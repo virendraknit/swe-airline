@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="METS" basedir=".">
+	<property name="serverJarfile" value="airlineReservationReserver"/>
+	<property name="clientJarfile" value="airlineClient"/>
+	<property name="build.home" value="${basedir}/build"/>
+	<property name="dist.home" value="${basedir}/dist"/>
+	<property name="src.home" value="${basedir}/src"/>
+
+	<property name="compile.debug" value="true"/>
+	<property name="compile.deprecation" value="false"/>
+	<property name="compile.optimize" value="true"/>
+	
+	
+	<!--
+			Setup compiler's class path
+	-->
+	<path id="compile.classpath">
+		<pathelement location="${catalina.home}/common/classes"/>
+		<fileset dir="${catalina.home}/common/endorsed">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${catalina.home}/common/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<path id="compile.tc6.classpath">
+		<fileset dir="${catalina.home}/lib">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${basedir}/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<!--
+			UNPACK WAR FILE
+	-->
+	<target name="clean" description="Clean old build and dist directories">
+		<delete dir="${build.home}/classes"/>
+		<delete dir="${dist.home}"/>
+	</target>
+	<target name="compile" description="Compile Java sources">
+		<mkdir dir="${build.home}/classes" />
+		<!-- Compile Java classes as necessary -->
+		<javac srcdir="${src.home}" destdir="${build.home}/classes" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<!--
+			<classpath refid="compile.tc6.classpath"/>
+			<classpath refid="axis2.classpath" />
+			-->
+		</javac>
+	</target>
+	<target name="createServer" depends="compile">
+		<mkdir dir="${dist.home}"/>
+		<jar destfile="${dist.home}/${serverJarfile}.jar">
+			<!--<classes dir="${build.home}/classes"/>
+			<fileset dir="${build.home}/classes" />
+			-->
+			<fileset dir="${build.home}/classes">
+				<include name="**/*.class" />
+    			<include name="**/rmi/*.class" />
+				<include name="**/domain/*.class" />
+			</fileset>
+		</jar>
+		<!--
+		<war destfile="dist/${warfile}.war" update="true">
+			<lib dir="lib" includes="*.jar"/>
+			<classes dir="build/classes"/>
+			<webinf dir="src/tld"/>
+			<zipfileset dir="html" prefix="html"/>
+			<zipfileset dir="xml" prefix="xml">
+				<exclude name="web.xml"/>
+				<exclude name="services.xml"/>
+			</zipfileset>
+			<zipfileset dir="jsp" prefix="jsp"/>
+			<zipfileset dir="sql" prefix="sql"/>
+		</war>
+		-->
+	</target>
+	<target name="copy_matt">
+		<delete dir="${catalina.home}/webapps/${warfile}"/>
+		<delete file="${catalina.home}/webapps/${warfile}.war"/>
+		<copy todir="${catalina.home}/webapps" overwrite="true">
+			<fileset dir="dist">
+				<include name="*.war"/>
+			</fileset>
+		</copy>
+	</target>
+</project>
