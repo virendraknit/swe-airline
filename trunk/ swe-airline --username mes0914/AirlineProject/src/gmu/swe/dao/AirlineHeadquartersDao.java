@@ -52,7 +52,7 @@ public class AirlineHeadquartersDao {
 			stmt = conn
 					.prepareStatement("insert into airplane (num_seats, type) values (?, ?)");
 			stmt.setInt(1, numberOfSeats);
-			stmt.setString(2, airplaneType);
+			stmt.setString(2, airplaneType.toUpperCase());
 			
 			stmt.executeUpdate();
 			conn.commit();
@@ -75,8 +75,8 @@ public class AirlineHeadquartersDao {
 			conn = DbUtils.getConnection();
 
 			stmt = conn
-					.prepareStatement("insert into airplane (code) values (?)");
-			stmt.setString(1, airportCode);
+					.prepareStatement("insert into airport (code) values (?)");
+			stmt.setString(1, airportCode.toUpperCase());
 			
 			stmt.executeUpdate();
 			

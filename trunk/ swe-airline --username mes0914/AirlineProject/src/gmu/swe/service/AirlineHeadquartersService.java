@@ -11,46 +11,31 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-public class AirlineHeadquartersService implements TempInterface {
+public class AirlineHeadquartersService {
 	private AirlineHeadquartersDao dao;
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.TempInterface#search(gmu.swe.domain.SearchFilters)
-	 */
 	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException {
 		System.out.println("Call to run search");
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.TempInterface#reserveFlight(java.lang.String, int)
-	 */
 	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException {
 		System.out.println("Call to reserve flight");
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.TempInterface#createAirplane(int, java.lang.String)
-	 */
 	public void createAirplane(int numberOfSeats, String airplaneType) throws ValidationException, DataAccessException {
 		validateAirplane(numberOfSeats, airplaneType);
 		
 		this.getDao().createAirplane(numberOfSeats, airplaneType);
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.TempInterface#createAirport(java.lang.String)
-	 */
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException {
 		validateAirport(airportCode);
 		
 		this.getDao().createAirport(airportCode);
 	}
 	
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.TempInterface#createFlight(gmu.swe.domain.Flight)
-	 */
 	public void createFlight(Flight flight) throws ValidationException, DataAccessException {
 		validateFlight(flight);
 
@@ -72,11 +57,13 @@ public class AirlineHeadquartersService implements TempInterface {
 		}
 	}
 	
-	protected void validateAirport(String airportCode) throws ValidationException {
+	protected void validateAirport(String airportCode) throws ValidationException, DataAccessException {
 		ValidationException validationException = new ValidationException();
 		
 		if(airportCode == null || airportCode.trim().equals("")){
 			validationException.addErrorMessage("The airport code was not provided");
+		}else if(this.getDao().doesAirportExist(airportCode)){
+			validationException.addErrorMessage("The airport code provided already exists");
 		}
 		
 		if(validationException.hasErrors()){
@@ -123,11 +110,6 @@ public class AirlineHeadquartersService implements TempInterface {
 			if (flight.getAirplaneId() < 0) {
 				validationException.addErrorMessage("The provided airplane Id is invalid.  The Id must be > 0");
 			}
-
-//			if (flight.getAvailableSeats() < 0) {
-//				validationException
-//						.addErrorMessage("The available seats provided is invalid.  The number must be > 0.");
-//			}
 		}
 
 		if (validationException.hasErrors()) {
