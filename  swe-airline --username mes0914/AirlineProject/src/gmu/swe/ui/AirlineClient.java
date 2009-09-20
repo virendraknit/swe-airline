@@ -128,9 +128,11 @@ public class AirlineClient {
 				return true;
 			case '2':
 				// create airport
+				createAirport();
 				return true;
 			case '3':
 				// create flight
+				createFlight();
 				return true;
 			case '4':
 				return false;
@@ -142,6 +144,112 @@ public class AirlineClient {
 				break;
 			}
 		}
+	}
+
+	private void createFlight() {
+		System.out.println("");
+		System.out.println("************************");
+		System.out.println("** Create Flight/Trip **");
+		System.out.println("    R - Return (no updates will occur)");
+		System.out.print("Please enter the date of the flight, or R to return----> ");
+
+		Date departureDate = null;
+		String departureAirportCode = null;
+		String destinationAirportCode = null;
+		double cost = 0.0;
+		int airplaneId = 0;
+		int availableSeats = 0;
+		
+		while (true) {
+			String inValue = this.readLine();
+			
+			
+			
+			
+			if (inValue == null || inValue.length() < 1) {
+				System.out.print("Error: Please enter a new Airport Code, or R to return----> ");
+			} else if (inValue.equalsIgnoreCase("R")) {
+				return;
+			} else {
+				try {
+					AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+					reserver.createAirport(inValue);
+					System.out.println("");
+					System.out.println("* Successfully added airport code " + inValue + ".");
+					return;
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+					System.out.print("Error: The URL provided for the Airline server is malformed.");
+					return;
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					System.out.print("Error: Airline server is currently down, please try again later.");
+					return;
+				} catch (NotBoundException e) {
+					e.printStackTrace();
+					System.out.print("Error: Airline server is currently down, please try again later.");
+					return;
+				} catch (ValidationException e) {
+					System.out.println("Validation Error - Please see message(s) below:");
+					showErrorMessages(e);
+					System.out.print("Please enter a new Airport Code, or R to return----> ");
+				} catch (DataAccessException e) {
+					e.printStackTrace();
+					System.out.print("Error while attempting to store data, please try again later.");
+					return;
+				}
+			}
+
+		}
+		
+	}
+
+	private void createAirport() {
+		System.out.println("");
+		System.out.println("*************************");
+		System.out.println("** Create Airport Code **");
+		System.out.println("    R - Return (no updates will occur)");
+		System.out.print("Please enter a new Airport Code, or R to return----> ");
+
+		while (true) {
+			String airportCode = this.readLine();
+
+			if (airportCode == null || airportCode.length() < 1) {
+				System.out.print("Error: Please enter a new Airport Code, or R to return----> ");
+			} else if (airportCode.equalsIgnoreCase("R")) {
+				return;
+			} else {
+				try {
+					AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+					reserver.createAirport(airportCode);
+					System.out.println("");
+					System.out.println("* Successfully added airport code " + airportCode + ".");
+					return;
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+					System.out.print("Error: The URL provided for the Airline server is malformed.");
+					return;
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					System.out.print("Error: Airline server is currently down, please try again later.");
+					return;
+				} catch (NotBoundException e) {
+					e.printStackTrace();
+					System.out.print("Error: Airline server is currently down, please try again later.");
+					return;
+				} catch (ValidationException e) {
+					System.out.println("Validation Error - Please see message(s) below:");
+					showErrorMessages(e);
+					System.out.print("Please enter a new Airport Code, or R to return----> ");
+				} catch (DataAccessException e) {
+					e.printStackTrace();
+					System.out.print("Error while attempting to store data, please try again later.");
+					return;
+				}
+			}
+
+		}
+		
 	}
 
 	private void createAirplane() {
@@ -189,7 +297,7 @@ public class AirlineClient {
 							return;
 						} catch (MalformedURLException e) {
 							e.printStackTrace();
-							System.out.print("Error: Airline server is currently down, please try again later.");
+							System.out.print("Error: The URL provided for the Airline server is malformed.");
 							return;
 						} catch (RemoteException e) {
 							e.printStackTrace();
