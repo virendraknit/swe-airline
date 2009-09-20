@@ -1,4 +1,4 @@
-package gmu.swe.classclient;
+package gmu.swe.ui;
 
 public class HelloWorld { 
 	   public static void main(String[] args) { 
