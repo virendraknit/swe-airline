@@ -1,9 +1,10 @@
-package gmu.swe.classclient;
+package gmu.swe.ui;
 
 
 import static org.junit.Assert.assertEquals;
 
 import gmu.swe.domain.SearchFilters;
+import gmu.swe.ui.AirlineClient;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
