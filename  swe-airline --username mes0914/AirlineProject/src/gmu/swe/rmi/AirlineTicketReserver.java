@@ -19,5 +19,5 @@ public interface AirlineTicketReserver extends Remote {
 
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException, RemoteException;
 
-	public void createFlight(Flight flight) throws ValidationException, DataAccessException, RemoteException;
+	public int createFlight(Flight flight) throws ValidationException, DataAccessException, RemoteException;
 }

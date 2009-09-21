@@ -7,12 +7,21 @@ public class Flight implements Serializable {
 
 	private static final long serialVersionUID = -2909265133578707208L;
 
+	private int id;
 	private Date departureDate;
 	private String departureAirportCode;
 	private String destinationAirportCode;
 	private double cost;
 	private int airplaneId;
 	private int availableSeats;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public Date getDepartureDate() {
 		return departureDate;
