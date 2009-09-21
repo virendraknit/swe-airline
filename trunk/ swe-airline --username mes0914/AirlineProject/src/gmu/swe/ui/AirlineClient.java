@@ -1,9 +1,11 @@
 package gmu.swe.ui;
 
+import gmu.swe.domain.Flight;
 import gmu.swe.domain.SearchFilters;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
 import gmu.swe.rmi.AirlineTicketReserver;
+import gmu.swe.util.DateUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,6 +15,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -147,61 +150,198 @@ public class AirlineClient {
 	}
 
 	private void createFlight() {
+		Flight flight = new Flight();
 		System.out.println("");
 		System.out.println("************************");
 		System.out.println("** Create Flight/Trip **");
+		System.out
+				.println(" (Note: The seat count is automatically set based on the number of seats on the provided Airplane Id)");
 		System.out.println("    R - Return (no updates will occur)");
-		System.out.print("Please enter the date of the flight, or R to return----> ");
 
-		Date departureDate = null;
-		String departureAirportCode = null;
-		String destinationAirportCode = null;
-		double cost = 0.0;
-		int airplaneId = 0;
-		int availableSeats = 0;
-		
+		// Date departureDate = null;
+		// String departureAirportCode = null;
+		// String destinationAirportCode = null;
+		// double cost = 0.0;
+		// int airplaneId = 0;
+		// int availableSeats = 0;
+		boolean shouldReturn = false;
+
 		while (true) {
-			String inValue = this.readLine();
-			
-			
-			
-			
-			if (inValue == null || inValue.length() < 1) {
-				System.out.print("Error: Please enter a new Airport Code, or R to return----> ");
-			} else if (inValue.equalsIgnoreCase("R")) {
-				return;
+
+			if (flight.getDepartureDate() == null) {
+				shouldReturn = getDepartureDate(flight);
+			} else if (flight.getDepartureAirportCode() == null) {
+				shouldReturn = getDepartureAirportCode(flight);
+			} else if (flight.getDestinationAirportCode() == null) {
+				shouldReturn = getDestinationAirportCode(flight);
+			} else if (flight.getCost() <= 0.0) {
+				shouldReturn = getFlightCost(flight);
+			} else if (flight.getAirplaneId() < 0) {
+				shouldReturn = getAirplaneId(flight);
 			} else {
-				try {
-					AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
-					reserver.createAirport(inValue);
-					System.out.println("");
-					System.out.println("* Successfully added airport code " + inValue + ".");
-					return;
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-					System.out.print("Error: The URL provided for the Airline server is malformed.");
-					return;
-				} catch (RemoteException e) {
-					e.printStackTrace();
-					System.out.print("Error: Airline server is currently down, please try again later.");
-					return;
-				} catch (NotBoundException e) {
-					e.printStackTrace();
-					System.out.print("Error: Airline server is currently down, please try again later.");
-					return;
-				} catch (ValidationException e) {
-					System.out.println("Validation Error - Please see message(s) below:");
-					showErrorMessages(e);
-					System.out.print("Please enter a new Airport Code, or R to return----> ");
-				} catch (DataAccessException e) {
-					e.printStackTrace();
-					System.out.print("Error while attempting to store data, please try again later.");
-					return;
+				shouldReturn = createFlight(flight);
+			}
+
+			if (shouldReturn) {
+				return;
+			}
+		}
+
+	}
+
+	private boolean createFlight(Flight flight) {
+		try {
+			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			int flightId = reserver.createFlight(flight);
+			System.out.println("");
+			System.out.println("* Successfully added flight number " + flightId + ".");
+			return true;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			System.out.print("Error: The URL provided for the Airline server is malformed.");
+			return true;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+			return true;
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+			return true;
+		} catch (ValidationException e) {
+			System.out.println("");
+			System.out.println("****** Flight Creation Failed");
+			System.out.println("Validation Error - Please see message(s) below:");
+			showErrorMessages(e);
+			return true;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			System.out.print("Error while attempting to store data, please try again later.");
+			return true;
+		}
+	}
+
+	private boolean getAirplaneId(Flight flight) {
+		System.out.print("Please enter the airplane Id that should be used for the flight, or R to return----> ");
+
+		while (true) {
+			String sAirplaneId = this.readLine();
+
+			if (sAirplaneId == null || sAirplaneId.length() < 1) {
+				System.out
+						.print("Error: Please enter the airplane Id that should be used for the flight, or R to return----> ");
+			} else if (sAirplaneId.equalsIgnoreCase("R")) {
+				return true;
+			} else {
+				if (isWholeNumber(sAirplaneId)) {
+					flight.setAirplaneId(Integer.parseInt(sAirplaneId));
+					return false;
+				} else {
+					System.out
+							.print(sAirplaneId
+									+ " is an invalid Id. Please enter the airplane Id (a whole number) that should be used for the flight, or R to return----> ");
 				}
 			}
 
 		}
-		
+	}
+
+	private boolean getFlightCost(Flight flight) {
+		System.out.print("Please enter the cost for the flight (ex: 150.00), or R to return----> ");
+
+		while (true) {
+			String cost = this.readLine();
+
+			if (cost == null || cost.length() < 1) {
+				System.out.print("Error: Please enter the cost for the flight (ex: 150.00), or R to return----> ");
+			} else if (cost.equalsIgnoreCase("R")) {
+				return true;
+			} else {
+				if (isValidCurrency(cost)) {
+					flight.setCost(Double.parseDouble(cost));
+					return false;
+				} else {
+					System.out
+							.print("$"
+									+ cost
+									+ " is an invalid amount.  Please enter the cost for the flight (ex: 150.00), or R to return----> ");
+				}
+			}
+
+		}
+	}
+
+	private boolean getDestinationAirportCode(Flight flight) {
+		System.out.print("Please enter Destination Location Code for the flight, or R to return----> ");
+
+		while (true) {
+			String destinationLocation = this.readLine();
+
+			if (destinationLocation == null || destinationLocation.length() < 1) {
+				System.out.print("Error: Please enter Destination Location Code for the flight, or R to return----> ");
+			} else if (destinationLocation.equalsIgnoreCase("R")) {
+				return true;
+			} else if (destinationLocation.equalsIgnoreCase(flight.getDepartureAirportCode())) {
+				System.out
+						.println("Error: The Destination Location Code may not be the same value as the Departing Location Code.");
+				System.out.print("  Please enter Destination Location Code for the flight, or R to return----> ");
+			} else {
+				flight.setDestinationAirportCode(destinationLocation);
+				return false;
+			}
+
+		}
+	}
+
+	private boolean getDepartureAirportCode(Flight flight) {
+		System.out.print("Please enter Departure Location Code for the flight, or R to return----> ");
+
+		while (true) {
+			String departureLocation = this.readLine();
+
+			if (departureLocation == null || departureLocation.length() < 1) {
+				System.out.print("Error: Please enter Departure Location Code for the flight, or R to return----> ");
+			} else if (departureLocation.equalsIgnoreCase("R")) {
+				return true;
+			} else {
+				flight.setDepartureAirportCode(departureLocation);
+				return false;
+			}
+
+		}
+	}
+
+	private boolean getDepartureDate(Flight flight) {
+		System.out.print("Please enter the Date of the flight (MM/DD/YYYY), or R to return----> ");
+
+		while (true) {
+
+			String sDateOfFlight = this.readLine();
+
+			if (sDateOfFlight == null || sDateOfFlight.length() < 1) {
+				System.out.print("Error: Please enter the Date of the Trip (MM/DD/YYYY), or R to return----> ");
+			} else if (sDateOfFlight.equalsIgnoreCase("R")) {
+				return true;
+			} else {
+				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+				try {
+					Date dateOfTrip = sdf.parse(sDateOfFlight);
+
+					if (DateUtil.isTodayOrLater(dateOfTrip)) {
+						flight.setDepartureDate(dateOfTrip);
+						return false;
+					} else {
+						System.out
+								.print("Error: Please enter the Date of the Trip that is today or later (MM/DD/YYYY), or R to return----> ");
+					}
+				} catch (ParseException e) {
+					System.out
+							.print("'"
+									+ sDateOfFlight
+									+ "' is an invalid date. Please enter a Date in the format MM/DD/YYYY, or R to return----> ");
+				}
+			}
+		}
 	}
 
 	private void createAirport() {
@@ -238,6 +378,8 @@ public class AirlineClient {
 					System.out.print("Error: Airline server is currently down, please try again later.");
 					return;
 				} catch (ValidationException e) {
+					System.out.println("");
+					System.out.println("****** Adding Airport Code Failed");
 					System.out.println("Validation Error - Please see message(s) below:");
 					showErrorMessages(e);
 					System.out.print("Please enter a new Airport Code, or R to return----> ");
@@ -249,7 +391,7 @@ public class AirlineClient {
 			}
 
 		}
-		
+
 	}
 
 	private void createAirplane() {
@@ -281,7 +423,7 @@ public class AirlineClient {
 			}
 
 			if (airplaneType != null && sNumSeats != null) {
-				if (isNumber(sNumSeats)) {
+				if (isWholeNumber(sNumSeats)) {
 					Integer numSeats = new Integer(sNumSeats);
 					if (numSeats < 1) {
 						System.out
@@ -293,7 +435,8 @@ public class AirlineClient {
 							AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
 							reserver.createAirplane(numSeats, airplaneType);
 							System.out.println("");
-							System.out.println("* Successfully added a " + airplaneType + " airplane with " + numSeats + " seats.");
+							System.out.println("* Successfully added a " + airplaneType + " airplane with " + numSeats
+									+ " seats.");
 							return;
 						} catch (MalformedURLException e) {
 							e.printStackTrace();
@@ -308,6 +451,8 @@ public class AirlineClient {
 							System.out.print("Error: Airline server is currently down, please try again later.");
 							return;
 						} catch (ValidationException e) {
+							System.out.println("");
+							System.out.println("****** Airplane Creation Failed");
 							System.out.println("Validation Error - Please see message(s) below:");
 							showErrorMessages(e);
 							return;
@@ -331,13 +476,24 @@ public class AirlineClient {
 		for (String errorMessage : e.getErrorMessages()) {
 			System.out.println("-- " + errorMessage);
 		}
-		
+
 	}
 
-	private boolean isNumber(String numSeats) {
+	private boolean isWholeNumber(String numSeats) {
 		try {
 			// Test if the value is actually a number
 			new Integer(numSeats);
+			return true;
+		} catch (NumberFormatException e) {
+			// Ignore
+		}
+		return false;
+	}
+
+	private boolean isValidCurrency(String currencyAmount) {
+		try {
+			// Test if the value is actually a number
+			new Double(currencyAmount);
 			return true;
 		} catch (NumberFormatException e) {
 			// Ignore
@@ -362,7 +518,7 @@ public class AirlineClient {
 			System.out.println("    1 - Set Departure Location");
 			System.out.println("    2 - Set Destination");
 			System.out.println("    3 - Set Date of Trip");
-			System.out.println("    4 - Run Search (requires departure, destination, or date to be set)");
+			System.out.println("    4 - Run Search (requires departure and destination, and/or date to be set)");
 			System.out.println("    5 - Reset Search Filters");
 			System.out.println("    6 - Main Menu");
 			System.out.println("    7 - Quit");
@@ -371,13 +527,6 @@ public class AirlineClient {
 			shouldContinue = handleFlightSearchChoice(searchFilters);
 
 		}
-
-		// System.out.println("Email Listing: ");
-		// System.out.println("");
-		// System.out.println("  NAME      EMAIL ADDRESS");
-		// System.out
-		// .println("----------------------------------------------------------");
-		// System.out.println("");
 	}
 
 	/**
@@ -542,10 +691,112 @@ public class AirlineClient {
 
 	private void search(SearchFilters searchFilters) {
 		if (searchFilters.isAllNull()) {
+			System.out.println("");
 			System.out
-					.println("Error: Running a search requires one or more of the following to be set - Departure, Destination, or Date.");
+					.println("* Error: Running a search requires the Departure and Destination, and/or Date to be set.");
+		} else if (searchFilters.getDepartureLocation() != null || searchFilters.getDestinationLocation() != null
+				|| searchFilters.getDateOfTrip() != null) {
+			Collection<Flight> flights = runSearch(searchFilters);
+			if (flights != null) {
+				reserveProcess(flights);
+			} else {
+				System.out.println("");
+				System.out.println("* No flights were found with the provided search options.");
+			}
+		} else {
+			System.out.println("");
+			System.out.println("* Error: Running a search requires the Departure, Destination, and/or Date to be set.");
 		}
-		System.out.println("Not Implemented Yet");
+	}
+
+	private Collection<Flight> runSearch(SearchFilters searchFilters) {
+		try {
+			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			return reserver.search(searchFilters);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			System.out.print("Error: The URL provided for the Airline server is malformed.");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+		} catch (ValidationException e) {
+			System.out.println("");
+			System.out.println("****** Flight Search Failed");
+			System.out.println("Validation Error - Please see message(s) below:");
+			showErrorMessages(e);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			System.out.print("Error while attempting to access data, please try again later.");
+		}
+
+		return null;
+	}
+
+	private void reserveProcess(Collection<Flight> flights) {
+		showFlights(flights);
+
+		System.out.println("");
+		System.out.println("************************");
+		System.out.println("** Reserving a Flight **");
+		System.out.println("    R - Return (no updates will occur)");
+
+		// Date departureDate = null;
+		// String departureAirportCode = null;
+		// String destinationAirportCode = null;
+		// double cost = 0.0;
+		// int airplaneId = 0;
+		// int availableSeats = 0;
+		boolean shouldReturn = false;
+
+		while (true) {
+
+			// if (flight.getDepartureDate() == null) {
+			// shouldReturn = getDepartureDate(flight);
+			// } else if (flight.getDepartureAirportCode() == null) {
+			// shouldReturn = getDepartureAirportCode(flight);
+			// } else if (flight.getDestinationAirportCode() == null) {
+			// shouldReturn = getDestinationAirportCode(flight);
+			// } else if (flight.getCost() <= 0.0) {
+			// shouldReturn = getFlightCost(flight);
+			// } else if (flight.getAirplaneId() < 0) {
+			// shouldReturn = getAirplaneId(flight);
+			// } else {
+			// shouldReturn = createFlight(flight);
+			// }
+
+			if (shouldReturn) {
+				return;
+			}
+		}
+
+	}
+
+	private void showFlights(Collection<Flight> flights) {
+		// System.out.println("Email Listing: ");
+		// System.out.println("");
+		// System.out.println("  NAME      EMAIL ADDRESS");
+		// System.out
+		// .println("----------------------------------------------------------");
+		// System.out.println("");
+		System.out.println("*****************");
+		System.out.println("** Flight List **");
+		System.out.println("(Ordered by Departing Airport and then by Destination Airport)");
+		System.out.println("");
+		System.out.println("DEPARTING\tDESTINATION\t\t\t\t\t\tAVAILABLE");
+		System.out.println("AIRLINE\t\tAIRLINE\t\tDEPART DATE\tFLIGHT ID\tCOST\tSEATS");
+		System.out.println("--------------------------------------------------------------------------------");
+
+		for (Flight flight : flights) {
+			String airplanes = flight.getDepartureAirportCode() + "\t\t" + flight.getDestinationAirportCode() + "\t\t"
+					+ flight.getDepartureDate() + "\t" + flight.getId() + "\t\t$" + flight.getCost() + "\t"
+					+ flight.getAvailableSeats();
+			System.out.println(airplanes);
+		}
+		System.out.println("--------------------------------------------------------------------------------");
+
 	}
 
 	private String readLine() {

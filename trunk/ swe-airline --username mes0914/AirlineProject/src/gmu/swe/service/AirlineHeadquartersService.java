@@ -6,71 +6,87 @@ import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
+import gmu.swe.util.DateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 
 public class AirlineHeadquartersService {
 	private AirlineHeadquartersDao dao;
 
-	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException {
-		System.out.println("Call to run search");
-		return null;
+	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException  {
+		validateSearchCriteria(searchFilters);
+
+		return this.getDao().search(searchFilters);
 	}
 
-	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException {
+	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException, DataAccessException  {
+		/*
+		 * TODO
+		 */
 		System.out.println("Call to reserve flight");
 		return null;
 	}
 
 	public void createAirplane(int numberOfSeats, String airplaneType) throws ValidationException, DataAccessException {
 		validateAirplane(numberOfSeats, airplaneType);
-		
+
 		this.getDao().createAirplane(numberOfSeats, airplaneType);
 	}
 
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException {
 		validateAirport(airportCode);
-		
+
 		this.getDao().createAirport(airportCode);
 	}
-	
-	public void createFlight(Flight flight) throws ValidationException, DataAccessException {
+
+	public int createFlight(Flight flight) throws ValidationException, DataAccessException {
 		validateFlight(flight);
 
-		this.getDao().createFlight(flight);
+		return this.getDao().createFlight(flight);
+	}
+
+	private void validateSearchCriteria(SearchFilters searchFilters) throws ValidationException {
+		ValidationException validationException = new ValidationException();
+
+		if (searchFilters == null || searchFilters.isAllNull()) {
+			validationException.addErrorMessage("No search filters were not provided");
+		}
+
+		if (validationException.hasErrors()) {
+			throw validationException;
+		}
 	}
 
 	protected void validateAirplane(int numberOfSeats, String airplaneType) throws ValidationException {
 		ValidationException validationException = new ValidationException();
-		
-		if(numberOfSeats < 1){
+
+		if (numberOfSeats < 1) {
 			validationException.addErrorMessage("The number of seats on a plane may not be < 1");
 		}
-		if(airplaneType == null || airplaneType.trim().equals("")){
+		if (airplaneType == null || airplaneType.trim().equals("")) {
 			validationException.addErrorMessage("The airplane type was not provided");
 		}
-		
-		if(validationException.hasErrors()){
+
+		if (validationException.hasErrors()) {
 			throw validationException;
 		}
 	}
-	
+
 	protected void validateAirport(String airportCode) throws ValidationException, DataAccessException {
 		ValidationException validationException = new ValidationException();
-		
-		if(airportCode == null || airportCode.trim().equals("")){
+
+		if (airportCode == null || airportCode.trim().equals("")) {
 			validationException.addErrorMessage("The airport code was not provided");
-		}else if(this.getDao().doesAirportExist(airportCode)){
+		} else if (this.getDao().doesAirportExist(airportCode)) {
 			validationException.addErrorMessage("The airport code provided already exists");
 		}
-		
-		if(validationException.hasErrors()){
+
+		if (validationException.hasErrors()) {
 			throw validationException;
 		}
 	}
-	
+
 	protected void validateFlight(Flight flight) throws ValidationException, DataAccessException {
 		ValidationException validationException = new ValidationException();
 
@@ -79,10 +95,10 @@ public class AirlineHeadquartersService {
 		} else {
 			if (flight.getDepartureDate() == null) {
 				validationException.addErrorMessage("No departure date was provided");
-			} else if (flight.getDepartureDate().before(new Date())) {
+			} else if (!DateUtil.isTodayOrLater(flight.getDepartureDate())) {
 				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 				validationException
-						.addErrorMessage("The departure date must be no earlier than today.  The provided date was "
+						.addErrorMessage("The departure date must be no earlier than tomorrow.  The provided date was "
 								+ sdf.format(flight.getDepartureDate()) + ".");
 			}
 

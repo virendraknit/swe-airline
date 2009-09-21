@@ -44,9 +44,9 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 		this.getService().createAirport(airportCode);
 	}
 
-	public void createFlight(Flight flight) throws ValidationException, DataAccessException, RemoteException {
+	public int createFlight(Flight flight) throws ValidationException, DataAccessException, RemoteException {
 		System.out.println("Creating Flight");
-		this.getService().createFlight(flight);
+		return this.getService().createFlight(flight);
 	}
 	
 	public static void main(String[] args) throws RemoteException, MalformedURLException{
