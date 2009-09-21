@@ -1,11 +1,12 @@
 package gmu.swe.dao;
 
 import gmu.swe.domain.Flight;
+import gmu.swe.domain.SearchFilters;
 import gmu.swe.exception.DataAccessException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -57,17 +58,47 @@ public class AirlineHeadquartersDaoTest {
 //		stmt.setInt(5, flight.getAirplaneId());
 //		stmt.setInt(6, flight.getAvailableSeats());
 		
-		String sDate = "10/23/2005";
+		String sDate = "10/25/2009";
 		
 		Flight flight = new Flight();
 		flight.setDepartureDate(this.simpleDateFormatter.parse(sDate));
-		flight.setDestinationAirportCode("BWI");
-		flight.setDepartureAirportCode("IAD");
+		flight.setDestinationAirportCode("DCA");
+		flight.setDepartureAirportCode("BWI");
 		flight.setCost(240.00);
-		flight.setAirplaneId(1);
+		flight.setAirplaneId(0);
 		
-		this.dao.createFlight(flight);
+//		this.dao.createFlight(flight);
 		Assert.assertTrue(true);
 		
+	}
+	
+	@Test
+	public void testSearchFlights() throws DataAccessException{
+		Collection<Flight> flights = this.dao.search(new SearchFilters());
+		
+		System.out.println("*****************");
+		System.out.println("** Flight List **");
+		System.out.println("(Ordered by Departing Airport and then by Destination Airport)");
+		System.out.println("");
+		System.out.println("DEPARTING\tDESTINATION\t\t\t\t\t\tAVAILABLE");
+		System.out.println("AIRLINE\t\tAIRLINE\t\tDEPART DATE\tFLIGHT ID\tCOST\tSEATS");
+		System.out.println("--------------------------------------------------------------------------------");
+		
+		for (Flight flight : flights) {
+			
+//			String airplanes = "FlightId(" + flight.getId() + "), DepartDate(" + flight.getDepartureDate()
+//			+ "), DepartCode(" + flight.getDepartureAirportCode() + "), DestCode(" + flight.getDestinationAirportCode() + "), Cost($"
+//			+ flight.getCost() + "), PlaneId(" + flight.getAirplaneId() + "), AvailableSeats(" + flight.getAvailableSeats()
+//			+ ")";
+//			System.out.println(airplanes);
+			
+//			for (Flight flight : flights) {
+				String airplanes = flight.getDepartureAirportCode() + "\t\t" + flight.getDestinationAirportCode() + "\t\t"
+						+ flight.getDepartureDate() + "\t" + flight.getId() + "\t\t$" + flight.getCost() + "\t"
+						+ flight.getAvailableSeats();
+				System.out.println(airplanes);
+//			}
+		}
+		System.out.println("--------------------------------------------------------------------------------");
 	}
 }
