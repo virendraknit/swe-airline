@@ -49,12 +49,12 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 		return this.getService().createFlight(flight);
 	}
 	
-	public static void main(String[] args) throws RemoteException, MalformedURLException{
-		AirlineTicketReserverServer server = new AirlineTicketReserverServer();
-		Naming.rebind("/AirlineTicketReserverServer", server);
-		System.out.println("Airline Server running and bound!");
+	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException,
+			RemoteException {
+		System.out.println("Creating Reservation");
+		return this.getService().createReservation(flightId, numSeats);
 	}
-	
+
 	public AirlineHeadquartersService getService() {
 		if(this.service == null){
 			this.service = new AirlineHeadquartersService();
@@ -64,5 +64,11 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 
 	public void setService(AirlineHeadquartersService service) {
 		this.service = service;
+	}
+	
+	public static void main(String[] args) throws RemoteException, MalformedURLException{
+		AirlineTicketReserverServer server = new AirlineTicketReserverServer();
+		Naming.rebind("/AirlineTicketReserverServer", server);
+		System.out.println("Airline Server running and bound!");
 	}
 }

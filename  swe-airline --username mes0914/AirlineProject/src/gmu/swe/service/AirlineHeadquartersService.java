@@ -14,13 +14,14 @@ import java.util.Collection;
 public class AirlineHeadquartersService {
 	private AirlineHeadquartersDao dao;
 
-	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException  {
+	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException {
 		validateSearchCriteria(searchFilters);
 
 		return this.getDao().search(searchFilters);
 	}
 
-	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException, DataAccessException  {
+	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException,
+			DataAccessException {
 		/*
 		 * TODO
 		 */
@@ -44,6 +45,35 @@ public class AirlineHeadquartersService {
 		validateFlight(flight);
 
 		return this.getDao().createFlight(flight);
+	}
+
+	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException {
+		validateReservationData(flightId, numSeats);
+
+		return this.getDao().createReservation(flightId, numSeats);
+	}
+
+	private void validateReservationData(int flightId, int numSeats) throws ValidationException, DataAccessException {
+		ValidationException validationException = new ValidationException();
+
+		if (flightId < 0) {
+			validationException.addErrorMessage("An invalid flight Id was provided, it must be >= 0");
+		} else if (!this.getDao().doesFlightExist(flightId)) {
+			validationException.addErrorMessage("The provided flight Id does not exist");
+		}
+		if (numSeats < 0) {
+			validationException.addErrorMessage("An invalid number of seats was provided, it must be >= 1");
+		} else {
+			int numAvailableSeats = this.getDao().getNumberOfAvailableSeats(flightId);
+			if (numAvailableSeats < numSeats) {
+				validationException
+						.addErrorMessage("The flight does not have enough seats, it only has " + "available");
+			}
+		}
+
+		if (validationException.hasErrors()) {
+			throw validationException;
+		}
 	}
 
 	private void validateSearchCriteria(SearchFilters searchFilters) throws ValidationException {
