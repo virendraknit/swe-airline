@@ -15,6 +15,10 @@ public class Flight implements Serializable {
 	private int airplaneId;
 	private int availableSeats;
 
+	public Flight(){
+		this.airplaneId = -1;
+	}
+	
 	public int getId() {
 		return id;
 	}

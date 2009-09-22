@@ -1,6 +1,7 @@
 package gmu.swe.service;
 
 import gmu.swe.dao.AirlineHeadquartersDao;
+import gmu.swe.domain.Airplane;
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
@@ -14,6 +15,14 @@ import java.util.Collection;
 public class AirlineHeadquartersService {
 	private AirlineHeadquartersDao dao;
 
+	public Collection<Airplane> getAllAirplanes() throws DataAccessException {
+		return this.getDao().getAllAirplanes();
+	}
+	
+	public Collection<String> getallAirports() throws DataAccessException {
+		return this.getDao().getallAirports();
+	}
+	
 	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException {
 		validateSearchCriteria(searchFilters);
 
@@ -146,6 +155,8 @@ public class AirlineHeadquartersService {
 
 			if (flight.getAirplaneId() < 0) {
 				validationException.addErrorMessage("The provided airplane Id is invalid.  The Id must be > 0");
+			}else if(!this.getDao().doesAirplaneExist(flight.getAirplaneId())){
+				validationException.addErrorMessage("The provided airplane Id does not exist.");
 			}
 		}
 

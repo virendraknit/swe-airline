@@ -1,5 +1,6 @@
 package gmu.swe.rmi;
 
+import gmu.swe.domain.Airplane;
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
@@ -20,4 +21,8 @@ public interface AirlineTicketReserver extends Remote {
 	public int createFlight(Flight flight) throws ValidationException, DataAccessException, RemoteException;
 
 	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException, RemoteException;
+
+	public Collection<Airplane> getAllAirplanes() throws DataAccessException, RemoteException;
+
+	public Collection<String> getAllAirports() throws DataAccessException, RemoteException;
 }
