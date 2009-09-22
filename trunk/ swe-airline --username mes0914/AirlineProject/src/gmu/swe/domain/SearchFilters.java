@@ -11,19 +11,19 @@ public class SearchFilters implements Serializable {
 	private Date dateOfTrip;
 
 	public String getDepartureLocation() {
-		return departureLocation;
+		return departureLocation == null ? null : departureLocation.toUpperCase();
 	}
 
 	public void setDepartureLocation(String departureLocation) {
-		this.departureLocation = departureLocation;
+		this.departureLocation = departureLocation == null ? null : departureLocation.toUpperCase();
 	}
 
 	public String getDestinationLocation() {
-		return destinationLocation;
+		return destinationLocation == null ? null : destinationLocation.toUpperCase();
 	}
 
 	public void setDestinationLocation(String destinationLocation) {
-		this.destinationLocation = destinationLocation;
+		this.destinationLocation = destinationLocation == null ? null : destinationLocation.toUpperCase();
 	}
 
 	public Date getDateOfTrip() {

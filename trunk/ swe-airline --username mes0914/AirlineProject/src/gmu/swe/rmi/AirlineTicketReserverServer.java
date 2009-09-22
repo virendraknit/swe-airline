@@ -28,11 +28,6 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 		return this.getService().search(searchFilters);
 	}
 
-	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException, DataAccessException, RemoteException {
-		System.out.println("Reserving Flight");
-		return this.getService().reserveFlight(flightNumber, numberOfSeats);
-	}
-	
 	public void createAirplane(int numberOfSeats, String airplaneType) throws ValidationException, DataAccessException,
 			RemoteException {
 		System.out.println("Creating Airplane");

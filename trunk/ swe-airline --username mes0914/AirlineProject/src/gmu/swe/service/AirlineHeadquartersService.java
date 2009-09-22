@@ -20,15 +20,6 @@ public class AirlineHeadquartersService {
 		return this.getDao().search(searchFilters);
 	}
 
-	public Reservation reserveFlight(String flightNumber, int numberOfSeats) throws ValidationException,
-			DataAccessException {
-		/*
-		 * TODO
-		 */
-		System.out.println("Call to reserve flight");
-		return null;
-	}
-
 	public void createAirplane(int numberOfSeats, String airplaneType) throws ValidationException, DataAccessException {
 		validateAirplane(numberOfSeats, airplaneType);
 
@@ -67,7 +58,7 @@ public class AirlineHeadquartersService {
 			int numAvailableSeats = this.getDao().getNumberOfAvailableSeats(flightId);
 			if (numAvailableSeats < numSeats) {
 				validationException
-						.addErrorMessage("The flight does not have enough seats, it only has " + "available");
+						.addErrorMessage("The flight does not have enough seats, it only has " + numAvailableSeats + " seats available");
 			}
 		}
 

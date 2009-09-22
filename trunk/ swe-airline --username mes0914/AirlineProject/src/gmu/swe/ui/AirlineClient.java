@@ -40,10 +40,8 @@ public class AirlineClient {
 	public AirlineClient() {
 		// Print out header
 		System.out.println("");
-		System.out.println("Travel Agent System");
+		System.out.println("Travel Agent & Airline System");
 		System.out.println("****************************************************");
-		System.out.println("");
-		System.out.println("");
 
 		// Continue Flag
 		boolean bContinue = true;
@@ -53,17 +51,24 @@ public class AirlineClient {
 
 			// Print out the command ment
 			System.out.println("");
-			System.out.println("** Options **");
+			System.out.println("***************");
+			System.out.println("** Main Menu **");
 			System.out.println("    1 - Search for Flights");
 			System.out.println("    2 - Create Airplanes, Airports, and/or Flights");
 			System.out.println("    3 - Quit");
 			System.out.print("Please enter command (1-3)----> ");
 
+			bContinue = handleMainMenuChoice(bContinue);
+		}
+	}
+
+	private boolean handleMainMenuChoice(boolean bContinue) {
+		while (true) {
 			String userOption = this.readLine();
 			char letterOption = '\0';
 
 			// convert the input to a char
-			if (userOption.length() > 1) {
+			if (userOption.length() != 1) {
 				letterOption = '4';
 			} else {
 				letterOption = userOption.charAt(0);
@@ -74,18 +79,18 @@ public class AirlineClient {
 			case '1':
 				// Search for flights
 				searchFlights();
-				break;
+				return true;
 			case '2':
 				populateDatabase();
-				break;
+				return true;
 			case '3':
 				// Quit the program
 				bContinue = false;
 				System.out.println("Quiting - Good Bye");
-				break;
+				return false;
 			case '4':
 			default:
-				System.out.println("Error: Please enter only a number from the Options.");
+				System.out.print("Error: Please enter only a number from the Options (1-3)----> ");
 				break;
 			}
 		}
@@ -752,16 +757,23 @@ public class AirlineClient {
 		// int availableSeats = 0;
 		StringBuffer sFlightIdBuf = new StringBuffer();
 		StringBuffer sNumOfSeatsBuf = new StringBuffer();
-		
+
 		boolean shouldReturn = false;
 
 		while (true) {
-			if(sFlightIdBuf.length() < 1){
-				shouldReturn = getFlightId(sFlightIdBuf);
-			}else if(sNumOfSeatsBuf.length() < 1){
+			if (sFlightIdBuf.length() < 1) {
+				shouldReturn = getFlightId(sFlightIdBuf, flights);
+			} else if (sNumOfSeatsBuf.length() < 1) {
 				shouldReturn = getNumberOfSeatsToReserve(sNumOfSeatsBuf);
-			}else{
-				shouldReturn = createReservation(Integer.parseInt(sFlightIdBuf.toString()), Integer.parseInt(sNumOfSeatsBuf.toString()));
+			} else {
+				try {
+					shouldReturn = createReservation(Integer.parseInt(sFlightIdBuf.toString()), Integer
+							.parseInt(sNumOfSeatsBuf.toString()));
+				} catch (ValidationException e) {
+					System.out.println("You may choose to reserve another flight, or return and run a new search.");
+					sFlightIdBuf = new StringBuffer();
+					sNumOfSeatsBuf = new StringBuffer(0);
+				}
 			}
 
 			if (shouldReturn) {
@@ -771,14 +783,23 @@ public class AirlineClient {
 
 	}
 
-	private boolean createReservation(int flightId, int numSeats) {
+	private boolean createReservation(int flightId, int numSeats) throws ValidationException {
 		try {
 			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
 			Reservation reservation = reserver.createReservation(flightId, numSeats);
-			
-			
+			Flight flight = reservation.getFlight();
+
 			System.out.println("");
-			System.out.println("* Successfully added flight number " + flightId + ".");
+			System.out.println("* Successfully create reservation.");
+			System.out.println("--------------------------------------------------------------------------------");
+			System.out.println("Reservation #: " + reservation.getId());
+			System.out.println("Number of Seats Reserved: " + reservation.getNumSeats());
+			System.out.println("Flight #: " + flight.getId());
+			System.out.println("Departing From Airport: " + flight.getDepartureAirportCode());
+			System.out.println("Arriving in Airport: " + flight.getDestinationAirportCode());
+			System.out.println("Flight Date: " + flight.getDepartureDate());
+			System.out.println("Total Cost: $" + (flight.getCost() * reservation.getNumSeats()));
+			System.out.println("--------------------------------------------------------------------------------");
 			return true;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -794,10 +815,10 @@ public class AirlineClient {
 			return true;
 		} catch (ValidationException e) {
 			System.out.println("");
-			System.out.println("****** Flight Creation Failed");
+			System.out.println("****** Reservation Creation Failed");
 			System.out.println("Validation Error - Please see message(s) below:");
 			showErrorMessages(e);
-			return true;
+			throw e;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			System.out.print("Error while attempting to store data, please try again later.");
@@ -817,8 +838,9 @@ public class AirlineClient {
 				return true;
 			} else {
 				if (isWholeNumber(sNumSeats)) {
-					if (Integer.parseInt(sNumSeats) < 0) {
-						System.out.print("Error: Please enter the number of seats to reserve (the Id should be >= 1), or R to return----> ");
+					if (Integer.parseInt(sNumSeats) <= 0) {
+						System.out
+								.print("Error: Please enter the number of seats to reserve (the Id should be >= 1), or R to return----> ");
 					} else {
 						numOfSeatsBuf.append(sNumSeats);
 						return false;
@@ -833,7 +855,7 @@ public class AirlineClient {
 		}
 	}
 
-	private boolean getFlightId(StringBuffer sFlightIdBuf) {
+	private boolean getFlightId(StringBuffer sFlightIdBuf, Collection<Flight> flights) {
 		System.out.print("Please enter the flight Id for the reservation, or R to return----> ");
 
 		while (true) {
@@ -846,10 +868,15 @@ public class AirlineClient {
 			} else {
 				if (isWholeNumber(sFlightId)) {
 					if (Integer.parseInt(sFlightId) < 0) {
-						System.out.print("Error: Please enter the flight Id for the reservation (the Id should be >= 0), or R to return----> ");
-					} else {
+						System.out
+								.print("Error: Please enter the flight Id for the reservation (the Id should be >= 0), or R to return----> ");
+					} else if (isFlightIdInFlights(Integer.parseInt(sFlightId), flights)) {
 						sFlightIdBuf.append(sFlightId);
 						return false;
+					} else {
+						System.out.println("Error: The flight Id provided is not one of the choices listed.");
+						System.out
+								.print("Please enter the flight Id for the reservation (the Ids are listed in the search results), or R to return----> ");
 					}
 				} else {
 					System.out
@@ -859,6 +886,15 @@ public class AirlineClient {
 			}
 
 		}
+	}
+
+	private boolean isFlightIdInFlights(int flightId, Collection<Flight> flights) {
+		for (Flight flight : flights) {
+			if (flightId == flight.getId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void showFlights(Collection<Flight> flights) {

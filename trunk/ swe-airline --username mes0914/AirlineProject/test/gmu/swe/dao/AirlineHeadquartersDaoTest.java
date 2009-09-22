@@ -72,26 +72,37 @@ public class AirlineHeadquartersDaoTest {
 
 	@Test
 	public void testCreateReservation() throws DataAccessException {
-//		Flight flight = this.dao.createReservation(2, 5);
-//
-//		System.out.println("Last Reservation Added.");
-//		String airplanes = flight.getDepartureAirportCode() + "\t\t" + flight.getDestinationAirportCode() + "\t\t"
-//				+ flight.getDepartureDate() + "\t" + flight.getId() + "\t\t$" + flight.getCost() + "\t"
-//				+ flight.getAvailableSeats();
-//		System.out.println(airplanes);
+		// Flight flight = this.dao.createReservation(2, 5);
+		//
+		// System.out.println("Last Reservation Added.");
+		// String airplanes = flight.getDepartureAirportCode() + "\t\t" +
+		// flight.getDestinationAirportCode() + "\t\t"
+		// + flight.getDepartureDate() + "\t" + flight.getId() + "\t\t$" +
+		// flight.getCost() + "\t"
+		// + flight.getAvailableSeats();
+		// System.out.println(airplanes);
 	}
-	
+
 	@Test
 	public void testGetLastReservationAdded() throws DataAccessException {
 		Reservation reservation = this.dao.getLastReservationAdded(2);
 		Flight flight = reservation.getFlight();
-		
-		System.out.println("Last Reservation Added.");
-		System.out.println("Reservation Id: " + reservation.getId() + ", # Seats Reserved: " + reservation.getNumSeats());
-		String airplanes = flight.getDepartureAirportCode() + "\t\t" + flight.getDestinationAirportCode() + "\t\t"
-				+ flight.getDepartureDate() + "\t" + flight.getId() + "\t\t$" + flight.getCost() + "\t"
-				+ flight.getAvailableSeats();
-		System.out.println(airplanes);
+
+		System.out.println("* Successfully create reservation.");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("Reservation #: " + reservation.getId());
+		System.out.println("Number of Seats Reserved: " + reservation.getNumSeats());
+		System.out.println("Flight #: " + flight.getId());
+		System.out.println("Departing From Airport: " + flight.getDepartureAirportCode());
+		System.out.println("Arriving in Airport: " + flight.getDestinationAirportCode());
+		System.out.println("Flight Date: " + flight.getDepartureDate());
+		System.out.println("Total Cost: $" + (flight.getCost() * reservation.getNumSeats()));
+		System.out.println("--------------------------------------------------------------------------------");
+//		String airplanes = reservation.getId() + "\t" + reservation.getNumSeats() + "\t"
+//				+ flight.getDepartureAirportCode() + "\t\t" + flight.getDestinationAirportCode() + "\t\t"
+//				+ flight.getDepartureDate() + "\t" + flight.getId() + "\t\t$" + flight.getCost() + "\t"
+//				+ flight.getAvailableSeats();
+//		System.out.println(airplanes);
 	}
 
 	@Test
