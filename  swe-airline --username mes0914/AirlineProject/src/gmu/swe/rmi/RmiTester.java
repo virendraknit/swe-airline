@@ -16,7 +16,7 @@ public class RmiTester {
 		AirlineTicketReserver reserver = (AirlineTicketReserver)Naming.lookup(url);
 		
 		reserver.search(new SearchFilters());
-		reserver.reserveFlight("flight_num", 4);
+//		reserver.reserveFlight("flight_num", 4);
 	}
 
 }
