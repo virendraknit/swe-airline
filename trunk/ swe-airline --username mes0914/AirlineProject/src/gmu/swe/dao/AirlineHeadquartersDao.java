@@ -1,6 +1,7 @@
 package gmu.swe.dao;
 
 import gmu.swe.domain.Flight;
+import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.util.DbUtils;
@@ -130,7 +131,104 @@ public class AirlineHeadquartersDao {
 			closeDbObjects(stmt, conn);
 		}
 	}
+	
+	public Reservation createReservation(int flightId, int numSeats) throws DataAccessException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
 
+		try {
+			conn = DbUtils.getConnection();
+
+			stmt = conn
+					.prepareStatement("insert into RESERVATION (FLIGHT_ID, NUM_SEATS) values (?, ?)");
+			stmt.setInt(1, flightId);
+			stmt.setInt(2, numSeats);
+
+			stmt.executeUpdate();
+
+			stmt = conn.prepareStatement("update FLIGHT set AVAILABLE_SEATS = AVAILABLE_SEATS - ? where ID = ?");
+			stmt.setInt(1, numSeats);
+			stmt.setInt(2, flightId);
+			
+			stmt.executeUpdate();
+			
+			return getLastReservationAdded(flightId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} finally {
+			closeDbObjects(stmt, conn);
+		}
+	}
+
+	protected Reservation getLastReservationAdded(int flightId) throws DataAccessException {
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			conn = DbUtils.getConnection();
+
+			stmt = conn.createStatement();
+			
+			// Get Reservation
+			ResultSet rs = stmt.executeQuery("select ID, NUM_SEATS from RESERVATION ORDER BY ID DESC");
+			rs.next();
+			
+			Reservation reservation = new Reservation();
+			reservation.setId(rs.getInt(1));
+			reservation.setNumSeats(rs.getInt(2));
+			
+			reservation.setFlight(this.getFlight(flightId));
+			
+			return reservation;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} finally {
+			closeDbObjects(stmt, conn);
+		}
+	}
+
+	protected Flight getFlight(int flightId) throws DataAccessException{
+		Connection conn = null;
+		PreparedStatement stmt = null;
+
+		try {
+			conn = DbUtils.getConnection();
+
+			stmt = conn.prepareStatement("select * from FLIGHT where ID = ? ORDER BY ID DESC");
+			stmt.setInt(1, flightId);
+			
+			ResultSet rs = stmt.executeQuery();
+			rs.next();
+			
+			Flight flight = new Flight();
+			flight.setId(rs.getInt(1));
+			flight.setDepartureDate(rs.getDate(2));
+			flight.setDepartureAirportCode(rs.getString(3));
+			flight.setDestinationAirportCode(rs.getString(4));
+			flight.setCost(rs.getDouble(5));
+			flight.setAirplaneId(rs.getInt(6));
+			flight.setAvailableSeats(rs.getInt(7));
+			
+			return flight;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} finally {
+			closeDbObjects(stmt, conn);
+		}
+	}
+	
 	private int getLastAddedFlightId() throws DataAccessException {
 		Connection conn = null;
 		Statement stmt = null;
@@ -169,6 +267,56 @@ public class AirlineHeadquartersDao {
 				return true;
 			}
 			return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} finally {
+			closeDbObjects(stmt, conn);
+		}
+	}
+
+	public boolean doesFlightExist(int flightId) throws DataAccessException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+
+		try {
+			conn = DbUtils.getConnection();
+
+			stmt = conn.prepareStatement("select id from flight where id = ?");
+			stmt.setInt(1, flightId);
+
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+			return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} finally {
+			closeDbObjects(stmt, conn);
+		}
+	}
+
+	public int getNumberOfAvailableSeats(int flightId) throws DataAccessException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+
+		try {
+			conn = DbUtils.getConnection();
+
+			stmt = conn.prepareStatement("select available_seats from flight where id = ?");
+			stmt.setInt(1, flightId);
+
+			ResultSet rs = stmt.executeQuery();
+			rs.next();
+			return rs.getInt(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
