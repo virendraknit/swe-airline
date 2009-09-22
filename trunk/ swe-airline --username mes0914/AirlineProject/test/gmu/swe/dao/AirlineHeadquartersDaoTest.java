@@ -66,6 +66,11 @@ public class AirlineHeadquartersDaoTest {
 	}
 
 	@Test
+	public void testDoesAirplaneExist_WithValidAirplaneId() throws DataAccessException {
+		Assert.assertTrue(this.dao.doesAirplaneExist(4));
+	}
+	
+	@Test
 	public void testDoesFlightHaveEnoughSeats_WithTooManySeats() throws DataAccessException {
 		Assert.assertEquals(98, this.dao.getNumberOfAvailableSeats(2));
 	}

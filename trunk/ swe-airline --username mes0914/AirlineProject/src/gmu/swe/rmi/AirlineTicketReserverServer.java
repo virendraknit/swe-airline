@@ -1,5 +1,6 @@
 package gmu.swe.rmi;
 
+import gmu.swe.domain.Airplane;
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
@@ -18,12 +19,13 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 	private static final long serialVersionUID = 5546301886910842040L;
 
 	private AirlineHeadquartersService service;
-	
+
 	protected AirlineTicketReserverServer() throws RemoteException {
 		super();
 	}
 
-	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException, RemoteException{
+	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException,
+			RemoteException {
 		System.out.println("Running Search");
 		return this.getService().search(searchFilters);
 	}
@@ -43,15 +45,25 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 		System.out.println("Creating Flight");
 		return this.getService().createFlight(flight);
 	}
-	
+
 	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException,
 			RemoteException {
 		System.out.println("Creating Reservation");
 		return this.getService().createReservation(flightId, numSeats);
 	}
 
+	public Collection<Airplane> getAllAirplanes() throws DataAccessException, RemoteException {
+		System.out.println("Retrieving All Airplanes");
+		return this.getService().getAllAirplanes();
+	}
+
+	public Collection<String> getAllAirports() throws DataAccessException, RemoteException {
+		System.out.println("Retrieving All Airports");
+		return this.getService().getallAirports();
+	}
+	
 	public AirlineHeadquartersService getService() {
-		if(this.service == null){
+		if (this.service == null) {
 			this.service = new AirlineHeadquartersService();
 		}
 		return service;
@@ -60,8 +72,8 @@ public class AirlineTicketReserverServer extends UnicastRemoteObject implements 
 	public void setService(AirlineHeadquartersService service) {
 		this.service = service;
 	}
-	
-	public static void main(String[] args) throws RemoteException, MalformedURLException{
+
+	public static void main(String[] args) throws RemoteException, MalformedURLException {
 		AirlineTicketReserverServer server = new AirlineTicketReserverServer();
 		Naming.rebind("/AirlineTicketReserverServer", server);
 		System.out.println("Airline Server running and bound!");

@@ -51,9 +51,12 @@ public class DatabaseTester {
 
 			System.out.println("** All Airplanes");
 
+			System.out.println("PLANE ID\tPLANE TYPE\t# SEATS");
 			while (rs.next()) {
-				String airplanes = "PlaneId(" + rs.getObject(1) + "), SeatsCount(" + rs.getObject(2) + "), PlaneType("
-						+ rs.getObject(3) + ")";
+				String airplanes = rs.getObject(1) + "\t\t" + rs.getObject(3) + "\t\t" + rs.getObject(2);
+				// String airplanes = "PlaneId(" + rs.getObject(1) +
+				// "), SeatsCount(" + rs.getObject(2) + "), PlaneType("
+				// + rs.getObject(3) + ")";
 				System.out.println(airplanes);
 			}
 
@@ -163,5 +166,5 @@ public class DatabaseTester {
 		}
 
 	}
-	
+
 }

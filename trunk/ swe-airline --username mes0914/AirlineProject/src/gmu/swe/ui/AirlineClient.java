@@ -1,5 +1,6 @@
 package gmu.swe.ui;
 
+import gmu.swe.domain.Airplane;
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
@@ -16,6 +17,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -164,26 +166,44 @@ public class AirlineClient {
 				.println(" (Note: The seat count is automatically set based on the number of seats on the provided Airplane Id)");
 		System.out.println("    R - Return (no updates will occur)");
 
+		boolean shouldReturn = false;
+
+		Collection<Airplane> airplanes = new ArrayList<Airplane>();
+		Collection<String> airports = new ArrayList<String>();
+
+		System.out.println("");
+		System.out.println("Available Airplanes & Airports");
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("--------------------------------------------------------------------------------");
+		shouldReturn = showAvailableAirplanes(airplanes);
+		System.out.println("--------------------------------------------------------------------------------");
+		shouldReturn = showAvailableAirports(airports);
+		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("--------------------------------------------------------------------------------");
+
+		if (shouldReturn) {
+			return;
+		}
+
 		// Date departureDate = null;
 		// String departureAirportCode = null;
 		// String destinationAirportCode = null;
 		// double cost = 0.0;
 		// int airplaneId = 0;
 		// int availableSeats = 0;
-		boolean shouldReturn = false;
 
 		while (true) {
 
 			if (flight.getDepartureDate() == null) {
 				shouldReturn = getDepartureDate(flight);
 			} else if (flight.getDepartureAirportCode() == null) {
-				shouldReturn = getDepartureAirportCode(flight);
+				shouldReturn = getDepartureAirportCode(flight, airports);
 			} else if (flight.getDestinationAirportCode() == null) {
-				shouldReturn = getDestinationAirportCode(flight);
+				shouldReturn = getDestinationAirportCode(flight, airports);
 			} else if (flight.getCost() <= 0.0) {
 				shouldReturn = getFlightCost(flight);
 			} else if (flight.getAirplaneId() < 0) {
-				shouldReturn = getAirplaneId(flight);
+				shouldReturn = getAirplaneId(flight, airplanes);
 			} else {
 				shouldReturn = createFlight(flight);
 			}
@@ -193,6 +213,70 @@ public class AirlineClient {
 			}
 		}
 
+	}
+
+	private boolean showAvailableAirports(Collection<String> storeAirports) {
+		try {
+			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			Collection<String> airports = reserver.getAllAirports();
+
+			System.out.println("AIRPORT(LOCATION) CODE");
+			for (String airport : airports) {
+				System.out.println(airport);
+			}
+
+			storeAirports.addAll(airports);
+			return false;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			System.out.print("Error: The URL provided for the Airline server is malformed.");
+			return true;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+			return true;
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+			return true;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			System.out.print("Error while attempting retrieve store data, please try again later.");
+			return true;
+		}
+	}
+
+	private boolean showAvailableAirplanes(Collection<Airplane> storeAirplanes) {
+		try {
+			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			Collection<Airplane> airplanes = reserver.getAllAirplanes();
+
+			System.out.println("PLANE ID\tPLANE TYPE\t# SEATS");
+			for (Airplane airplane : airplanes) {
+				String airplaneString = airplane.getId() + "\t\t" + airplane.getType() + "\t\t"
+						+ airplane.getNumSeats();
+				System.out.println(airplaneString);
+			}
+
+			storeAirplanes.addAll(airplanes);
+			return false;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			System.out.print("Error: The URL provided for the Airline server is malformed.");
+			return true;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+			return true;
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+			System.out.print("Error: Airline server is currently down, please try again later.");
+			return true;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			System.out.print("Error while attempting retrieve store data, please try again later.");
+			return true;
+		}
 	}
 
 	private boolean createFlight(Flight flight) {
@@ -227,7 +311,7 @@ public class AirlineClient {
 		}
 	}
 
-	private boolean getAirplaneId(Flight flight) {
+	private boolean getAirplaneId(Flight flight, Collection<Airplane> airplanes) {
 		System.out.print("Please enter the airplane Id that should be used for the flight, or R to return----> ");
 
 		while (true) {
@@ -240,8 +324,14 @@ public class AirlineClient {
 				return true;
 			} else {
 				if (isWholeNumber(sAirplaneId)) {
-					flight.setAirplaneId(Integer.parseInt(sAirplaneId));
-					return false;
+					if (isExistingFlight(Integer.parseInt(sAirplaneId), airplanes)) {
+						flight.setAirplaneId(Integer.parseInt(sAirplaneId));
+						return false;
+					}else{
+						System.out.println("Error: The provided airplane Id does not exist.");
+						System.out
+								.print("Please enter the airplane Id that should be used for the flight (see airplane Ids listed above), or R to return----> ");
+					}
 				} else {
 					System.out
 							.print(sAirplaneId
@@ -250,6 +340,15 @@ public class AirlineClient {
 			}
 
 		}
+	}
+
+	private boolean isExistingFlight(int airplaneId, Collection<Airplane> airplanes) {
+		for (Airplane airplane : airplanes) {
+			if(airplaneId == airplane.getId()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean getFlightCost(Flight flight) {
@@ -277,7 +376,7 @@ public class AirlineClient {
 		}
 	}
 
-	private boolean getDestinationAirportCode(Flight flight) {
+	private boolean getDestinationAirportCode(Flight flight, Collection<String> airports) {
 		System.out.print("Please enter Destination Location Code for the flight, or R to return----> ");
 
 		while (true) {
@@ -291,15 +390,19 @@ public class AirlineClient {
 				System.out
 						.println("Error: The Destination Location Code may not be the same value as the Departing Location Code.");
 				System.out.print("  Please enter Destination Location Code for the flight, or R to return----> ");
-			} else {
+			} else if (isExistingAirport(destinationLocation, airports)) {
 				flight.setDestinationAirportCode(destinationLocation);
 				return false;
+			} else {
+				System.out.println("Error: The provided Destination Code does not exist.");
+				System.out
+						.print("Please enter Destination Location Code for the flight (see airport codes listed above), or R to return----> ");
 			}
 
 		}
 	}
 
-	private boolean getDepartureAirportCode(Flight flight) {
+	private boolean getDepartureAirportCode(Flight flight, Collection<String> airports) {
 		System.out.print("Please enter Departure Location Code for the flight, or R to return----> ");
 
 		while (true) {
@@ -309,12 +412,25 @@ public class AirlineClient {
 				System.out.print("Error: Please enter Departure Location Code for the flight, or R to return----> ");
 			} else if (departureLocation.equalsIgnoreCase("R")) {
 				return true;
-			} else {
+			} else if (isExistingAirport(departureLocation, airports)) {
 				flight.setDepartureAirportCode(departureLocation);
 				return false;
+			} else {
+				System.out.println("Error: The provided Departure Code does not exist.");
+				System.out
+						.print("Please enter Departure Location Code for the flight (see airport codes listed above), or R to return----> ");
 			}
 
 		}
+	}
+
+	private boolean isExistingAirport(String departureLocation, Collection<String> airports) {
+		for (String airport : airports) {
+			if (airport.equalsIgnoreCase(departureLocation)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean getDepartureDate(Flight flight) {
