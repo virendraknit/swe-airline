@@ -22,15 +22,28 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
+ * This is the user interface for the airline system. This class may be used to
+ * add items to the database, and search and reserve flights. In other words,
+ * this is the Travel Agent and Airline Ticket Reservation Headquarters.
+ * 
+ * Some of the code here was copied from the in class example provided by
+ * Professor Martin (which is why he is listed as an author as well)
  * 
  * @author Matt Snyder
+ * @author Greg Martin
  * @course SWE 645
  * @date 09/17/2009
  */
 public class AirlineClient {
 	private String rmiUrl = "/AirlineHeadquartersRemoteServer";
 
-	public AirlineClient(String blah) {
+	/**
+	 * This constructor is never called. It is only here so this class can be
+	 * tested with JUnit.
+	 * 
+	 * @param notUsed
+	 */
+	public AirlineClient(String notUsed) {
 		/*
 		 * Created so I can test individual methods.
 		 */
@@ -60,11 +73,18 @@ public class AirlineClient {
 			System.out.println("    3 - Quit");
 			System.out.print("Please enter command (1-3)----> ");
 
-			bContinue = handleMainMenuChoice(bContinue);
+			bContinue = handleMainMenuChoice();
 		}
 	}
 
-	private boolean handleMainMenuChoice(boolean bContinue) {
+	/**
+	 * Handles the user input from the main menu (including invalid inputs)
+	 * 
+	 * @return True if the program should continue to run, false if it should
+	 *         shutdown.
+	 */
+	private boolean handleMainMenuChoice() {
+
 		while (true) {
 			String userOption = this.readLine();
 			char letterOption = '\0';
@@ -87,7 +107,6 @@ public class AirlineClient {
 				return true;
 			case '3':
 				// Quit the program
-				bContinue = false;
 				System.out.println("Quiting - Good Bye");
 				return false;
 			case '4':
@@ -98,6 +117,10 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This menu handles the adding of airplanes, airports, and flights to the
+	 * system.
+	 */
 	private void populateDatabase() {
 		boolean shouldContinue = true;
 
@@ -120,6 +143,13 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * This method handles the user input from the "Adding Flight Data" menu.
+	 * 
+	 * @return True if the "Adding Flight Data" menu should be displayed again.
+	 *         False if the Main Menu should be displayed. If the user chooses
+	 *         the "Quit" option, the program can also end here.
+	 */
 	private boolean handleAddingDataChoice() {
 		while (true) {
 			String userOption = this.readLine();
@@ -157,6 +187,10 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This method displays the menu for creating flights. It also displays all
+	 * of the airplanes and airports in the system.
+	 */
 	private void createFlight() {
 		Flight flight = new Flight();
 		System.out.println("");
@@ -181,17 +215,17 @@ public class AirlineClient {
 		System.out.println("--------------------------------------------------------------------------------");
 		System.out.println("--------------------------------------------------------------------------------");
 
+		/*
+		 * If there was a problem when retrieving the airplanes or airports, we
+		 * will return.
+		 */
 		if (shouldReturn) {
 			return;
 		}
 
-		// Date departureDate = null;
-		// String departureAirportCode = null;
-		// String destinationAirportCode = null;
-		// double cost = 0.0;
-		// int airplaneId = 0;
-		// int availableSeats = 0;
-
+		/*
+		 * Go through and get each piece of information for creating a flight.
+		 */
 		while (true) {
 
 			if (flight.getDepartureDate() == null) {
@@ -205,7 +239,8 @@ public class AirlineClient {
 			} else if (flight.getAirplaneId() < 0) {
 				shouldReturn = getAirplaneId(flight, airplanes);
 			} else {
-				shouldReturn = createFlight(flight);
+				createFlight(flight);
+				shouldReturn = true;
 			}
 
 			if (shouldReturn) {
@@ -215,7 +250,15 @@ public class AirlineClient {
 
 	}
 
-	private boolean showAvailableAirports(Collection<String> storeAirports) {
+	/**
+	 * Displays a formatted list of all the airports in the system. They are
+	 * sorted alphabetically from a to z.
+	 * 
+	 * @param storedAirports
+	 *            Collection of airports in the system.
+	 * @return True if the menu should be reshown. False if it should return.
+	 */
+	private boolean showAvailableAirports(Collection<String> storedAirports) {
 		try {
 			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			Collection<String> airports = reserver.getAllAirports();
@@ -225,7 +268,7 @@ public class AirlineClient {
 				System.out.println(airport);
 			}
 
-			storeAirports.addAll(airports);
+			storedAirports.addAll(airports);
 			return false;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -246,7 +289,16 @@ public class AirlineClient {
 		}
 	}
 
-	private boolean showAvailableAirplanes(Collection<Airplane> storeAirplanes) {
+	/**
+	 * Displays a formatted list of all the airplanes in the system. They are
+	 * sorted alphabetically from a to z, first by departure code, then by
+	 * destination code.
+	 * 
+	 * @param storedAirplanes
+	 *            Collection of airports in the system.
+	 * @return True if the menu should be reshown. False if it should return.
+	 */
+	private boolean showAvailableAirplanes(Collection<Airplane> storedAirplanes) {
 		try {
 			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			Collection<Airplane> airplanes = reserver.getAllAirplanes();
@@ -258,7 +310,7 @@ public class AirlineClient {
 				System.out.println(airplaneString);
 			}
 
-			storeAirplanes.addAll(airplanes);
+			storedAirplanes.addAll(airplanes);
 			return false;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -279,38 +331,53 @@ public class AirlineClient {
 		}
 	}
 
-	private boolean createFlight(Flight flight) {
+	/**
+	 * Method that makes a call to the server to create a Flight. This method
+	 * will show any errors that occur. It will also show a successful message
+	 * if the flight was created.
+	 * 
+	 * @param flight
+	 *            Flight to create
+	 */
+	private void createFlight(Flight flight) {
 		try {
 			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			int flightId = reserver.createFlight(flight);
 			System.out.println("");
 			System.out.println("* Successfully added flight number " + flightId + ".");
-			return true;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			System.out.print("Error: The URL provided for the Airline server is malformed.");
-			return true;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			System.out.print("Error: Airline server is currently down, please try again later.");
-			return true;
 		} catch (NotBoundException e) {
 			e.printStackTrace();
 			System.out.print("Error: Airline server is currently down, please try again later.");
-			return true;
 		} catch (ValidationException e) {
 			System.out.println("");
 			System.out.println("****** Flight Creation Failed");
 			System.out.println("Validation Error - Please see message(s) below:");
 			showErrorMessages(e);
-			return true;
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			System.out.print("Error while attempting to store data, please try again later.");
-			return true;
 		}
 	}
 
+	/**
+	 * This method hanldes the user's choice of the airplane Id that should be
+	 * used for the flight. It will handle any invalid input. I also recognizes
+	 * if the Id is not an Id available for them to choose. This method will set
+	 * the airplaneId of the <code>flight</code> object.
+	 * 
+	 * @param flight
+	 *            Object used to store the airplane Id.
+	 * @param airplanes
+	 *            Available airplane choices the user has to choose from.
+	 * @return True if the same menu should be shown, or False if the previous
+	 *         menu should be shown.
+	 */
 	private boolean getAirplaneId(Flight flight, Collection<Airplane> airplanes) {
 		System.out.print("Please enter the airplane Id that should be used for the flight, or R to return----> ");
 
@@ -324,10 +391,10 @@ public class AirlineClient {
 				return true;
 			} else {
 				if (isWholeNumber(sAirplaneId)) {
-					if (isExistingFlight(Integer.parseInt(sAirplaneId), airplanes)) {
+					if (isExistingAirplane(Integer.parseInt(sAirplaneId), airplanes)) {
 						flight.setAirplaneId(Integer.parseInt(sAirplaneId));
 						return false;
-					}else{
+					} else {
 						System.out.println("Error: The provided airplane Id does not exist.");
 						System.out
 								.print("Please enter the airplane Id that should be used for the flight (see airplane Ids listed above), or R to return----> ");
@@ -342,15 +409,34 @@ public class AirlineClient {
 		}
 	}
 
-	private boolean isExistingFlight(int airplaneId, Collection<Airplane> airplanes) {
+	/**
+	 * Returns true if the provided airplaneId is in the Collection of
+	 * <code>airplanes</code>. Otherwise returns false.
+	 * 
+	 * @param airplaneId
+	 *            Airplane Id to check on.
+	 * @param airplanes
+	 *            Collection of airplanes to check against.
+	 * @return True if the airplaneId is in the collection of airplanes.
+	 */
+	private boolean isExistingAirplane(int airplaneId, Collection<Airplane> airplanes) {
 		for (Airplane airplane : airplanes) {
-			if(airplaneId == airplane.getId()){
+			if (airplaneId == airplane.getId()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	/**
+	 * This method handles the menu input from the user for the cost of the
+	 * airplane, and all related invalid inputs.
+	 * 
+	 * @param flight
+	 *            Flight object to set the cost of.
+	 * @return True if the same menu should be shown to the user. False if the
+	 *         previuos menu should be shown.
+	 */
 	private boolean getFlightCost(Flight flight) {
 		System.out.print("Please enter the cost for the flight (ex: 150.00), or R to return----> ");
 
@@ -376,6 +462,19 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This menu hanldes the user's input for the destination airport code, and
+	 * all related invalid inputs. If the user chooses a code that doesn't exist
+	 * in the provided <code>airports</code>, then an error message will be
+	 * displayed.
+	 * 
+	 * @param flight
+	 *            Flight object to store the destination airport code in.
+	 * @param airports
+	 *            Collection of airports the user must choose from.
+	 * @return True if the same menu should be shown to the user. False if the
+	 *         previous menu should be displayed.
+	 */
 	private boolean getDestinationAirportCode(Flight flight, Collection<String> airports) {
 		System.out.print("Please enter Destination Location Code for the flight, or R to return----> ");
 
@@ -402,6 +501,19 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This menu hanldes the user's input for the departure airport code, and
+	 * all related invalid inputs. If the user chooses a code that doesn't exist
+	 * in the provided <code>airports</code>, then an error message will be
+	 * displayed.
+	 * 
+	 * @param flight
+	 *            Flight object to store the departure airport code in.
+	 * @param airports
+	 *            Collection of airports the user must choose from.
+	 * @return True if the same menu should be shown to the user. False if the
+	 *         previous menu should be displayed.
+	 */
 	private boolean getDepartureAirportCode(Flight flight, Collection<String> airports) {
 		System.out.print("Please enter Departure Location Code for the flight, or R to return----> ");
 
@@ -424,6 +536,18 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * Returns true if the provided departureLocation exists in the provided
+	 * <code>airports</code>
+	 * 
+	 * @param departureLocation
+	 *            Departure airport code.
+	 * @param airports
+	 *            Collection of airports the departureLocation should be
+	 *            compared against.
+	 * @return True if the provided departureLocation is in the provided
+	 *         <code>airports</code>. Otherwise returns false.
+	 */
 	private boolean isExistingAirport(String departureLocation, Collection<String> airports) {
 		for (String airport : airports) {
 			if (airport.equalsIgnoreCase(departureLocation)) {
@@ -433,6 +557,14 @@ public class AirlineClient {
 		return false;
 	}
 
+	/**
+	 * This method handles the user's input for the departure date of a flight.
+	 * It also handles all invalid input, including the wrong format for a date.
+	 * 
+	 * @param flight Flight object to set the date for.
+	 * @return True if the same menu should be shown to the user. False if the
+	 *         previous menu should be displayed.
+	 */
 	private boolean getDepartureDate(Flight flight) {
 		System.out.print("Please enter the Date of the flight (MM/DD/YYYY), or R to return----> ");
 
@@ -482,7 +614,8 @@ public class AirlineClient {
 				return;
 			} else {
 				try {
-					AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
+					AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming
+							.lookup(rmiUrl);
 					reserver.createAirport(airportCode);
 					System.out.println("");
 					System.out.println("* Successfully added airport code " + airportCode + ".");
@@ -554,7 +687,8 @@ public class AirlineClient {
 					} else {
 
 						try {
-							AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
+							AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming
+									.lookup(rmiUrl);
 							reserver.createAirplane(numSeats, airplaneType);
 							System.out.println("");
 							System.out.println("* Successfully added a " + airplaneType + " airplane with " + numSeats
