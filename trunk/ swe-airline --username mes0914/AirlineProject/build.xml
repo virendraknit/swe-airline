@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="METS" basedir=".">
-	<property name="serverJarfile" value="airlineReservationReserver"/>
+<project name="METS" basedir="." default="createServerAndClient">
+	<property name="serverJarfile" value="airlineServer"/>
 	<property name="clientJarfile" value="airlineClient"/>
 	<property name="build.home" value="${basedir}/build"/>
 	<property name="dist.home" value="${basedir}/dist"/>
@@ -10,33 +10,16 @@
 	<property name="compile.deprecation" value="false"/>
 	<property name="compile.optimize" value="true"/>
 	
-	
-	<!--
-			Setup compiler's class path
-	-->
-	<path id="compile.classpath">
-		<pathelement location="${catalina.home}/common/classes"/>
-		<fileset dir="${catalina.home}/common/endorsed">
-			<include name="*.jar"/>
-		</fileset>
-		<fileset dir="${catalina.home}/common/lib">
-			<include name="*.jar"/>
-		</fileset>
-	</path>
-	<path id="compile.tc6.classpath">
-		<fileset dir="${catalina.home}/lib">
-			<include name="*.jar"/>
-		</fileset>
-		<fileset dir="${basedir}/lib">
-			<include name="*.jar"/>
-		</fileset>
-	</path>
 	<!--
 			UNPACK WAR FILE
 	-->
 	<target name="clean" description="Clean old build and dist directories">
 		<delete dir="${build.home}/classes"/>
-		<delete dir="${dist.home}"/>
+		<delete>
+			<fileset dir="${dist.home}">
+			</fileset>
+		</delete>
+
 	</target>
 	<target name="compile" description="Compile Java sources">
 		<mkdir dir="${build.home}/classes" />
@@ -48,6 +31,22 @@
 			-->
 		</javac>
 	</target>
+	<target name="createClient" depends="compile">
+		<mkdir dir="${dist.home}"/>
+		<jar destfile="${dist.home}/${clientJarfile}.jar">
+			<!--<classes dir="${build.home}/classes"/>
+			<fileset dir="${build.home}/classes" />
+			-->
+			<fileset dir="${build.home}/classes">
+				<include name="**/domain/*.class" />
+				<include name="**/exception/*.class" />
+				<include name="**/service/rmi/AirlineHeadquartersRemoteService.class" />
+				<include name="**/ui/*.class" />
+				<include name="**/util/DateUtil.class" />
+			</fileset>
+		</jar>
+	</target>
+	
 	<target name="createServer" depends="compile">
 		<mkdir dir="${dist.home}"/>
 		<jar destfile="${dist.home}/${serverJarfile}.jar">
@@ -55,33 +54,17 @@
 			<fileset dir="${build.home}/classes" />
 			-->
 			<fileset dir="${build.home}/classes">
-				<include name="**/*.class" />
-    			<include name="**/rmi/*.class" />
+				<include name="**/dao/*.class" />
 				<include name="**/domain/*.class" />
+				<include name="**/exception/*.class" />
+				<include name="**/service/**/*.class" />
+				<include name="**/util/*.class" />
 			</fileset>
 		</jar>
-		<!--
-		<war destfile="dist/${warfile}.war" update="true">
-			<lib dir="lib" includes="*.jar"/>
-			<classes dir="build/classes"/>
-			<webinf dir="src/tld"/>
-			<zipfileset dir="html" prefix="html"/>
-			<zipfileset dir="xml" prefix="xml">
-				<exclude name="web.xml"/>
-				<exclude name="services.xml"/>
-			</zipfileset>
-			<zipfileset dir="jsp" prefix="jsp"/>
-			<zipfileset dir="sql" prefix="sql"/>
-		</war>
-		-->
 	</target>
-	<target name="copy_matt">
-		<delete dir="${catalina.home}/webapps/${warfile}"/>
-		<delete file="${catalina.home}/webapps/${warfile}.war"/>
-		<copy todir="${catalina.home}/webapps" overwrite="true">
-			<fileset dir="dist">
-				<include name="*.war"/>
-			</fileset>
-		</copy>
+	
+	<target name="createServerAndClient">
+		<antcall target="createClient" />
+		<antcall target="createServer" />
 	</target>
 </project>
