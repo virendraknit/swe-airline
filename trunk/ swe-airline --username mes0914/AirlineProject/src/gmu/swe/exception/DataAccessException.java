@@ -1,5 +1,12 @@
 package gmu.swe.exception;
 
+/**
+ * Custom exception used to wrap the database specific exceptions, and cut down
+ * on the number of exceptions thrown.
+ * 
+ * @author mbsnyder
+ * 
+ */
 public class DataAccessException extends Exception {
 
 	private static final long serialVersionUID = 8123757319324423701L;
