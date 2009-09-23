@@ -3,9 +3,15 @@ package gmu.swe.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Domain object used as a filter when searching for a flight.
+ * 
+ * @author mbsnyder
+ * 
+ */
 public class SearchFilters implements Serializable {
 	private static final long serialVersionUID = -7121710518476582087L;
-	
+
 	private String departureLocation;
 	private String destinationLocation;
 	private Date dateOfTrip;
@@ -35,11 +41,10 @@ public class SearchFilters implements Serializable {
 	}
 
 	public boolean isAllNull() {
-		return this.departureLocation == null
-				&& this.destinationLocation == null && this.dateOfTrip == null;
+		return this.departureLocation == null && this.destinationLocation == null && this.dateOfTrip == null;
 	}
-	
-	public void nullOutValues(){
+
+	public void nullOutValues() {
 		this.departureLocation = null;
 		this.destinationLocation = null;
 		this.dateOfTrip = null;
