@@ -561,7 +561,8 @@ public class AirlineClient {
 	 * This method handles the user's input for the departure date of a flight.
 	 * It also handles all invalid input, including the wrong format for a date.
 	 * 
-	 * @param flight Flight object to set the date for.
+	 * @param flight
+	 *            Flight object to set the date for.
 	 * @return True if the same menu should be shown to the user. False if the
 	 *         previous menu should be displayed.
 	 */
@@ -598,6 +599,11 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This method displays the menu for creating an airport code. It also
+	 * handles any invalid input and calling the server to create the new
+	 * airport.
+	 */
 	private void createAirport() {
 		System.out.println("");
 		System.out.println("*************************");
@@ -649,6 +655,11 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * This method displays the menu for creating an airport in the system. It
+	 * will also call the server to create the airport and handle any invalid
+	 * input.
+	 */
 	private void createAirplane() {
 		System.out.println("");
 		System.out.println("*********************");
@@ -728,6 +739,13 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * Utility method used to print out any validation errors the server
+	 * returns.
+	 * 
+	 * @param e
+	 *            Validation errors
+	 */
 	private void showErrorMessages(ValidationException e) {
 		for (String errorMessage : e.getErrorMessages()) {
 			System.out.println("-- " + errorMessage);
@@ -735,30 +753,47 @@ public class AirlineClient {
 
 	}
 
-	private boolean isWholeNumber(String numSeats) {
+	/**
+	 * Utility method that determines if the provided string is a whole number.
+	 * Returns true if it is, false if it isn't (this could be because it is
+	 * text or a floating number.)
+	 * 
+	 * @param sNumber
+	 *            The String to check
+	 * @return True of sNumber is a whole number, otherwise returns false.
+	 */
+	private boolean isWholeNumber(String sNumber) {
 		try {
 			// Test if the value is actually a number
-			new Integer(numSeats);
+			new Integer(sNumber);
 			return true;
 		} catch (NumberFormatException e) {
-			// Ignore
+			// Ignore, this means it isn't a whole number.
 		}
 		return false;
 	}
 
+	/**
+	 * Utility method to determine if the provided currencyAmount is a
+	 * {@link Double}. Returns true if it is, false if it isn't.
+	 * 
+	 * @param currencyAmount
+	 *            Value to check.
+	 * @return True if currenctyAmount is a {@link Double}, false if it isn't.
+	 */
 	private boolean isValidCurrency(String currencyAmount) {
 		try {
 			// Test if the value is actually a number
 			new Double(currencyAmount);
 			return true;
 		} catch (NumberFormatException e) {
-			// Ignore
+			// Ignore, this meants it isn't a double.
 		}
 		return false;
 	}
 
 	/**
-	 * Method to list all of the registrations.
+	 * This method displays the Flight Search menu to the user.
 	 */
 	private void searchFlights() {
 		SearchFilters searchFilters = new SearchFilters();
@@ -786,10 +821,14 @@ public class AirlineClient {
 	}
 
 	/**
-	 * Returns false if the user wants to quite, otherwise returns true.
+	 * This method handles the user's input for the flight searching. If the
+	 * user chooses the option to quite, this method can exit the application.
 	 * 
 	 * @param searchFilters
-	 * @return
+	 *            SearchFilters that should be set when the user enters valid
+	 *            data.
+	 * @return True if the flight menu should be displayed, False if the Main
+	 *         Menu should be displayed.
 	 */
 	private boolean handleFlightSearchChoice(SearchFilters searchFilters) {
 		while (true) {
@@ -832,6 +871,15 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * Used to display the currently set filters the user has entered. If no
+	 * values have been entered, "NONE" will be displayed. Only the values
+	 * entered will be displayed.
+	 * 
+	 * @param searchFilters
+	 *            SearchFilters to display.
+	 * @return String of the current SearchFilters.
+	 */
 	protected String showCurrentSearchFilters(SearchFilters searchFilters) {
 		String filterDetails = "";
 
@@ -860,6 +908,13 @@ public class AirlineClient {
 		return filterDetails;
 	}
 
+	/**
+	 * This method displays the menu for setting a departure code. It also
+	 * handles the user's input and invalid input.
+	 * 
+	 * @param searchFilters
+	 *            SearchFilters object to set the object to.
+	 */
 	private void setDepartureLocation(SearchFilters searchFilters) {
 		System.out.println("");
 		System.out.println("*********************************");
@@ -884,8 +939,14 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * This method displays the menu to the user that will set a destination
+	 * airport code. It also handles any invalid input.
+	 * 
+	 * @param searchFilters
+	 *            SearchFilters object to set the destination airport code to.
+	 */
 	private void setDestinationLocation(SearchFilters searchFilters) {
-		// Display listing
 		System.out.println("");
 		System.out.println("***********************************");
 		System.out.println("** Set Destination Location Code **");
@@ -910,11 +971,17 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * This method displays the menu that allows the user to set the date of the
+	 * trip/reservation. It also handles any invalid input.
+	 * 
+	 * @param searchFilters
+	 *            SearchFilters object to set the date to.
+	 */
 	private void setDateOfTrip(SearchFilters searchFilters) {
-		// Display listing
 		System.out.println("");
-		System.out.println("****************************");
-		System.out.println("** Set Date of Trip **");
+		System.out.println("**********************************");
+		System.out.println("** Set Date of Reservation/Trip **");
 		showCurrentSearchFilters(searchFilters);
 		System.out.println("    R - Return (no updates will occur)");
 		System.out.print("Please enter the Date of the Trip (MM/DD/YYYY), or R to return----> ");
@@ -945,6 +1012,18 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * This method will run the search, using the provided searchFilters, to get
+	 * back all flights that match the filter. It will then show the reservation
+	 * menu to the user.
+	 * 
+	 * If the searchFilters is empty, then an error message will be displayed.
+	 * If no flights were found matching the filter, then a message is
+	 * displayed.
+	 * 
+	 * @param searchFilters
+	 *            SearchFilters to use when searching for flights.
+	 */
 	private void search(SearchFilters searchFilters) {
 		if (searchFilters.isAllNull()) {
 			System.out.println("");
@@ -965,6 +1044,16 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This method will call the server to run the search. If any errors occur,
+	 * or there are validation errors, messages will be shown describing what
+	 * happened.
+	 * 
+	 * @param searchFilters
+	 *            SearchFilter to run the search on.
+	 * @return Collection of flights that match the provided searchFilters. If
+	 *         no flights were found, or error occured, null will be returned.
+	 */
 	private Collection<Flight> runSearch(SearchFilters searchFilters) {
 		try {
 			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
@@ -991,6 +1080,13 @@ public class AirlineClient {
 		return null;
 	}
 
+	/**
+	 * This method will display the menu for reserving a flight. It will also
+	 * handle some input validation.
+	 * 
+	 * @param flights
+	 *            Collection of flights that resulted from the search.
+	 */
 	private void reserveProcess(Collection<Flight> flights) {
 		showFlights(flights);
 
@@ -999,12 +1095,6 @@ public class AirlineClient {
 		System.out.println("** Reserving a Flight **");
 		System.out.println("    R - Return (no updates will occur)");
 
-		// Date departureDate = null;
-		// String departureAirportCode = null;
-		// String destinationAirportCode = null;
-		// double cost = 0.0;
-		// int airplaneId = 0;
-		// int availableSeats = 0;
 		StringBuffer sFlightIdBuf = new StringBuffer();
 		StringBuffer sNumOfSeatsBuf = new StringBuffer();
 
@@ -1033,6 +1123,21 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * This method calls the server to make a flight reservation. If there are
+	 * errors, they will be displayed to the user. If the reservation was
+	 * successful, the Reservation information will be shown to the user.
+	 * 
+	 * @param flightId
+	 *            Flight number to make the reservation for.
+	 * @param numSeats
+	 *            The number of seats to reserve.
+	 * @return Always returns true to show the flight search menu. Only other
+	 *         option is if an exception is thrown from a validation error.
+	 * @throws ValidationException
+	 *             Thrown if there are any validation errors with the input
+	 *             provided.
+	 */
 	private boolean createReservation(int flightId, int numSeats) throws ValidationException {
 		try {
 			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
@@ -1050,19 +1155,15 @@ public class AirlineClient {
 			System.out.println("Flight Date: " + flight.getDepartureDate());
 			System.out.println("Total Cost: $" + (flight.getCost() * reservation.getNumSeats()));
 			System.out.println("--------------------------------------------------------------------------------");
-			return true;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			System.out.print("Error: The URL provided for the Airline server is malformed.");
-			return true;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			System.out.print("Error: Airline server is currently down, please try again later.");
-			return true;
 		} catch (NotBoundException e) {
 			e.printStackTrace();
 			System.out.print("Error: Airline server is currently down, please try again later.");
-			return true;
 		} catch (ValidationException e) {
 			System.out.println("");
 			System.out.println("****** Reservation Creation Failed");
@@ -1072,10 +1173,20 @@ public class AirlineClient {
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			System.out.print("Error while attempting to store data, please try again later.");
-			return true;
 		}
+		return true;
 	}
 
+	/**
+	 * This method handles the user input for the number of seats to reserve for
+	 * a flight. It also handles any invalid input.
+	 * 
+	 * @param numOfSeatsBuf
+	 *            Object used for this method to set the number of seats that
+	 *            should be reserved.
+	 * @return True if the reservation process should continue. False if it
+	 *         should return.
+	 */
 	private boolean getNumberOfSeatsToReserve(StringBuffer numOfSeatsBuf) {
 		System.out.print("Please enter the number of seats to reserve, or R to return----> ");
 
@@ -1105,6 +1216,17 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * This method handles the user's input for the flight number to make a
+	 * reservation for. It also handles any invalid input.
+	 * 
+	 * @param sFlightIdBuf
+	 *            Object to set the flight number to.
+	 * @param flights
+	 *            Flights the user has to choose from.
+	 * @return True if the reservation process should continue. False if it
+	 *         shouldn't.
+	 */
 	private boolean getFlightId(StringBuffer sFlightIdBuf, Collection<Flight> flights) {
 		System.out.print("Please enter the flight Id for the reservation, or R to return----> ");
 
@@ -1138,6 +1260,17 @@ public class AirlineClient {
 		}
 	}
 
+	/**
+	 * Returns true if the provided flightId exists in the collection of
+	 * <code>flights</code>. This method is used to validate the user chose a
+	 * flight number that resulted from their search.
+	 * 
+	 * @param flightId
+	 *            Value to check on
+	 * @param flights
+	 *            Flights the flightId should be in.
+	 * @return True if the flightId is in the collection of <code>flights</code>
+	 */
 	private boolean isFlightIdInFlights(int flightId, Collection<Flight> flights) {
 		for (Flight flight : flights) {
 			if (flightId == flight.getId()) {
@@ -1147,6 +1280,12 @@ public class AirlineClient {
 		return false;
 	}
 
+	/**
+	 * This method will printout the provided collection of flights.
+	 * 
+	 * @param flights
+	 *            Flights that will be printed out.
+	 */
 	private void showFlights(Collection<Flight> flights) {
 		System.out.println("*****************");
 		System.out.println("** Flight List **");
@@ -1166,6 +1305,12 @@ public class AirlineClient {
 
 	}
 
+	/**
+	 * Helper method to read in the user's input.
+	 * 
+	 * @return Returns the user's input with no excess whitespace in the
+	 *         beginning or end of the string.
+	 */
 	private String readLine() {
 		BufferedReader bRead = new BufferedReader(new InputStreamReader(System.in));
 		String inLine = "";
@@ -1179,25 +1324,11 @@ public class AirlineClient {
 	}
 
 	/**
-	 * Main method to run from command line
+	 * Main method to run from command line that will start up the client.
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// String host = "";
-		// String port = "";
-		// String registryName = "";
-		// if (args.length != 3) {
-		// System.out
-		// .println("Usage: java gmartinc.swe645.examples.rmi.emailreg.client.EmailRegClient [host] [port] [Registry Name]");
-		// return;
-		// } else {
-		// // get the RMI connection info
-		// host = args[0];
-		// port = args[1];
-		// registryName = args[2];
-		// }
-
 		new AirlineClient();
 	}
 }
