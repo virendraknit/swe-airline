@@ -6,7 +6,7 @@ import gmu.swe.domain.Reservation;
 import gmu.swe.domain.SearchFilters;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
-import gmu.swe.rmi.AirlineTicketReserver;
+import gmu.swe.service.rmi.AirlineHeadquartersRemoteService;
 import gmu.swe.util.DateUtil;
 
 import java.io.BufferedReader;
@@ -28,7 +28,7 @@ import java.util.Date;
  * @date 09/17/2009
  */
 public class AirlineClient {
-	private String rmiUrl = "/AirlineTicketReserverServer";
+	private String rmiUrl = "/AirlineHeadquartersRemoteServer";
 
 	public AirlineClient(String blah) {
 		/*
@@ -217,7 +217,7 @@ public class AirlineClient {
 
 	private boolean showAvailableAirports(Collection<String> storeAirports) {
 		try {
-			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			Collection<String> airports = reserver.getAllAirports();
 
 			System.out.println("AIRPORT(LOCATION) CODE");
@@ -248,7 +248,7 @@ public class AirlineClient {
 
 	private boolean showAvailableAirplanes(Collection<Airplane> storeAirplanes) {
 		try {
-			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			Collection<Airplane> airplanes = reserver.getAllAirplanes();
 
 			System.out.println("PLANE ID\tPLANE TYPE\t# SEATS");
@@ -281,7 +281,7 @@ public class AirlineClient {
 
 	private boolean createFlight(Flight flight) {
 		try {
-			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			int flightId = reserver.createFlight(flight);
 			System.out.println("");
 			System.out.println("* Successfully added flight number " + flightId + ".");
@@ -482,7 +482,7 @@ public class AirlineClient {
 				return;
 			} else {
 				try {
-					AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+					AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 					reserver.createAirport(airportCode);
 					System.out.println("");
 					System.out.println("* Successfully added airport code " + airportCode + ".");
@@ -554,7 +554,7 @@ public class AirlineClient {
 					} else {
 
 						try {
-							AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+							AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 							reserver.createAirplane(numSeats, airplaneType);
 							System.out.println("");
 							System.out.println("* Successfully added a " + airplaneType + " airplane with " + numSeats
@@ -833,7 +833,7 @@ public class AirlineClient {
 
 	private Collection<Flight> runSearch(SearchFilters searchFilters) {
 		try {
-			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			return reserver.search(searchFilters);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -901,7 +901,7 @@ public class AirlineClient {
 
 	private boolean createReservation(int flightId, int numSeats) throws ValidationException {
 		try {
-			AirlineTicketReserver reserver = (AirlineTicketReserver) Naming.lookup(rmiUrl);
+			AirlineHeadquartersRemoteService reserver = (AirlineHeadquartersRemoteService) Naming.lookup(rmiUrl);
 			Reservation reservation = reserver.createReservation(flightId, numSeats);
 			Flight flight = reservation.getFlight();
 
@@ -1019,7 +1019,7 @@ public class AirlineClient {
 		System.out.println("(Ordered by Departing Airport and then by Destination Airport)");
 		System.out.println("");
 		System.out.println("DEPARTING\tDESTINATION\t\t\t\t\t\tAVAILABLE");
-		System.out.println("AIRLINE\t\tAIRLINE\t\tDEPART DATE\tFLIGHT ID\tCOST\tSEATS");
+		System.out.println("AIRPORT\t\tAIRPORT\t\tDEPART DATE\tFLIGHT ID\tCOST\tSEATS");
 		System.out.println("--------------------------------------------------------------------------------");
 
 		for (Flight flight : flights) {
