@@ -16,22 +16,29 @@ import java.util.Collection;
 public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersService {
 	private AirlineHeadquartersDao dao;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#getAllAirplanes()
 	 */
 	public Collection<Airplane> getAllAirplanes() throws DataAccessException {
 		return this.getDao().getAllAirplanes();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#getallAirports()
 	 */
 	public Collection<String> getallAirports() throws DataAccessException {
 		return this.getDao().getallAirports();
 	}
-	
-	/* (non-Javadoc)
+
+	/**
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#search(gmu.swe.domain.SearchFilters)
+	 * 
+	 *      Fails validation if searchFilters is null or if all of the values in
+	 *      searchFilters are null.
 	 */
 	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException {
 		validateSearchCriteria(searchFilters);
@@ -39,8 +46,12 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		return this.getDao().search(searchFilters);
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createAirplane(int, java.lang.String)
+	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createAirplane(int,
+	 *      java.lang.String) <br>
+	 * <br>
+	 *      Fails validation if the numberOfSeats < 1, or if the airplaneType is
+	 *      null or empty String "".
 	 */
 	public void createAirplane(int numberOfSeats, String airplaneType) throws ValidationException, DataAccessException {
 		validateAirplane(numberOfSeats, airplaneType);
@@ -48,8 +59,12 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		this.getDao().createAirplane(numberOfSeats, airplaneType);
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createAirport(java.lang.String)
+	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createAirport(java.lang
+	 *      .String)<br>
+	 * <br>
+	 *      Fails validation if the airportCode is null, empty, or doesn't exist
+	 *      in the system.
 	 */
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException {
 		validateAirport(airportCode);
@@ -57,8 +72,20 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		this.getDao().createAirport(airportCode);
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createFlight(gmu.swe.domain.Flight)
+	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createFlight(gmu.swe.
+	 *      domain.Flight)<br>
+	 * <br>
+	 *      Fails validation if:<br>
+	 *      - The flight is null<br>
+	 *      - The departure date is null or it is earlier than today<br>
+	 *      - The departure airport code is null or doesn't exist in the system<br>
+	 *      - The destination airport code is null or doesn't exist in the
+	 *      system<br>
+	 *      - The departure & destination airport codes are the same value<br>
+	 *      - The cost of the flight !> 0<br>
+	 *      - The airplaneId is not valid (i.e. not >= 0 or doesn't exist in the
+	 *      system.)
 	 */
 	public int createFlight(Flight flight) throws ValidationException, DataAccessException {
 		validateFlight(flight);
@@ -66,8 +93,13 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		return this.getDao().createFlight(flight);
 	}
 
-	/* (non-Javadoc)
-	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createReservation(int, int)
+	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createReservation(int,
+	 *      int)<br>
+	 * <br>
+	 *      Fails validation if the provided flightId < 0 or does not exist in
+	 *      the system. Also fails if the numSeats < 1 or if the flight doesn't
+	 *      have enough available seats.
 	 */
 	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException {
 		validateReservationData(flightId, numSeats);
@@ -75,6 +107,21 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		return this.getDao().createReservation(flightId, numSeats);
 	}
 
+	/**
+	 * Fails validation if the provided flightId < 0 or does not exist in the
+	 * system. Also fails if the numSeats < 1 or if the flight doesn't have
+	 * enough available seats.
+	 * 
+	 * @param flightId
+	 *            Field to validate
+	 * @param numSeats
+	 *            Field to validate
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when looking up values in the
+	 *             system.
+	 */
 	private void validateReservationData(int flightId, int numSeats) throws ValidationException, DataAccessException {
 		ValidationException validationException = new ValidationException();
 
@@ -83,13 +130,13 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		} else if (!this.getDao().doesFlightExist(flightId)) {
 			validationException.addErrorMessage("The provided flight Id does not exist");
 		}
-		if (numSeats < 0) {
+		if (numSeats < 1) {
 			validationException.addErrorMessage("An invalid number of seats was provided, it must be >= 1");
 		} else {
 			int numAvailableSeats = this.getDao().getNumberOfAvailableSeats(flightId);
 			if (numAvailableSeats < numSeats) {
-				validationException
-						.addErrorMessage("The flight does not have enough seats, it only has " + numAvailableSeats + " seats available");
+				validationException.addErrorMessage("The flight does not have enough seats, it only has "
+						+ numAvailableSeats + " seats available");
 			}
 		}
 
@@ -98,6 +145,15 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		}
 	}
 
+	/**
+	 * Fails validation if searchFilters is null or if all of the values in
+	 * searchFilters are null.
+	 * 
+	 * @param searchFilters
+	 *            Filters to validate
+	 * @throws ValidationException
+	 *             Thrown if validation fails.
+	 */
 	private void validateSearchCriteria(SearchFilters searchFilters) throws ValidationException {
 		ValidationException validationException = new ValidationException();
 
@@ -110,6 +166,17 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		}
 	}
 
+	/**
+	 * Fails validation if the numberOfSeats < 1, or if the airplaneType is null
+	 * or empty String "".
+	 * 
+	 * @param numberOfSeats
+	 *            field to validate
+	 * @param airplaneType
+	 *            field to validate
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors.
+	 */
 	protected void validateAirplane(int numberOfSeats, String airplaneType) throws ValidationException {
 		ValidationException validationException = new ValidationException();
 
@@ -125,6 +192,18 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		}
 	}
 
+	/**
+	 * Fails validation if the airportCode is null, empty, or doesn't exist in
+	 * the system.
+	 * 
+	 * @param airportCode
+	 *            Fied to validate
+	 * @throws ValidationException
+	 *             Thrown if validation fails
+	 * @throws DataAccessException
+	 *             Thrown if there is a problem with looking up the airport
+	 *             code.
+	 */
 	protected void validateAirport(String airportCode) throws ValidationException, DataAccessException {
 		ValidationException validationException = new ValidationException();
 
@@ -139,6 +218,25 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		}
 	}
 
+	/**
+	 * Fails validation if:<br>
+	 * - The flight is null<br>
+	 * - The departure date is null or it is earlier than today<br>
+	 * - The departure airport code is null or doesn't exist in the system<br>
+	 * - The destination airport code is null or doesn't exist in the system<br>
+	 * - The departure & destination airport codes are the same value<br>
+	 * - The cost of the flight !> 0<br>
+	 * - The airplaneId is not valid (i.e. not >= 0 or doesn't exist in the
+	 * system.)
+	 * 
+	 * @param flight
+	 *            Field to validate
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors
+	 * @throws DataAccessException
+	 *             Thrown if there is a problem with looking up information in
+	 *             the system.
+	 */
 	protected void validateFlight(Flight flight) throws ValidationException, DataAccessException {
 		ValidationException validationException = new ValidationException();
 
@@ -177,7 +275,7 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 
 			if (flight.getAirplaneId() < 0) {
 				validationException.addErrorMessage("The provided airplane Id is invalid.  The Id must be > 0");
-			}else if(!this.getDao().doesAirplaneExist(flight.getAirplaneId())){
+			} else if (!this.getDao().doesAirplaneExist(flight.getAirplaneId())) {
 				validationException.addErrorMessage("The provided airplane Id does not exist.");
 			}
 		}
@@ -187,6 +285,14 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		}
 	}
 
+	/**
+	 * This method is used to get the correct DAO implementation. This method
+	 * makes this class loosely couples in that someone could set a different
+	 * implementation of a DAO by calling the setDao() method. If no DAO is
+	 * explicitly set, then this method will instantiate a known implementation.
+	 * 
+	 * @return DAO to use.
+	 */
 	public AirlineHeadquartersDao getDao() {
 		if (this.dao == null) {
 			this.dao = new AirlineHeadquartersDao();
@@ -194,6 +300,12 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		return this.dao;
 	}
 
+	/**
+	 * Used to set an implementation of a DAO.
+	 * 
+	 * @param dao
+	 *            DAO to set.
+	 */
 	public void setDao(AirlineHeadquartersDao dao) {
 		this.dao = dao;
 	}
