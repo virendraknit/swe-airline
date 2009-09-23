@@ -30,8 +30,8 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 * 
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#getallAirports()
 	 */
-	public Collection<String> getallAirports() throws DataAccessException {
-		return this.getDao().getallAirports();
+	public Collection<String> getAllAirports() throws DataAccessException {
+		return this.getDao().getAllAirports();
 	}
 
 	/**
@@ -287,7 +287,7 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 
 	/**
 	 * This method is used to get the correct DAO implementation. This method
-	 * makes this class loosely couples in that someone could set a different
+	 * makes this class loosely coupled in that someone could set a different
 	 * implementation of a DAO by calling the setDao() method. If no DAO is
 	 * explicitly set, then this method will instantiate a known implementation.
 	 * 

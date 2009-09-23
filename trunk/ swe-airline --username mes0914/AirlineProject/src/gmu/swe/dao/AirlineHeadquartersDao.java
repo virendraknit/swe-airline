@@ -67,7 +67,7 @@ public class AirlineHeadquartersDao {
 	 *             Thrown if a problem occurs while communicating with the
 	 *             database.
 	 */
-	public Collection<String> getallAirports() throws DataAccessException {
+	public Collection<String> getAllAirports() throws DataAccessException {
 		Connection conn = null;
 		Statement stmt = null;
 
