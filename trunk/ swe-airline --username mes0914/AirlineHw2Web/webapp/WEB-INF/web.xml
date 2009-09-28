@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>msnydera_hw2</display-name>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		airlineHome</display-name>
+		<servlet-name>airlineHome</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.AirlineHome</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		flightSearch</display-name>
+		<servlet-name>flightSearch</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.FlightSearch</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		prepareSearch</display-name>
+		<servlet-name>prepareSearch</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.PrepareSearch</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>airlineHome</servlet-name>
+		<url-pattern>/airlineHome</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>flightSearch</servlet-name>
+		<url-pattern>/flightSearch</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>prepareSearch</servlet-name>
+		<url-pattern>/prepareSearch</url-pattern>
+	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>/jsp/home.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

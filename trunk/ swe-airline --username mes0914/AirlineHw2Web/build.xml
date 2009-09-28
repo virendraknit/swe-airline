@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="AirlineHw2Web" basedir=".">
+	<property name="serverJarfile" value="airlineServer"/>
+	<property name="clientJarfile" value="airlineClient"/>
+	<property name="warFile" value="msnydera_hw2.war" />
+	<property name="build.home" value="${basedir}/build"/>
+	<property name="dist.home" value="${basedir}/dist"/>
+	<property name="web.home" value="${basedir}/webapp"/>
+	<property name="src.home" value="${basedir}/src"/>
+
+	<property name="compile.debug" value="true"/>
+	<property name="compile.deprecation" value="false"/>
+	<property name="compile.optimize" value="true"/>
+	<property name="jboss.deploy" value="/Library/JBoss/Home/server/default/deploy" />
+	<property name="jboss.lib" value="/Library/JBoss/jboss-5.1.0.GA/common/lib" />
+	
+	<!--
+			UNPACK WAR FILE
+	-->
+	<target name="clean" description="Clean old build and dist directories">
+		<delete dir="${build.home}/*"/>
+		<delete> 
+			<fileset dir="${dist.home}" />
+		</delete>
+	</target>
+	
+	<target name="compile" description="Compile Java sources">
+		<mkdir dir="${build.home}/classes" />
+		<!-- Compile Java classes as necessary -->
+		
+		<javac srcdir="${src.home}" destdir="${build.home}/classes" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<classpath>
+				<fileset dir="${jboss.lib}">
+    				<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+			
+	<target name="createClient" depends="compile">
+		<mkdir dir="${dist.home}"/>
+		<jar destfile="${dist.home}/${clientJarfile}.jar">
+			<!--<classes dir="${build.home}/classes"/>
+			<fileset dir="${build.home}/classes" />
+			-->
+			<fileset dir="${build.home}/classes">
+				<include name="**/domain/*.class" />
+				<include name="**/exception/*.class" />
+				<include name="**/service/rmi/AirlineHeadquartersRemoteService.class" />
+				<include name="**/ui/*.class" />
+				<include name="**/util/DateUtil.class" />
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="createWar" depends="compile">
+		<mkdir dir="${dist.home}"/>
+					
+		<war destfile="${dist.home}/${warFile}" manifest="${web.home}/META-INF/MANIFEST.MF" webxml="${web.home}/WEB-INF/web.xml" update="true">
+			<!--
+            <lib dir="${jboss.lib}" includes="*.jar"/>
+            -->
+            <classes dir="${build.home}/classes"/>
+            <!-- <webinf dir="src/tld"/> -->
+           	<fileset dir="${web.home}" />
+<!--
+            <zipfileset dir="html" prefix="html"/>
+            <zipfileset dir="xml" prefix="xml">
+                    <exclude name="web.xml"/>
+                    <exclude name="services.xml"/>
+            </zipfileset>
+            <zipfileset dir="jsp" prefix="jsp"/>
+            <zipfileset dir="sql" prefix="sql"/>
+-->
+        </war>
+	</target>
+	
+	<target name="deployWar" depends="compile">
+		<copy file="${dist.home}/${warFile}" todir="${jboss.deploy}" overwrite="true" />
+	</target>
+		
+    <target name="doAll" description="description">
+		<antcall target="clean" />
+    	<antcall target="compile" />
+		<antcall target="createWar" />
+		<antcall target="deployWar" />
+    </target>
+
+	
+	<target name="createServer" depends="compile">
+		<mkdir dir="${dist.home}"/>
+		<jar destfile="${dist.home}/${serverJarfile}.jar">
+			<!--<classes dir="${build.home}/classes"/>
+			<fileset dir="${build.home}/classes" />
+			-->
+			<fileset dir="${build.home}/classes">
+				<include name="**/dao/*.class" />
+				<include name="**/domain/*.class" />
+				<include name="**/exception/*.class" />
+				<include name="**/service/**/*.class" />
+				<include name="**/util/*.class" />
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="createServerAndClient">
+		<antcall target="createClient" />
+		<antcall target="createServer" />
+	</target>
+</project>
