@@ -10,23 +10,33 @@
 <body>
 	<c:set var="basePath" value="${pageContext.request.contextPath}" />
 	<h1>Available Flights</h1>
-	
+	<c:if test="${not empty requestScope.error}">
+ 		<span style="color: red;">
+ 			<ul>
+ 				<li>${error}</li>
+ 			</ul>
+ 		</span>
+ 	
+ 	</c:if>
+ 	
 	<c:forEach var="flight" items="${requestScope.flights}">
-	
+		<c:out value="${flight.id}"></c:out> <br />
 	</c:forEach>
 	
- 	<form action="${basePath}/flightSearch">
- 		
+ 	<form action="${basePath}/reserveFlight">
+ 		<select name="flightId">
+ 			<c:forEach var="flight" items="${requestScope.flights}">
+ 				<option>${flight.id }</option>
+			</c:forEach>
+ 		</select>
+ 		<br />
+ 		<label>Number of Seats</label>
+ 		<input type="text" name="numSeats" />
+ 		<br />
+ 		<input type="submit" value="Reserve Seats" />
  	</form>
  	<br />
  	<a href="${basePath}/prepareSearch">Run New Search</a><br>
 	<a href="${basePath}/jsp/home.jsp">Main Menu</a>
 </body>
-<script type="text/javascript">
-	//load();
-
-	function clearDate(){
-		document.getElementById("flightDate").value = "";
-	}
-</script>
 </html>
