@@ -80,6 +80,7 @@
 	</target>
 		
     <target name="doAll" description="description">
+    	<delete file="${dist.home}/${warFile}" />
 		<antcall target="clean" />
     	<antcall target="compile" />
 		<antcall target="createWar" />

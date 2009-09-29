@@ -17,6 +17,14 @@
 <body>
 	<c:set var="basePath" value="${pageContext.request.contextPath}" />
 	<h1>Flight Search</h1>
+	<c:if test="${not empty requestScope.error}">
+ 		<span style="color: red;">
+ 			<ul>
+ 				<li>${error}</li>
+ 			</ul>
+ 		</span>
+ 	
+ 	</c:if>
  	<p>Please set your search parameters:</p>
  	<form action="${basePath}/flightSearch">
  		<label>Select Departing Airport</label>

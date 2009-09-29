@@ -32,6 +32,7 @@ public class PrepareSearch extends HttpServlet {
 		ArrayList<String> airports = getAllAirports();
 
 		request.setAttribute("airports", airports);
+		request.setAttribute("error", request.getAttribute("error"));
 		dispatch.forward(request, response);
 	}
 
