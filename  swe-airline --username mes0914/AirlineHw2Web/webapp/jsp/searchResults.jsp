@@ -58,21 +58,6 @@
  	
  	</c:if>
  	
-<!-- 	// Unique Id of the flight-->
-<!--	private int id;-->
-<!--	private Date departureDate;-->
-<!--	private String departureAirportCode;-->
-<!--	private String destinationAirportCode;-->
-<!---->
-<!--	// The cost of the flight.-->
-<!--	private double cost;-->
-<!---->
-<!--	// Unique Id of the airplane that is used for the flight-->
-<!--	private int airplaneId;-->
-<!---->
-<!--	// Number of seats that are available for passengers on the flight.-->
-<!--	private int availableSeats;-->
- 	
  	<display:table name="requestScope.flights" cellspacing="10px" class="searchResults">
  		<display:column property="id" title="Flight #" />
  		<display:column property="departureAirportCode" title="Depart Code" />
@@ -83,24 +68,6 @@
  		<display:column property="airplaneId" title="Airplane Id" />
  	</display:table>
  	
- 	<table>
- 		<tr>
- 			<th>Flight #</th>
- 			<th>Depart Code</th>
- 			<th>Dest Code</th>
- 			<th>Flight Date</th>
- 			<th></th>
- 			<th></th>
- 			<th></th>
- 		</tr>
- 	
- 	</table>
- 	
-<!--  	
-	<c:forEach var="flight" items="${requestScope.flights}">
-		<c:out value="${flight.id}"></c:out> <br />
-	</c:forEach>
--->
 	<br />
 	<b>Please make your choices for a reservation:</b>
 	<br />
