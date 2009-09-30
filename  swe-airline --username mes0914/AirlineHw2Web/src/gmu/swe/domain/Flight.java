@@ -1,6 +1,7 @@
 package gmu.swe.domain;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -87,5 +88,9 @@ public class Flight implements Serializable {
 	public void setAvailableSeats(int availableSeats) {
 		this.availableSeats = availableSeats;
 	}
-
+	
+	public String getDisplayDate(){
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		return sdf.format(this.getDepartureDate());
+	}
 }

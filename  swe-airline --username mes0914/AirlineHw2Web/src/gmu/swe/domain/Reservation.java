@@ -39,4 +39,8 @@ public class Reservation implements Serializable {
 	public void setFlight(Flight flight) {
 		this.flight = flight;
 	}
+	
+	public double getTotalCost(){
+		return flight.getCost() * (double)numSeats;
+	}
 }

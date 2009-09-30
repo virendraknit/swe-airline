@@ -2,6 +2,7 @@ package gmu.swe.web.servlet;
 
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.SearchFilters;
+import gmu.swe.util.DateUtil;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -52,6 +53,7 @@ public class FlightSearch extends HttpServlet {
 			if (errorMessage == null) {
 				ArrayList<Flight> flights = getFlights();
 
+				request.getSession().setAttribute("savedFlights", flights);
 				request.setAttribute("flights", flights);
 			} else {
 				dispatch = request.getRequestDispatcher("/prepareSearch");
@@ -98,14 +100,22 @@ public class FlightSearch extends HttpServlet {
 
 	private String validateFilters(SearchFilters searchFilters) {
 		String errorMessage = null;
-
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		
 		if (searchFilters.isAllEmpty()) {
 			System.out.println("");
 			System.out
 					.println("* Error: Running a search requires the Departure and Destination, and/or Date to be set.");
 			errorMessage = "Running a search requires the Departure and Destination, and/or Date to be set.";
+		}else if(searchFilters.getDateOfTrip() != null && !DateUtil.isTodayOrLater(searchFilters.getDateOfTrip())){
+			errorMessage = "Please enter the Date of the Trip that is today or later.";
 		}
 		return errorMessage;
+	}
+
+	private boolean isDateBeforeToday(Date dateOfTrip) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	private SearchFilters getSearchFilters(HttpServletRequest request) throws ParseException {
