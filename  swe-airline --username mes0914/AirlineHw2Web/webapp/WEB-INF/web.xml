@@ -28,6 +28,15 @@
 		<servlet-class>
 		gmu.swe.web.servlet.PrepareSearch</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		reserveFlight</display-name>
+		<servlet-name>reserveFlight</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.ReserveFlight</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>airlineHome</servlet-name>
 		<url-pattern>/airlineHome</url-pattern>
@@ -39,6 +48,10 @@
 	<servlet-mapping>
 		<servlet-name>prepareSearch</servlet-name>
 		<url-pattern>/prepareSearch</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>reserveFlight</servlet-name>
+		<url-pattern>/reserveFlight</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
