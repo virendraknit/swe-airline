@@ -37,6 +37,24 @@
 		<servlet-class>
 		gmu.swe.web.servlet.ReserveFlight</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		addAirplane</display-name>
+		<servlet-name>addAirplane</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.AddAirplane</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		prepareAddAirplane</display-name>
+		<servlet-name>prepareAddAirplane</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.PrepareAddAirplane</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>airlineHome</servlet-name>
 		<url-pattern>/airlineHome</url-pattern>
@@ -52,6 +70,14 @@
 	<servlet-mapping>
 		<servlet-name>reserveFlight</servlet-name>
 		<url-pattern>/reserveFlight</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>addAirplane</servlet-name>
+		<url-pattern>/addAirplane</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>prepareAddAirplane</servlet-name>
+		<url-pattern>/prepareAddAirplane</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
