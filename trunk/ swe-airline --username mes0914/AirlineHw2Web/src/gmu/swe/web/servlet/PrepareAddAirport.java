@@ -13,15 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class PrepareAddAirplane
+ * Servlet implementation class PrepareAddAirport
  */
-public class PrepareAddAirplane extends HttpServlet {
+public class PrepareAddAirport extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public PrepareAddAirplane() {
+    public PrepareAddAirport() {
         super();
     }
 
@@ -36,42 +36,25 @@ public class PrepareAddAirplane extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/addAirplane.jsp");
+		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/addAirport.jsp");
 		
-		Collection<Airplane> airplanes = getExistingAirplanes();
-		request.setAttribute("airplanes", airplanes);
+		Collection<String> airports = getExistingAirports();
+		request.setAttribute("airportCodes", airports);
 		
-		request.setAttribute("addedAirplane", request.getAttribute("addedAirplane"));
+		request.setAttribute("addedAirport", request.getAttribute("addedAirport"));
 		request.setAttribute("error", request.getAttribute("error"));
 		
 		dispatch.forward(request, response);
 	}
 
-	private Collection<Airplane> getExistingAirplanes() {
-		Collection<Airplane> airplanes = new ArrayList<Airplane>();
+	private Collection<String> getExistingAirports() {
+		Collection<String> airports = new ArrayList<String>();
 		
-		Airplane airplane = new Airplane();
-		airplane.setType("DC-10");
-		airplane.setNumSeats(150);
-		airplanes.add(airplane);
+		airports.add("BWI");
+		airports.add("IAD");
+		airports.add("WAS");
 		
-		airplane = new Airplane();
-		airplane.setType("737");
-		airplane.setNumSeats(180);
-		airplanes.add(airplane);
-		
-		airplane = new Airplane();
-		airplane.setType("747");
-		airplane.setNumSeats(200);
-		airplanes.add(airplane);
-		
-		airplane = new Airplane();
-		airplane.setType("F-14");
-		airplane.setNumSeats(2);
-		airplanes.add(airplane);
-		
-		
-		return airplanes;
+		return airports;
 	}
 
 }
