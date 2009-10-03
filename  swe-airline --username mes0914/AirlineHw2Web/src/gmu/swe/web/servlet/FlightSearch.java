@@ -116,10 +116,6 @@ public class FlightSearch extends HttpServlet {
 	private SearchFilters getSearchFilters(HttpServletRequest request) throws ParseException {
 		SearchFilters searchFilters = new SearchFilters();
 		
-		System.out.println("Depart Code: " + (String) request.getParameter("departureAirport"));
-		System.out.println("Dest Code: " + (String) request.getParameter("destinationAirport"));
-		
-		
 		searchFilters.setDepartureLocation((String) request.getParameter("departureAirport"));
 		searchFilters.setDestinationLocation((String) request.getParameter("destinationAirport"));
 		searchFilters.setDateOfTrip(getDateOfTrip(request));
