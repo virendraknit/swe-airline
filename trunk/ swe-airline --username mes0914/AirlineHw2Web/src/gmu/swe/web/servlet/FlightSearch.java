@@ -113,11 +113,6 @@ public class FlightSearch extends HttpServlet {
 		return errorMessage;
 	}
 
-	private boolean isDateBeforeToday(Date dateOfTrip) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	private SearchFilters getSearchFilters(HttpServletRequest request) throws ParseException {
 		SearchFilters searchFilters = new SearchFilters();
 		

@@ -2,6 +2,7 @@ package gmu.swe.web.servlet;
 
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
+import gmu.swe.util.NumberUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class ReserveFlight extends HttpServlet {
 	private String validateReservation(int flightId, String numSeats, HttpServletRequest request) {
 		String errorMessage = null;
 
-		if (!isWholeNumber(numSeats)) {
+		if (!NumberUtils.isWholeNumber(numSeats)) {
 			errorMessage = "'" + numSeats + "' is not a valid number.  Please enter a WHOLE number.";
 		} else if (!isValidSeatNumber(numSeats)) {
 			errorMessage = "The number of seats to reserve must be > 0.";
@@ -149,28 +150,8 @@ public class ReserveFlight extends HttpServlet {
 	}
 
 	private boolean isValidSeatNumber(String numSeats) {
-		if (isWholeNumber(numSeats)) {
+		if (NumberUtils.isWholeNumber(numSeats)) {
 			return Integer.parseInt(numSeats) > 0;
-		}
-		return false;
-	}
-
-	/**
-	 * Utility method that determines if the provided string is a whole number.
-	 * Returns true if it is, false if it isn't (this could be because it is
-	 * text or a floating number.)
-	 * 
-	 * @param sNumber
-	 *            The String to check
-	 * @return True of sNumber is a whole number, otherwise returns false.
-	 */
-	private boolean isWholeNumber(String sNumber) {
-		try {
-			// Test if the value is actually a number
-			new Integer(sNumber);
-			return true;
-		} catch (NumberFormatException e) {
-			// Ignore, this means it isn't a whole number.
 		}
 		return false;
 	}
