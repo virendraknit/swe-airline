@@ -15,7 +15,7 @@
  	<p>Welcome to the Airline Headquarters.  Please choose what you would like to do:</p>
 	<a href="${basePath}/prepareAddAirplane">Add Airplane</a><br>
 	<a href="${basePath}/prepareAddAirport">Add Airport</a><br>
-	<a href="createFlight">Create Flight</a><br>
+	<a href="${basePath}/prepareCreateFlight">Create Flight</a><br>
 	<a href="home.jsp">Main Menu</a>
 </body>
 </html>

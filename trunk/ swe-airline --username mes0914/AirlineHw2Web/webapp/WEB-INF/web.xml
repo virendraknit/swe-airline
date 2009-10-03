@@ -73,6 +73,24 @@
 		<servlet-class>
 		gmu.swe.web.servlet.AddAirport</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		prepareCreateFlight</display-name>
+		<servlet-name>prepareCreateFlight</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.PrepareCreateFlight</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		createFlight</display-name>
+		<servlet-name>createFlight</servlet-name>
+		<servlet-class>
+		gmu.swe.web.servlet.CreateFlight</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>airlineHome</servlet-name>
 		<url-pattern>/airlineHome</url-pattern>
@@ -104,6 +122,14 @@
 	<servlet-mapping>
 		<servlet-name>addAirport</servlet-name>
 		<url-pattern>/addAirport</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>prepareCreateFlight</servlet-name>
+		<url-pattern>/prepareCreateFlight</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>createFlight</servlet-name>
+		<url-pattern>/createFlight</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>

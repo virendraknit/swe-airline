@@ -22,4 +22,23 @@ public class NumberUtils {
 		}
 		return false;
 	}
+	
+	/**
+	 * Utility method to determine if the provided currencyAmount is a
+	 * {@link Double}. Returns true if it is, false if it isn't.
+	 * 
+	 * @param currencyAmount
+	 *            Value to check.
+	 * @return True if currenctyAmount is a {@link Double}, false if it isn't.
+	 */
+	public static boolean isValidCurrency(String currencyAmount) {
+		try {
+			// Test if the value is actually a number
+			new Double(currencyAmount);
+			return true;
+		} catch (NumberFormatException e) {
+			// Ignore, this meants it isn't a double.
+		}
+		return false;
+	}
 }
