@@ -3,6 +3,7 @@
 	<name>AirlineHw2Web</name>
 	<comment></comment>
 	<projects>
+		<project>AirlineHw2EarEJB</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
