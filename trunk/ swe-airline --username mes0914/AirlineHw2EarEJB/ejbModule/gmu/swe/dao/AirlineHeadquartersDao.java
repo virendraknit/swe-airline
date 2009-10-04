@@ -51,9 +51,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -85,9 +82,6 @@ public class AirlineHeadquartersDao {
 			return airports;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -136,9 +130,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -172,9 +163,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -204,9 +192,6 @@ public class AirlineHeadquartersDao {
 
 			// conn.commit();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -246,9 +231,6 @@ public class AirlineHeadquartersDao {
 			return getLastAddedFlightId();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -291,9 +273,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -330,9 +309,6 @@ public class AirlineHeadquartersDao {
 
 			return reservation;
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -377,9 +353,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -406,9 +379,6 @@ public class AirlineHeadquartersDao {
 			rs.next();
 			return rs.getInt(1);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -443,9 +413,6 @@ public class AirlineHeadquartersDao {
 			}
 			return false;
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -483,9 +450,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -520,9 +484,6 @@ public class AirlineHeadquartersDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
 		} finally {
 			closeDbObjects(stmt, conn);
 		}
@@ -553,9 +514,6 @@ public class AirlineHeadquartersDao {
 			rs.next();
 			return rs.getInt(1);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
@@ -616,9 +574,6 @@ public class AirlineHeadquartersDao {
 			return flights;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
 		} finally {
