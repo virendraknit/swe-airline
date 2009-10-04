@@ -2,12 +2,18 @@ package gmu.swe.web.servlet;
 
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
+import gmu.swe.exception.DataAccessException;
+import gmu.swe.exception.ValidationException;
+import gmu.swe.service.ejb.TravelAgentEjbRemote;
 import gmu.swe.util.NumberUtils;
+import gmu.swe.util.ResourceUtil;
+import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -52,11 +58,22 @@ public class ReserveFlight extends HttpServlet {
 			request.setAttribute("error", errorMessage);
 			request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
 		} else {
-			Reservation reservation = createReservation(flightId, Integer.parseInt(numSeats));
+			Reservation reservation;
+			try {
+				reservation = createReservation(flightId, Integer.parseInt(numSeats));
+				
+				request.getSession().setAttribute("savedFlights", null);
+				dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
+				request.setAttribute("reservation", reservation);
+				
+			} catch (ValidationException e) {
+				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
+				
+				request.setAttribute("error", errorMessage);
+				request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
+			}
 			
-			request.getSession().setAttribute("savedFlights", null);
-			dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
-			request.setAttribute("reservation", reservation);
+			
 		}
 
 		dispatch.forward(request, response);
@@ -71,26 +88,25 @@ public class ReserveFlight extends HttpServlet {
 	 * @param numSeats
 	 *            The number of seats the reservation is for.
 	 * @return The Reservation created.
+	 * @throws ValidationException 
 	 */
-	private Reservation createReservation(int flightId, int numSeats) {
-		Reservation reservation = new Reservation();
-		reservation.setId(12344);
-		reservation.setNumSeats(numSeats);
-		
-		Flight flight = new Flight();
-		flight.setId(222);
-		flight.setAirplaneId(22);
-		flight.setAvailableSeats(180);
-		flight.setCost(125.00);
-		flight.setDepartureAirportCode("IAD");
-		flight.setDestinationAirportCode("NAC");
-		flight.setDepartureDate(new Date());
-		
-		reservation.setFlight(flight);
-		
-		return reservation;
+	private Reservation createReservation(int flightId, int numSeats) throws ValidationException {
+		try {
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("TravelAgentEjb/remote");
+			return ejbRef.createReservation(flightId, numSeats);
+		} catch (NamingException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during EJB lookup.");
+			throw ve;
+		} catch (ValidationException e) {
+			throw e;
+		} catch (DataAccessException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during reservation creation.");
+			throw ve;
+		}
 	}
-
+	
 	/**
 	 * Returns an error message if there is a problem with the reservation
 	 * input. Returns null if the reservation information is valid/complete.<br>
@@ -155,4 +171,24 @@ public class ReserveFlight extends HttpServlet {
 		}
 		return false;
 	}
+	
+	
+//	private Reservation createReservationTest(int flightId, int numSeats) {
+//		Reservation reservation = new Reservation();
+//		reservation.setId(12344);
+//		reservation.setNumSeats(numSeats);
+//		
+//		Flight flight = new Flight();
+//		flight.setId(222);
+//		flight.setAirplaneId(22);
+//		flight.setAvailableSeats(180);
+//		flight.setCost(125.00);
+//		flight.setDepartureAirportCode("IAD");
+//		flight.setDestinationAirportCode("NAC");
+//		flight.setDepartureDate(new Date());
+//		
+//		reservation.setFlight(flight);
+//		
+//		return reservation;
+//	}
 }

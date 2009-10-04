@@ -1,15 +1,25 @@
+/*
+ * Created by: Matt Snyder
+ */
+
 package gmu.swe.web.servlet;
 
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.SearchFilters;
+import gmu.swe.exception.DataAccessException;
+import gmu.swe.exception.ValidationException;
+import gmu.swe.service.ejb.TravelAgentEjbRemote;
 import gmu.swe.util.DateUtil;
+import gmu.swe.util.ResourceUtil;
+import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,10 +61,16 @@ public class FlightSearch extends HttpServlet {
 			String errorMessage = validateFilters(searchFilters);
 
 			if (errorMessage == null) {
-				ArrayList<Flight> flights = getFlights();
+				Collection<Flight> flights = getFlights(searchFilters);
 
-				request.getSession().setAttribute("savedFlights", flights);
-				request.setAttribute("flights", flights);
+				if(flights == null || flights.size() == 0){
+					errorMessage = "Your search found no flights.  Please run a different search.";
+					dispatch = request.getRequestDispatcher("/prepareSearch");
+					request.setAttribute("error", errorMessage);
+				}else{
+					request.getSession().setAttribute("savedFlights", flights);
+					request.setAttribute("flights", flights);
+				}
 			} else {
 				dispatch = request.getRequestDispatcher("/prepareSearch");
 				request.setAttribute("error", errorMessage);
@@ -65,39 +81,35 @@ public class FlightSearch extends HttpServlet {
 			dispatch = request.getRequestDispatcher("/prepareSearch");
 			String errorMessage = "Please provide a date in the format MM/dd/yyyy.";
 			request.setAttribute("error", errorMessage);
+		} catch (ValidationException e) {
+			dispatch = request.getRequestDispatcher("/prepareSearch");
+			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
+			
+			request.setAttribute("error", errorMessage);
 		}
 		
 		dispatch.forward(request, response);
 	}
 
-	private ArrayList<Flight> getFlights() {
-		ArrayList<Flight> flights = new ArrayList<Flight>();
-
-		Flight flight = new Flight();
-		flight.setId(111);
-		flight.setAirplaneId(11);
-		flight.setAvailableSeats(200);
-		flight.setCost(150.00);
-		flight.setDepartureAirportCode("BWI");
-		flight.setDestinationAirportCode("WAS");
-		flight.setDepartureDate(new Date());
-
-		flights.add(flight);
-
-		flight = new Flight();
-		flight.setId(222);
-		flight.setAirplaneId(22);
-		flight.setAvailableSeats(180);
-		flight.setCost(125.00);
-		flight.setDepartureAirportCode("IAD");
-		flight.setDestinationAirportCode("NAC");
-		flight.setDepartureDate(new Date());
+	private Collection<Flight> getFlights(SearchFilters searchFilters) throws ValidationException {
 		
-		flights.add(flight);
-		
-		return flights;
+		try {
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("TravelAgentEjb/remote");
+			
+			return ejbRef.search(searchFilters);
+		} catch (NamingException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during EJB lookup.");
+			throw ve;
+		} catch (ValidationException e) {
+			throw e;
+		} catch (DataAccessException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during search.");
+			throw ve;
+		}
 	}
-
+	
 	private String validateFilters(SearchFilters searchFilters) {
 		String errorMessage = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
@@ -137,4 +149,32 @@ public class FlightSearch extends HttpServlet {
 			throw e;
 		}
 	}
+	
+//	private ArrayList<Flight> getFlightsTest() {
+//		ArrayList<Flight> flights = new ArrayList<Flight>();
+//
+//		Flight flight = new Flight();
+//		flight.setId(111);
+//		flight.setAirplaneId(11);
+//		flight.setAvailableSeats(200);
+//		flight.setCost(150.00);
+//		flight.setDepartureAirportCode("BWI");
+//		flight.setDestinationAirportCode("WAS");
+//		flight.setDepartureDate(new Date());
+//
+//		flights.add(flight);
+//
+//		flight = new Flight();
+//		flight.setId(222);
+//		flight.setAirplaneId(22);
+//		flight.setAvailableSeats(180);
+//		flight.setCost(125.00);
+//		flight.setDepartureAirportCode("IAD");
+//		flight.setDestinationAirportCode("NAC");
+//		flight.setDepartureDate(new Date());
+//		
+//		flights.add(flight);
+//		
+//		return flights;
+//	}
 }

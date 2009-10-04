@@ -1,8 +1,12 @@
 package gmu.swe.web.servlet;
 
 import gmu.swe.domain.Flight;
+import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
+import gmu.swe.service.ejb.HeadquartersEjbRemote;
 import gmu.swe.util.NumberUtils;
+import gmu.swe.util.ResourceUtil;
+import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -10,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -49,22 +54,16 @@ public class CreateFlight extends HttpServlet {
 		try {
 			Flight flight = getFlight(request);
 			
-			flight = createFlight(flight);
+			int newFlightNum = createFlight(flight);
+			flight.setId(newFlightNum);
+			
 			request.setAttribute("addedFlight", flight);
 
 		} catch (ValidationException e) {
-			ArrayList<String> errorMessages = e.getErrorMessages();
-			String errorMessage = new String();
 			
-			for (String error : errorMessages) {
-				if(errorMessage.length() > 0){
-					errorMessage += "\n";
-				}
-				errorMessage += error;
-			}
-			
+			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 			request.setAttribute("error", errorMessage);
-			e.printStackTrace();
+			
 		} catch (ParseException e) {
 			e.printStackTrace();
 
@@ -75,8 +74,22 @@ public class CreateFlight extends HttpServlet {
 		dispatch.forward(request, response);
 	}
 
-	private Flight createFlight(Flight flight) throws ValidationException {
-		return flight;
+	private int createFlight(Flight flight) throws ValidationException {
+		try {
+			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
+					"HeadquartersEjb/remote");
+			return ejbRef.createFlight(flight);
+		} catch (NamingException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during EJB lookup.");
+			throw ve;
+		} catch (ValidationException e) {
+			throw e;
+		} catch (DataAccessException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured while attempting to add airplane.");
+			throw ve;
+		}
 	}
 
 	private Flight getFlight(HttpServletRequest request) throws ParseException, ValidationException {

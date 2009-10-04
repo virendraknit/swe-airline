@@ -1,10 +1,16 @@
 package gmu.swe.web.servlet;
 
 import gmu.swe.domain.Airplane;
+import gmu.swe.exception.DataAccessException;
+import gmu.swe.exception.ValidationException;
+import gmu.swe.service.ejb.HeadquartersEjbRemote;
 import gmu.swe.util.NumberUtils;
+import gmu.swe.util.ResourceUtil;
+import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
 
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,8 +47,15 @@ public class AddAirport extends HttpServlet {
 		String errorMessage = validateAirport(airportCode);
 		
 		if(errorMessage == null){
-			addAirport(airportCode);
-			request.setAttribute("addedAirportCode", airportCode);
+			try {
+				addAirport(airportCode);
+				request.setAttribute("addedAirportCode", airportCode);
+				
+			} catch (ValidationException e) {
+				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
+				request.setAttribute("error", errorMessage);
+			}
+			
 		}else{
 			request.setAttribute("error", errorMessage);
 		}
@@ -50,9 +63,22 @@ public class AddAirport extends HttpServlet {
 		dispatch.forward(request, response);
 	}
 
-	private void addAirport(String airport) {
-		// TODO Auto-generated method stub
-		
+	private void addAirport(String airport) throws ValidationException {
+		try {
+			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
+					"HeadquartersEjb/remote");
+			ejbRef.createAirport(airport);
+		} catch (NamingException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during EJB lookup.");
+			throw ve;
+		} catch (ValidationException e) {
+			throw e;
+		} catch (DataAccessException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured while attempting to add airport.");
+			throw ve;
+		}
 	}
 
 	private String validateAirport(String airportCode) {
