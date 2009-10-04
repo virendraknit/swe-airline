@@ -7,43 +7,57 @@ import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
 import gmu.swe.service.AirlineHeadquartersService;
 import gmu.swe.service.impl.AirlineHeadquartersServiceImpl;
-import gmu.swe.util.DbUtils;
 
 import java.util.Collection;
 
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.sql.DataSource;
 
 /**
  * Session Bean implementation class TravelAgentEjb
  */
 @Stateless
-public class TravelAgentEjb implements TravelAgentEjbRemote{
+public class TravelAgentEjb implements TravelAgentEjbRemote {
 	private AirlineHeadquartersService service;
 
-	@Resource (mappedName="java:/msnyderaDS")
-	private DataSource ds;
-	
 	/**
 	 * Default constructor.
 	 */
 	public TravelAgentEjb() {
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gmu.swe.service.ejb.TravelAgentEjbRemote#createReservation(int, int)
+	 */
 	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException {
-		DbUtils.setDs(this.ds);
 		return this.getService().createReservation(flightId, numSeats);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gmu.swe.service.ejb.TravelAgentEjbRemote#search(gmu.swe.domain.SearchFilters
+	 * )
+	 */
 	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException {
 		return this.getService().search(searchFilters);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gmu.swe.service.ejb.TravelAgentEjbRemote#getAllAirports()
+	 */
 	public Collection<String> getAllAirports() throws DataAccessException {
 		return this.getService().getAllAirports();
 	}
-	
+
+	/**
+	 * 
+	 * @return The service implementation to use.
+	 */
 	public AirlineHeadquartersService getService() {
 		if (this.service == null) {
 			this.service = new AirlineHeadquartersServiceImpl();
@@ -52,6 +66,13 @@ public class TravelAgentEjb implements TravelAgentEjbRemote{
 		return this.service;
 	}
 
+	/**
+	 * Sets the service implementation to use. This method would be used when
+	 * applying dependency injection principles.
+	 * 
+	 * @param service
+	 *            Service implementation to use.
+	 */
 	public void setService(AirlineHeadquartersService service) {
 		this.service = service;
 	}

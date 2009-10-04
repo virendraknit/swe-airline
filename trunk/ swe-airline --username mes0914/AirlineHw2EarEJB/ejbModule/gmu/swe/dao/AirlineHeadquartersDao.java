@@ -77,13 +77,62 @@ public class AirlineHeadquartersDao {
 
 			ResultSet rs = stmt.executeQuery("select * from AIRPORT ORDER BY CODE ASC");
 
-			Collection<String> airpports = new ArrayList<String>();
+			Collection<String> airports = new ArrayList<String>();
 			while (rs.next()) {
-				airpports.add(rs.getString(1));
+				airports.add(rs.getString(1));
 			}
 
-			return airpports;
+			return airports;
 
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new DataAccessException(e.getMessage(), e);
+		} finally {
+			closeDbObjects(stmt, conn);
+		}
+	}
+	
+	/**
+	 * Returns all of the flights in the database.
+	 * 
+	 * @return All of the flights.
+	 * @throws DataAccessException
+	 *             Thrown if a problem occurs while communicating with the
+	 *             database.
+	 */
+	public Collection<Flight> getAllFlights() throws DataAccessException {
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			conn = DbUtils.getConnection();
+			stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery("select * from FLIGHT");
+
+			Collection<Flight> flights = new ArrayList<Flight>();
+			while (rs.next()) {
+				if (flights == null) {
+					flights = new ArrayList<Flight>();
+				}
+
+				Flight flight = new Flight();
+				flight.setId(rs.getInt(1));
+				flight.setDepartureDate(rs.getDate(2));
+				flight.setDepartureAirportCode(rs.getString(3));
+				flight.setDestinationAirportCode(rs.getString(4));
+				flight.setCost(rs.getDouble(5));
+				flight.setAirplaneId(rs.getInt(6));
+				flight.setAvailableSeats(rs.getInt(7));
+
+				flights.add(flight);
+			}
+
+			return flights;
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
