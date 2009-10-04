@@ -34,16 +34,6 @@
 			background-color: white;
 			-moz-border-radius: 0px 0px 0px 0px;
 		}
-	/*
-		.searchResults{
-			border: 1px solid black;
-		}
-		
-		.searchResults tr {
-			border: 1px solid black;
-			border-style: 
-		}
-		*/
 	</style>
 </head>
 <body>
@@ -52,7 +42,7 @@
 	<c:if test="${not empty requestScope.error}">
  		<span style="color: red;">
  			<ul>
- 				<li>${error}</li>
+ 				<li><c:out value="${requestScope.error}" escapeXml="false" /></li>
  			</ul>
  		</span>
  	
