@@ -20,7 +20,7 @@
 	<c:if test="${not empty requestScope.error}">
  		<span style="color: red;">
  			<ul>
- 				<li>${error}</li>
+ 				<li><c:out value="${requestScope.error}" escapeXml="false" /></li>
  			</ul>
  		</span>
  	
