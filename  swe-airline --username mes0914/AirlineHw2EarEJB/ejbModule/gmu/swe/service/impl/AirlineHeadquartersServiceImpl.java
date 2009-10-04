@@ -34,6 +34,14 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		return this.getDao().getAllAirports();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see gmu.swe.service.AirlineHeadquartersService#getAllFlights()
+	 */
+	public Collection<Flight> getAllFlights() throws DataAccessException {
+		return this.getDao().getAllFlights();
+	}
+	
 	/**
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#search(gmu.swe.domain.SearchFilters)
 	 * 
