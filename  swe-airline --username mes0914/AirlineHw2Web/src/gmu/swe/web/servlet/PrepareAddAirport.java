@@ -1,11 +1,15 @@
 package gmu.swe.web.servlet;
 
-import gmu.swe.domain.Airplane;
+import gmu.swe.exception.DataAccessException;
+import gmu.swe.exception.ValidationException;
+import gmu.swe.service.ejb.HeadquartersEjbRemote;
+import gmu.swe.util.ResourceUtil;
+import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,23 +42,47 @@ public class PrepareAddAirport extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/addAirport.jsp");
 		
-		Collection<String> airports = getExistingAirports();
-		request.setAttribute("airportCodes", airports);
-		
-		request.setAttribute("addedAirport", request.getAttribute("addedAirport"));
-		request.setAttribute("error", request.getAttribute("error"));
+		Collection<String> airports;
+		try {
+			airports = getExistingAirports();
+			
+			request.setAttribute("airportCodes", airports);
+			
+			request.setAttribute("addedAirport", request.getAttribute("addedAirport"));
+			request.setAttribute("error", request.getAttribute("error"));
+			
+		} catch (ValidationException e) {
+			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
+			request.setAttribute("error", errorMessage);
+		}
 		
 		dispatch.forward(request, response);
 	}
 
-	private Collection<String> getExistingAirports() {
-		Collection<String> airports = new ArrayList<String>();
-		
-		airports.add("BWI");
-		airports.add("IAD");
-		airports.add("WAS");
-		
-		return airports;
+	public Collection<String> getExistingAirports() throws ValidationException {
+		try {
+			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
+					"HeadquartersEjb/remote");
+			return ejbRef.getAllAirports();
+		} catch (NamingException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during EJB lookup.");
+			throw ve;
+		} catch (DataAccessException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured while retrieving all the airports.");
+			throw ve;
+		}
 	}
+	
+//	private Collection<String> getExistingAirportsTest() {
+//		Collection<String> airports = new ArrayList<String>();
+//		
+//		airports.add("BWI");
+//		airports.add("IAD");
+//		airports.add("WAS");
+//		
+//		return airports;
+//	}
 
 }
