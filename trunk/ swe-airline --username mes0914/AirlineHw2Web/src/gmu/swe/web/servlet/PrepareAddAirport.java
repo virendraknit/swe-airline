@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -18,48 +21,60 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class PrepareAddAirport
+ * Servlet used to prepare the request object for the page to add airports.
  */
 public class PrepareAddAirport extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public PrepareAddAirport() {
-        super();
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public PrepareAddAirport() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		this.doPost(request, response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response) Adds a collection of all the airport codes in the system
+	 *      to the Request object.
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/addAirport.jsp");
-		
+
 		Collection<String> airports;
 		try {
 			airports = getExistingAirports();
-			
+
 			request.setAttribute("airportCodes", airports);
-			
+
 			request.setAttribute("addedAirport", request.getAttribute("addedAirport"));
 			request.setAttribute("error", request.getAttribute("error"));
-			
+
 		} catch (ValidationException e) {
 			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 			request.setAttribute("error", errorMessage);
 		}
-		
+
 		dispatch.forward(request, response);
 	}
 
+	/**
+	 * Returns a collection of all the airport codes that are in the system.
+	 * 
+	 * @return Collection of all the airport codes that are in the system.
+	 * @throws ValidationException
+	 *             Thrown if there is a problem in communicating with the remote
+	 *             EJB.
+	 */
 	public Collection<String> getExistingAirports() throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
@@ -76,15 +91,4 @@ public class PrepareAddAirport extends HttpServlet {
 			throw ve;
 		}
 	}
-	
-//	private Collection<String> getExistingAirportsTest() {
-//		Collection<String> airports = new ArrayList<String>();
-//		
-//		airports.add("BWI");
-//		airports.add("IAD");
-//		airports.add("WAS");
-//		
-//		return airports;
-//	}
-
 }

@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -19,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class PrepareAddAirplane
+ * Servlet handling the preparation for the AddAirplane page.
  */
 public class PrepareAddAirplane extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -41,7 +44,9 @@ public class PrepareAddAirplane extends HttpServlet {
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 *      response) This method will prepare the request with the existing
+	 *      airplanes in the system (so the user can see what is currently
+	 *      available).
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
@@ -64,6 +69,13 @@ public class PrepareAddAirplane extends HttpServlet {
 		dispatch.forward(request, response);
 	}
 
+	/**
+	 * Gets all the airplanes from the system by communicating with the remote
+	 * EJB.
+	 * 
+	 * @return Collection of Airplanes in the system.
+	 * @throws ValidationException Thrown if there is a problem with communicating with the remote EJB.
+	 */
 	public Collection<Airplane> getExistingAirplanes() throws ValidationException {
 
 		try {
@@ -81,32 +93,4 @@ public class PrepareAddAirplane extends HttpServlet {
 			throw ve;
 		}
 	}
-
-	// private Collection<Airplane> getExistingAirplanesTest() {
-	// Collection<Airplane> airplanes = new ArrayList<Airplane>();
-	//		
-	// Airplane airplane = new Airplane();
-	// airplane.setType("DC-10");
-	// airplane.setNumSeats(150);
-	// airplanes.add(airplane);
-	//		
-	// airplane = new Airplane();
-	// airplane.setType("737");
-	// airplane.setNumSeats(180);
-	// airplanes.add(airplane);
-	//		
-	// airplane = new Airplane();
-	// airplane.setType("747");
-	// airplane.setNumSeats(200);
-	// airplanes.add(airplane);
-	//		
-	// airplane = new Airplane();
-	// airplane.setType("F-14");
-	// airplane.setNumSeats(2);
-	// airplanes.add(airplane);
-	//		
-	//		
-	// return airplanes;
-	// }
-
 }

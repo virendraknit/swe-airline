@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -17,51 +20,67 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class AddAirport
+ * Servlet used to handle the JSP submission of a new airport to add.
  */
 public class AddAirport extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public AddAirport() {
-        super();
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public AddAirport() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		this.doPost(request, response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response) Handles the user input and forwards the user back to the
+	 *      PrepareAddAirport servlet. This method will add an 'error' String as
+	 *      a request attribute if there are any errors with validation or
+	 *      communicating with the remote service.
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareAddAirport");
-		
+
 		String airportCode = request.getParameter("airportCode");
 		String errorMessage = validateAirport(airportCode);
-		
-		if(errorMessage == null){
+
+		if (errorMessage == null) {
 			try {
 				addAirport(airportCode);
 				request.setAttribute("addedAirportCode", airportCode);
-				
+
 			} catch (ValidationException e) {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 				request.setAttribute("error", errorMessage);
 			}
-			
-		}else{
+
+		} else {
 			request.setAttribute("error", errorMessage);
 		}
-		
+
 		dispatch.forward(request, response);
 	}
 
+	/**
+	 * Communicates with the remote EJB service to add an airport to the system.
+	 * 
+	 * @param airport
+	 *            Airport to add
+	 * @throws ValidationException
+	 *             Thrown if there was an error with the validation of the
+	 *             provided airport, or if there was an issue in communicating
+	 *             with the remote service.
+	 */
 	private void addAirport(String airport) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
@@ -81,13 +100,21 @@ public class AddAirport extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Returns null if validation is OK. Otherwise returns an error message if
+	 * the provided airport data was bad.
+	 * 
+	 * @param airportCode
+	 *            Airport to validate
+	 * @return Null if OK, otherwise returns an error message.
+	 */
 	private String validateAirport(String airportCode) {
 		String errorMessage = null;
-		
+
 		if (airportCode == null || airportCode.trim().equals("")) {
 			errorMessage = "The airport code was not provided";
 		}
-		
+
 		return errorMessage;
 	}
 }

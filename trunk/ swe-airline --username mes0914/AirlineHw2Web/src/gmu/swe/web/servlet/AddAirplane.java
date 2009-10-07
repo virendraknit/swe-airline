@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -18,9 +21,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * Servlet implementation class AddAirplane
+ * Servlet used to add an airplane to the system.
  */
 public class AddAirplane extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -42,7 +44,8 @@ public class AddAirplane extends HttpServlet {
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 *      response) Handles the user's input and forwards him back to the
+	 *      PrepareAddAirplane servlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
@@ -59,7 +62,7 @@ public class AddAirplane extends HttpServlet {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 				request.setAttribute("error", errorMessage);
 			}
-			
+
 		} else {
 			request.setAttribute("error", errorMessage);
 		}
@@ -67,6 +70,14 @@ public class AddAirplane extends HttpServlet {
 		dispatch.forward(request, response);
 	}
 
+	/**
+	 * Connects to the Headquarters EJB to add an airplane to the system.
+	 * 
+	 * @param airplane
+	 *            Airplane to add
+	 * @throws ValidationException
+	 *             Thrown if a validation error occurred.
+	 */
 	private void addAirplane(Airplane airplane) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
@@ -86,6 +97,17 @@ public class AddAirplane extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Performs validation on the Airplane object to determine if the fields
+	 * contain appropriate data. This method returns null if there are no
+	 * problems with the data, otherwise this method will return an error
+	 * message describing what is wrong.
+	 * 
+	 * @param airplane
+	 *            Airplane to validate
+	 * @return Null if the airplane contains valid data, otherwise returns an
+	 *         error message.
+	 */
 	private String validateAirplane(Airplane airplane) {
 		String errorMessage = null;
 
@@ -98,6 +120,15 @@ public class AddAirplane extends HttpServlet {
 		return errorMessage;
 	}
 
+	/**
+	 * Binds the information in the request to an Airplane object and returns
+	 * that object. If the value in the 'numSeats' parameter in the request is
+	 * not a whole number, -1 is put in the airplane.setNumSeats(..) method.
+	 * 
+	 * @param request
+	 *            Request containing the information to bind.
+	 * @return Airplane object with the bound information.
+	 */
 	private Airplane getAirplane(HttpServletRequest request) {
 		String type = request.getParameter("airplaneType");
 		String sNumSeats = request.getParameter("numSeats");

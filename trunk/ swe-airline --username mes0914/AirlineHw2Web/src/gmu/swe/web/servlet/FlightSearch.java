@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class FlightSearch
+ * Servlet providing the functionality of searching for flights.
  */
 public class FlightSearch extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -50,7 +50,10 @@ public class FlightSearch extends HttpServlet {
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 *      response) Handles the user's input for the searching of a flight.
+	 *      This method will forward the user back to the searchResults.jsp
+	 *      page. If an error occurs, the message will be put into an 'error'
+	 *      attribute field name.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
@@ -64,11 +67,11 @@ public class FlightSearch extends HttpServlet {
 			if (errorMessage == null) {
 				Collection<Flight> flights = getFlights(searchFilters);
 
-				if(flights == null || flights.size() == 0){
+				if (flights == null || flights.size() == 0) {
 					errorMessage = "Your search found no flights.  Please run a different search.";
 					dispatch = request.getRequestDispatcher("/prepareSearch");
 					request.setAttribute("error", errorMessage);
-				}else{
+				} else {
 					request.getSession().setAttribute("savedFlights", flights);
 					request.setAttribute("flights", flights);
 				}
@@ -85,18 +88,30 @@ public class FlightSearch extends HttpServlet {
 		} catch (ValidationException e) {
 			dispatch = request.getRequestDispatcher("/prepareSearch");
 			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
-			
+
 			request.setAttribute("error", errorMessage);
 		}
-		
+
 		dispatch.forward(request, response);
 	}
 
+	/**
+	 * Communicates wit the remote EJB service to search for flights based on
+	 * the provided SearchFilters object.
+	 * 
+	 * @param searchFilters
+	 *            Filters used to limit the search results
+	 * @return Collection of flights that match the search filters.
+	 * @throws ValidationException
+	 *             Thrown if there is a validation error or if there is a
+	 *             problem in communicating with the EJB.
+	 */
 	private Collection<Flight> getFlights(SearchFilters searchFilters) throws ValidationException {
-		
+
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
-			
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
+					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+
 			return ejbRef.search(searchFilters);
 		} catch (NamingException e) {
 			e.printStackTrace();
@@ -111,25 +126,45 @@ public class FlightSearch extends HttpServlet {
 			throw ve;
 		}
 	}
-	
+
+	/**
+	 * Validates the SearchFilters object.
+	 * 
+	 * @param searchFilters
+	 *            Object to validate
+	 * @return Returns null if there are no validation errors, otherwise the
+	 *         returned string will contain an error message.
+	 */
 	private String validateFilters(SearchFilters searchFilters) {
 		String errorMessage = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-		
+
 		if (searchFilters.isAllEmpty()) {
 			System.out.println("");
 			System.out
 					.println("* Error: Running a search requires the Departure and Destination, and/or Date to be set.");
 			errorMessage = "Running a search requires the Departure and Destination, and/or Date to be set.";
-		}else if(searchFilters.getDateOfTrip() != null && !DateUtil.isTodayOrLater(searchFilters.getDateOfTrip())){
+		} else if (searchFilters.getDateOfTrip() != null && !DateUtil.isTodayOrLater(searchFilters.getDateOfTrip())) {
 			errorMessage = "Please enter the Date of the Trip that is today or later.";
 		}
 		return errorMessage;
 	}
 
+	/**
+	 * Binds the Request object to a SearchFilters object and returns that bound
+	 * object.
+	 * 
+	 * @param request
+	 *            Object containing the information to bind to a SearchFilters
+	 *            object.
+	 * @return SearchFilters object with the bound information from the request.
+	 * @throws ParseException
+	 *             Thrown if there is a problem with the format of the provided
+	 *             date in the request.
+	 */
 	private SearchFilters getSearchFilters(HttpServletRequest request) throws ParseException {
 		SearchFilters searchFilters = new SearchFilters();
-		
+
 		searchFilters.setDepartureLocation((String) request.getParameter("departureAirport"));
 		searchFilters.setDestinationLocation((String) request.getParameter("destinationAirport"));
 		searchFilters.setDateOfTrip(getDateOfTrip(request));
@@ -137,6 +172,16 @@ public class FlightSearch extends HttpServlet {
 		return searchFilters;
 	}
 
+	/**
+	 * Returns a Date object of a date that was in the request under the
+	 * parameter 'flightDate'.
+	 * 
+	 * @param request
+	 *            Request object containing the flight parameter.
+	 * @return Date of the flight parameter
+	 * @throws ParseException
+	 *             Thrown if the flight parameter is in an invalid format.
+	 */
 	private Date getDateOfTrip(HttpServletRequest request) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		String sDateOfTrip = (String) request.getParameter("flightDate");
@@ -151,32 +196,4 @@ public class FlightSearch extends HttpServlet {
 			throw e;
 		}
 	}
-	
-//	private ArrayList<Flight> getFlightsTest() {
-//		ArrayList<Flight> flights = new ArrayList<Flight>();
-//
-//		Flight flight = new Flight();
-//		flight.setId(111);
-//		flight.setAirplaneId(11);
-//		flight.setAvailableSeats(200);
-//		flight.setCost(150.00);
-//		flight.setDepartureAirportCode("BWI");
-//		flight.setDestinationAirportCode("WAS");
-//		flight.setDepartureDate(new Date());
-//
-//		flights.add(flight);
-//
-//		flight = new Flight();
-//		flight.setId(222);
-//		flight.setAirplaneId(22);
-//		flight.setAvailableSeats(180);
-//		flight.setCost(125.00);
-//		flight.setDepartureAirportCode("IAD");
-//		flight.setDestinationAirportCode("NAC");
-//		flight.setDepartureDate(new Date());
-//		
-//		flights.add(flight);
-//		
-//		return flights;
-//	}
 }
