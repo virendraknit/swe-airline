@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -21,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class ReserveFlight
+ * Servlet used to handle the reserving of a flight.
  */
 public class ReserveFlight extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -43,7 +46,11 @@ public class ReserveFlight extends HttpServlet {
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 *      response) Handles the user's input for the reserving of a flight. If
+	 *      there is a problem with the reservation process, the user will be
+	 *      forwarded back to the searchResults.jsp page with an error message.
+	 *      If the reservation was made, then the user will be forwarded to a
+	 *      "success" page with the reservation information.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
@@ -61,19 +68,18 @@ public class ReserveFlight extends HttpServlet {
 			Reservation reservation;
 			try {
 				reservation = createReservation(flightId, Integer.parseInt(numSeats));
-				
+
 				request.getSession().setAttribute("savedFlights", null);
 				dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
 				request.setAttribute("reservation", reservation);
-				
+
 			} catch (ValidationException e) {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
-				
+
 				request.setAttribute("error", errorMessage);
 				request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
 			}
-			
-			
+
 		}
 
 		dispatch.forward(request, response);
@@ -88,11 +94,15 @@ public class ReserveFlight extends HttpServlet {
 	 * @param numSeats
 	 *            The number of seats the reservation is for.
 	 * @return The Reservation created.
-	 * @throws ValidationException 
+	 * @throws ValidationException
+	 *             Thrown if there there was a problem in communicating with the
+	 *             remote EJB or if there is a validation error with the
+	 *             provided data.
 	 */
 	private Reservation createReservation(int flightId, int numSeats) throws ValidationException {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
+					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 			return ejbRef.createReservation(flightId, numSeats);
 		} catch (NamingException e) {
 			e.printStackTrace();
@@ -107,7 +117,7 @@ public class ReserveFlight extends HttpServlet {
 			throw ve;
 		}
 	}
-	
+
 	/**
 	 * Returns an error message if there is a problem with the reservation
 	 * input. Returns null if the reservation information is valid/complete.<br>
@@ -166,30 +176,17 @@ public class ReserveFlight extends HttpServlet {
 		return false;
 	}
 
+	/**
+	 * Returns true numSeats is a whole number > 0, otherwise returns false.
+	 * 
+	 * @param numSeats
+	 *            String value to check.
+	 * @return True numSeats is a whole number > 0, otherwise returns false.
+	 */
 	private boolean isValidSeatNumber(String numSeats) {
 		if (NumberUtils.isWholeNumber(numSeats)) {
 			return Integer.parseInt(numSeats) > 0;
 		}
 		return false;
 	}
-	
-	
-//	private Reservation createReservationTest(int flightId, int numSeats) {
-//		Reservation reservation = new Reservation();
-//		reservation.setId(12344);
-//		reservation.setNumSeats(numSeats);
-//		
-//		Flight flight = new Flight();
-//		flight.setId(222);
-//		flight.setAirplaneId(22);
-//		flight.setAvailableSeats(180);
-//		flight.setCost(125.00);
-//		flight.setDepartureAirportCode("IAD");
-//		flight.setDestinationAirportCode("NAC");
-//		flight.setDepartureDate(new Date());
-//		
-//		reservation.setFlight(flight);
-//		
-//		return reservation;
-//	}
 }

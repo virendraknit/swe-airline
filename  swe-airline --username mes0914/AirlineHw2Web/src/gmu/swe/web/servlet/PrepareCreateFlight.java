@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -10,9 +13,6 @@ import gmu.swe.util.ResourceUtil;
 import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.naming.NamingException;
@@ -23,19 +23,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class PrepareCreateFlight
+ * Servlet used to prepare the Request object for the create flight page.
  */
 public class PrepareCreateFlight extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private PrepareAddAirplane airplaneServlet;
 	private PrepareAddAirport airportServlet;
-	
+
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public PrepareCreateFlight() {
 		super();
-		
+
 		this.airplaneServlet = new PrepareAddAirplane();
 		this.airportServlet = new PrepareAddAirport();
 	}
@@ -50,7 +50,8 @@ public class PrepareCreateFlight extends HttpServlet {
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 *      response) Adds all the airplanes, airports, and flights currently in
+	 *      the system to the Request object to display them to the user.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
@@ -74,9 +75,14 @@ public class PrepareCreateFlight extends HttpServlet {
 		dispatch.forward(request, response);
 	}
 
-
-	
-	
+	/**
+	 * Returns all the flights in the system.
+	 * 
+	 * @return Collection of all the flights in the system.
+	 * @throws ValidationException
+	 *             Thrown if there is a problem in communicating with the remote
+	 *             EJB.
+	 */
 	private Collection<Flight> getExistingFlights() throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
@@ -92,48 +98,5 @@ public class PrepareCreateFlight extends HttpServlet {
 			ve.addErrorMessage("Server error occured while retrieving all the flights.");
 			throw ve;
 		}
-	}
-
-	private Collection<Flight> getExistingFlightsTest() {
-		Collection<Flight> flights = new ArrayList<Flight>();
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-			
-			String sDate = "10/25/2009";
-
-			Flight flight = new Flight();
-			flight.setId(5);
-			flight.setDepartureDate(sdf.parse(sDate));
-			flight.setDestinationAirportCode("DCA");
-			flight.setDepartureAirportCode("BWI");
-			flight.setCost(240.00);
-			flight.setAirplaneId(0);
-			flight.setAvailableSeats(200);
-			flights.add(flight);
-			
-			flight = new Flight();
-			flight.setId(2);
-			flight.setDepartureDate(sdf.parse(sDate));
-			flight.setDestinationAirportCode("IAD");
-			flight.setDepartureAirportCode("WAS");
-			flight.setCost(180.00);
-			flight.setAirplaneId(3);
-			flight.setAvailableSeats(190);
-			flights.add(flight);
-			
-			flight = new Flight();
-			flight.setDepartureDate(sdf.parse(sDate));
-			flight.setDestinationAirportCode("XYZ");
-			flight.setDepartureAirportCode("HAW");
-			flight.setCost(510.00);
-			flight.setAirplaneId(5);
-			flight.setAvailableSeats(280);
-			flights.add(flight);
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		return flights;
 	}
 }

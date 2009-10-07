@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.web.servlet;
 
 import gmu.swe.constant.Constants;
@@ -19,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class PrepareSearch
+ * Servlet that prepares the Request object for the search page.
  */
 public class PrepareSearch extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +36,8 @@ public class PrepareSearch extends HttpServlet {
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 *      response) Adds all of the airports in the system to the Request
+	 *      object so the user can see the exiting airports.
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/search.jsp");
@@ -54,6 +58,14 @@ public class PrepareSearch extends HttpServlet {
 		dispatch.forward(request, response);
 	}
 
+	/**
+	 * Returns all the airports in the system.
+	 * 
+	 * @return Collection of all the airport codes in the system.
+	 * @throws ValidationException
+	 *             Thrown if a problem occurs in communicating with the remote
+	 *             EJB.
+	 */
 	private Collection<String> getAllAirports() throws ValidationException {
 		try {
 			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
@@ -71,16 +83,4 @@ public class PrepareSearch extends HttpServlet {
 			throw ve;
 		}
 	}
-
-	private ArrayList<String> getAllAirportsTest() {
-
-		ArrayList<String> airports = new ArrayList<String>();
-		airports.add("BWI");
-		airports.add("IAD");
-		airports.add("WAS");
-		airports.add("RAG");
-
-		return airports;
-	}
-
 }
