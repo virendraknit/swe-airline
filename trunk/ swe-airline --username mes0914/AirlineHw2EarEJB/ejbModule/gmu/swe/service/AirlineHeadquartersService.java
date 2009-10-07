@@ -91,14 +91,14 @@ public interface AirlineHeadquartersService {
 	 * 
 	 * @param flight
 	 *            Flight to create
-	 * @return Unique Flight number that is associated with the created flight.
+	 * @return The Flight that was created.
 	 * @throws ValidationException
 	 *             Thrown if there are validation errors with the provided
 	 *             flight information.
 	 * @throws DataAccessException
 	 *             Thrown if there is an error when creating a flight.
 	 */
-	public int createFlight(Flight flight) throws ValidationException, DataAccessException;
+	public Flight createFlight(Flight flight) throws ValidationException, DataAccessException;
 
 	/**
 	 * Creates a reservation for on provided flight number, flightId, for the
