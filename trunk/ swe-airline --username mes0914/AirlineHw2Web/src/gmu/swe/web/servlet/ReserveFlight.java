@@ -11,7 +11,6 @@ import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
@@ -92,9 +91,10 @@ public class ReserveFlight extends HttpServlet {
 	 */
 	private Reservation createReservation(int flightId, int numSeats) throws ValidationException {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("AirlineHw2/TravelAgentEjb/remote");
 			return ejbRef.createReservation(flightId, numSeats);
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;

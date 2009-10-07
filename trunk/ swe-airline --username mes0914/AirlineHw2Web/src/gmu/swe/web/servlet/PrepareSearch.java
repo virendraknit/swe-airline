@@ -56,10 +56,11 @@ public class PrepareSearch extends HttpServlet {
 	private Collection<String> getAllAirports() throws ValidationException {
 		try {
 			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"TravelAgentEjb/remote");
+					"AirlineHw2/TravelAgentEjb/remote");
 
 			return ejbRef.getAllAirports();
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;

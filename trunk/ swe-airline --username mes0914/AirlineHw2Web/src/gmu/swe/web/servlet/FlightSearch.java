@@ -94,10 +94,11 @@ public class FlightSearch extends HttpServlet {
 	private Collection<Flight> getFlights(SearchFilters searchFilters) throws ValidationException {
 		
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("AirlineHw2/TravelAgentEjb/remote");
 			
 			return ejbRef.search(searchFilters);
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;
