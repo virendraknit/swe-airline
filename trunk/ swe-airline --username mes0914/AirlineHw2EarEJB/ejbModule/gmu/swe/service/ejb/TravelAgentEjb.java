@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.service.ejb;
 
 import gmu.swe.domain.Flight;
@@ -13,7 +16,10 @@ import java.util.Collection;
 import javax.ejb.Stateless;
 
 /**
- * Session Bean implementation class TravelAgentEjb
+ * Session Bean implementation of the Remote TravelAgentEJB. This class is
+ * basically a delegate object for the AirlineHeadquartersService business
+ * implementation. This EJB is only used to provide an external communication
+ * point. The functionality provided here is for the Travel Agent business.
  */
 @Stateless
 public class TravelAgentEjb implements TravelAgentEjbRemote {

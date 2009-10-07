@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.service.impl;
 
 import gmu.swe.dao.AirlineHeadquartersDao;
@@ -13,6 +16,12 @@ import gmu.swe.util.DateUtil;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
+/**
+ * Implementation class for the AirlineHeadquartersService. This class contains
+ * the business logic, including validation, and connects to the DAO for basic
+ * CRUD (create, retrieve, update, & delete) operations.
+ * 
+ */
 public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersService {
 	private AirlineHeadquartersDao dao;
 
@@ -36,12 +45,13 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see gmu.swe.service.AirlineHeadquartersService#getAllFlights()
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException {
 		return this.getDao().getAllFlights();
 	}
-	
+
 	/**
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#search(gmu.swe.domain.SearchFilters)
 	 * 

@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.service.ejb;
 
 import gmu.swe.domain.Flight;
@@ -10,6 +13,12 @@ import java.util.Collection;
 
 import javax.ejb.Remote;
 
+/**
+ * Remote interface that provides an external entry point to the
+ * AirlineHeadquartersService. This EJB only provides an access point to the
+ * Travel Agent related business.
+ * 
+ */
 @Remote
 public interface TravelAgentEjbRemote {
 

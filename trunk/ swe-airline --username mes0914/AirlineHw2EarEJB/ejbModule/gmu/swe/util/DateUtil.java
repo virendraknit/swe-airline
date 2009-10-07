@@ -1,12 +1,13 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.util;
 
 import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Date utility to abstract logic.
- * 
- * @author mbsnyder
+ * Date utility to extract common code.
  * 
  */
 public class DateUtil {

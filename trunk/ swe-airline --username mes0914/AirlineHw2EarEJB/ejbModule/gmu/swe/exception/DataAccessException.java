@@ -1,10 +1,11 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.exception;
 
 /**
  * Custom exception used to wrap the database specific exceptions, and cut down
  * on the number of exceptions thrown.
- * 
- * @author mbsnyder
  * 
  */
 public class DataAccessException extends Exception {

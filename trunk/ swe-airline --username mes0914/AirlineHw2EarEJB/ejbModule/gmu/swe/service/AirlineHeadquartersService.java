@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.service;
 
 import gmu.swe.domain.Airplane;
@@ -12,8 +15,6 @@ import java.util.Collection;
 /**
  * Business service that defines methods that should be available to be called.
  * This is meant to be a generic interface.
- * 
- * @author mbsnyder
  * 
  */
 public interface AirlineHeadquartersService {

@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.exception;
 
 import java.util.ArrayList;
@@ -7,8 +10,6 @@ import java.util.ArrayList;
  * functionality as {@link Exception}, but also provides a property for holding
  * custom exception. It also has a method to get the custom messages, and to
  * determine if there are any error messages.
- * 
- * @author mbsnyder
  * 
  */
 public class ValidationException extends Exception {

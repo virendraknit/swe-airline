@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.domain;
 
 import java.io.Serializable;
@@ -5,8 +8,6 @@ import java.io.Serializable;
 /**
  * Domain object used to represent a reservation.
  * 
- * @author mbsnyder
- *
  */
 public class Reservation implements Serializable {
 

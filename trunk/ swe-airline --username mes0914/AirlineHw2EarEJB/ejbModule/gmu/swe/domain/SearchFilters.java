@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.domain;
 
 import java.io.Serializable;
@@ -5,8 +8,6 @@ import java.util.Date;
 
 /**
  * Domain object used as a filter when searching for a flight.
- * 
- * @author mbsnyder
  * 
  */
 public class SearchFilters implements Serializable {

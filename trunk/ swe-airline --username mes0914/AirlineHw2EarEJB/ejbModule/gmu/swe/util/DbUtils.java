@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 public class DbUtils {
 	/**
 	 * Returns a connection to a HSQLDB database. This class will look up the
-	 * configured datasource with JDNI name 'msnyderaDs' and return a
+	 * configured datasource with JDNI name 'msnyderaDS' and return a
 	 * Connection.
 	 * 
 	 * @return Connection to the database.

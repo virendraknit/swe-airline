@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.domain;
 
 import java.io.Serializable;
@@ -6,8 +9,6 @@ import java.util.Date;
 
 /**
  * Domain object used to represent a Flight.
- * 
- * @author mbsnyder
  * 
  */
 public class Flight implements Serializable {
