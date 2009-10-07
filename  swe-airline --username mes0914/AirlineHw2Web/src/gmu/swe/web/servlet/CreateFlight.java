@@ -11,7 +11,6 @@ import gmu.swe.util.StringUtils;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import javax.naming.NamingException;
@@ -77,9 +76,10 @@ public class CreateFlight extends HttpServlet {
 	private int createFlight(Flight flight) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"HeadquartersEjb/remote");
+					"AirlineHw2/HeadquartersEjb/remote");
 			return ejbRef.createFlight(flight);
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;

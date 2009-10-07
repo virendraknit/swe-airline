@@ -3,14 +3,11 @@ package gmu.swe.web.servlet;
 import gmu.swe.domain.Airplane;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
-import gmu.swe.service.ejb.HeadquartersEjb;
 import gmu.swe.service.ejb.HeadquartersEjbRemote;
-import gmu.swe.service.ejb.TravelAgentEjbRemote;
 import gmu.swe.util.ResourceUtil;
 import gmu.swe.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.naming.NamingException;
@@ -70,9 +67,10 @@ public class PrepareAddAirplane extends HttpServlet {
 
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"HeadquartersEjb/remote");
+					"AirlineHw2/HeadquartersEjb/remote");
 			return ejbRef.getAllAirplanes();
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;

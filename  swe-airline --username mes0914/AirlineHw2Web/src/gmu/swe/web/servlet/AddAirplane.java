@@ -68,9 +68,10 @@ public class AddAirplane extends HttpServlet {
 	private void addAirplane(Airplane airplane) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"HeadquartersEjb/remote");
+					"AirlineHw2/HeadquartersEjb/remote");
 			ejbRef.createAirplane(airplane.getNumSeats(), airplane.getType());
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;

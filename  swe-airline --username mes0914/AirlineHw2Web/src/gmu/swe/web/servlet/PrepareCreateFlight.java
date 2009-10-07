@@ -79,9 +79,10 @@ public class PrepareCreateFlight extends HttpServlet {
 	private Collection<Flight> getExistingFlights() throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"HeadquartersEjb/remote");
+					"AirlineHw2/HeadquartersEjb/remote");
 			return ejbRef.getAllFlights();
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;

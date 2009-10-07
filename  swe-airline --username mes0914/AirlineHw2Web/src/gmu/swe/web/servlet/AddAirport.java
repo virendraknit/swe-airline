@@ -1,10 +1,8 @@
 package gmu.swe.web.servlet;
 
-import gmu.swe.domain.Airplane;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
 import gmu.swe.service.ejb.HeadquartersEjbRemote;
-import gmu.swe.util.NumberUtils;
 import gmu.swe.util.ResourceUtil;
 import gmu.swe.util.StringUtils;
 
@@ -66,9 +64,10 @@ public class AddAirport extends HttpServlet {
 	private void addAirport(String airport) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"HeadquartersEjb/remote");
+					"AirlineHw2/HeadquartersEjb/remote");
 			ejbRef.createAirport(airport);
 		} catch (NamingException e) {
+			e.printStackTrace();
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during EJB lookup.");
 			throw ve;
