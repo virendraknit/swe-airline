@@ -8,8 +8,20 @@ import gmu.swe.service.AirlineHeadquartersService;
 import gmu.swe.service.impl.AirlineHeadquartersServiceImpl;
 
 import java.util.Collection;
+import java.util.Properties;
 
 import javax.ejb.Stateless;
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.TopicConnectionFactory;
+import javax.jms.TopicSession;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * Session Bean implementation class HeadquartersEjb
@@ -45,7 +57,11 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#createFlight(gmu.swe.domain.Flight)
 	 */
 	public int createFlight(Flight flight) throws ValidationException, DataAccessException {
-		return this.getService().createFlight(flight);
+		Flight savedFlight = this.getService().createFlight(flight);
+		
+		this.sendMessage(savedFlight);
+		
+		return savedFlight.getId();
 	}
 
 	/*
@@ -71,6 +87,55 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 	public Collection<Flight> getAllFlights() throws DataAccessException {
 		return this.getService().getAllFlights();
 	}
+	
+	public boolean sendMessage(Flight flight) {
+		try {
+			Context context = getInitialContext();
+			TopicConnectionFactory connectionFactory = (TopicConnectionFactory) context.lookup("ConnectionFactory");
+	
+			TopicConnection conn;
+		
+			System.out.println("** " + getClass().getSimpleName() + ": Sending Message for Flight #" + flight.getId());
+			conn = connectionFactory.createTopicConnection();
+			TopicSession session = conn.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+
+			Topic topic = (Topic) context.lookup("topic/MsnyderaTopic");
+
+			MessageProducer producer = session.createProducer(topic);
+
+			// MessageProducer producer = session.createProducer(queue);
+			MapMessage mapMsg = session.createMapMessage();
+			mapMsg.setString("flightId", "" + flight.getId());
+			mapMsg.setString("flightDate", flight.getDisplayDate());
+			mapMsg.setString("departureAirport", flight.getDepartureAirportCode());
+			mapMsg.setString("destinationAirport", flight.getDestinationAirportCode());
+			mapMsg.setInt("numSeats", flight.getAvailableSeats());
+			mapMsg.setDouble("cost", flight.getCost());
+			mapMsg.setString("airplaneId", "" + flight.getAirplaneId());
+			
+			producer.send(mapMsg);
+			
+			conn.close();
+			
+			System.out.println("Sent Message!");
+			
+			return true;
+		} catch (JMSException e) {
+			e.printStackTrace();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static Context getInitialContext() throws javax.naming.NamingException {
+		Properties props = new Properties();
+		props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
+		props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
+		props.put(Context.PROVIDER_URL, "jnp://localhost:1099");
+		return new InitialContext(props);
+	}
+	
 	
 	/**
 	 * 

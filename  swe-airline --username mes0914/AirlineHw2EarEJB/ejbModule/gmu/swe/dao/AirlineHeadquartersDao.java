@@ -190,7 +190,6 @@ public class AirlineHeadquartersDao {
 
 			stmt.executeUpdate();
 
-			// conn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
@@ -204,12 +203,29 @@ public class AirlineHeadquartersDao {
 	 * 
 	 * @param flight
 	 *            Flight to create.
-	 * @return The flight number that was created.
+	 * @return The flight that was created.
 	 * @throws DataAccessException
 	 *             Thrown if a problem occurs while communicating with the
 	 *             database.
 	 */
-	public int createFlight(Flight flight) throws DataAccessException {
+	public Flight createFlight(Flight flight) throws DataAccessException {
+		createSingleFlight(flight);
+		int flightId = getLastAddedFlightId();
+		Flight savedFlight = getFlight(flightId);
+		
+		return savedFlight;
+	}
+
+	/**
+	 * Creates a flight in the database.
+	 * 
+	 * @param flight
+	 *            Flight to create.
+	 * @throws DataAccessException
+	 *             Thrown if a problem occurs while communicating with the
+	 *             database.
+	 */
+	private void createSingleFlight(Flight flight) throws DataAccessException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 
@@ -227,8 +243,6 @@ public class AirlineHeadquartersDao {
 			stmt.setInt(6, flight.getAirplaneId());
 
 			stmt.executeUpdate();
-
-			return getLastAddedFlightId();
 
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -95,7 +95,7 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 *      - The airplaneId is not valid (i.e. not >= 0 or doesn't exist in the
 	 *      system.)
 	 */
-	public int createFlight(Flight flight) throws ValidationException, DataAccessException {
+	public Flight createFlight(Flight flight) throws ValidationException, DataAccessException {
 		validateFlight(flight);
 
 		return this.getDao().createFlight(flight);
