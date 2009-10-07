@@ -1,5 +1,6 @@
 package gmu.swe.web.servlet;
 
+import gmu.swe.constant.Constants;
 import gmu.swe.domain.Flight;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
@@ -76,7 +77,7 @@ public class CreateFlight extends HttpServlet {
 	private int createFlight(Flight flight) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"AirlineHw2/HeadquartersEjb/remote");
+					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
 			return ejbRef.createFlight(flight);
 		} catch (NamingException e) {
 			e.printStackTrace();

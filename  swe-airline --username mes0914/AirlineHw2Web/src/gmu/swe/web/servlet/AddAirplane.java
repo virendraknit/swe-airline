@@ -1,5 +1,6 @@
 package gmu.swe.web.servlet;
 
+import gmu.swe.constant.Constants;
 import gmu.swe.domain.Airplane;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
@@ -16,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * Servlet implementation class AddAirplane
@@ -68,7 +70,7 @@ public class AddAirplane extends HttpServlet {
 	private void addAirplane(Airplane airplane) throws ValidationException {
 		try {
 			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"AirlineHw2/HeadquartersEjb/remote");
+					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
 			ejbRef.createAirplane(airplane.getNumSeats(), airplane.getType());
 		} catch (NamingException e) {
 			e.printStackTrace();
