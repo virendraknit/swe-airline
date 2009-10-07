@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.service.ejb;
 
 import gmu.swe.domain.Airplane;
@@ -24,29 +27,37 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * Session Bean implementation class HeadquartersEjb
+ * Session Bean implementation of the Remote HeadquartersEjb. This class is
+ * basically a delegate object for the AirlineHeadquartersService business
+ * implementation. This EJB is only used to provide an external communication
+ * point. This class also posts information on a Topic. This class only deals
+ * with Headquarters related business.
  */
 @Stateless
 public class HeadquartersEjb implements HeadquartersEjbRemote {
 	private AirlineHeadquartersService service;
 
-    /**
-     * Default constructor. 
-     */
-    public HeadquartersEjb() {
-    }
+	/**
+	 * Default constructor.
+	 */
+	public HeadquartersEjb() {
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see gmu.swe.service.ejb.HeadquartersEjbRemote#createAirplane(int, java.lang.String)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#createAirplane(int,
+	 * java.lang.String)
+	 */
 	public void createAirplane(int numberOfSeats, String airplaneType) throws ValidationException, DataAccessException {
 		this.getService().createAirplane(numberOfSeats, airplaneType);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#createAirport(java.lang.String)
+	 * 
+	 * @see
+	 * gmu.swe.service.ejb.HeadquartersEjbRemote#createAirport(java.lang.String)
 	 */
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException {
 		this.getService().createAirport(airportCode);
@@ -54,18 +65,22 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 
 	/*
 	 * (non-Javadoc)
-	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#createFlight(gmu.swe.domain.Flight)
+	 * 
+	 * @see
+	 * gmu.swe.service.ejb.HeadquartersEjbRemote#createFlight(gmu.swe.domain
+	 * .Flight)
 	 */
 	public int createFlight(Flight flight) throws ValidationException, DataAccessException {
 		Flight savedFlight = this.getService().createFlight(flight);
-		
+
 		this.sendMessage(savedFlight);
-		
+
 		return savedFlight.getId();
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#getAllAirplanes()
 	 */
 	public Collection<Airplane> getAllAirplanes() throws DataAccessException {
@@ -74,6 +89,7 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#getAllAirports()
 	 */
 	public Collection<String> getAllAirports() throws DataAccessException {
@@ -82,19 +98,28 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see gmu.swe.service.ejb.HeadquartersEjbRemote#getAllFlights()
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException {
 		return this.getService().getAllFlights();
 	}
-	
+
+	/**
+	 * Sends a message with flight information to a Topic.
+	 * 
+	 * @param flight
+	 *            Flight information to send to the Topic
+	 * @return True if the message sent successfully, false if an error
+	 *         occurred.
+	 */
 	public boolean sendMessage(Flight flight) {
 		try {
 			Context context = getInitialContext();
 			TopicConnectionFactory connectionFactory = (TopicConnectionFactory) context.lookup("ConnectionFactory");
-	
+
 			TopicConnection conn;
-		
+
 			System.out.println("** " + getClass().getSimpleName() + ": Sending Message for Flight #" + flight.getId());
 			conn = connectionFactory.createTopicConnection();
 			TopicSession session = conn.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -112,13 +137,13 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 			mapMsg.setInt("numSeats", flight.getAvailableSeats());
 			mapMsg.setDouble("cost", flight.getCost());
 			mapMsg.setString("airplaneId", "" + flight.getAirplaneId());
-			
+
 			producer.send(mapMsg);
-			
+
 			conn.close();
-			
+
 			System.out.println("Sent Message!");
-			
+
 			return true;
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -127,16 +152,22 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 		}
 		return false;
 	}
-	
-	public static Context getInitialContext() throws javax.naming.NamingException {
+
+	/**
+	 * Used to get a context to the server.
+	 * 
+	 * @return Context to the server.
+	 * @throws javax.naming.NamingException
+	 *             Thrown if an error occurs during the lookup of the context.
+	 */
+	private static Context getInitialContext() throws javax.naming.NamingException {
 		Properties props = new Properties();
 		props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
 		props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
 		props.put(Context.PROVIDER_URL, "jnp://localhost:1099");
 		return new InitialContext(props);
 	}
-	
-	
+
 	/**
 	 * 
 	 * @return The service implementation to use.

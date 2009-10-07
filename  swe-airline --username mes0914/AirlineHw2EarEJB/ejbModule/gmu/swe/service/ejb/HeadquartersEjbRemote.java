@@ -1,4 +1,8 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.service.ejb;
+
 import gmu.swe.domain.Airplane;
 import gmu.swe.domain.Flight;
 import gmu.swe.exception.DataAccessException;
@@ -8,6 +12,12 @@ import java.util.Collection;
 
 import javax.ejb.Remote;
 
+/**
+ * Remote interface that provides an external entry point to the
+ * AirlineHeadquartersService. This EJB only provides an access point to the
+ * Headquarters related business.
+ * 
+ */
 @Remote
 public interface HeadquartersEjbRemote {
 	/**
@@ -27,7 +37,7 @@ public interface HeadquartersEjbRemote {
 	 *             Thrown if there is an error when retrieving the airports.
 	 */
 	public Collection<String> getAllAirports() throws DataAccessException;
-	
+
 	/**
 	 * Returns all flights that are in the system.
 	 * 
@@ -36,7 +46,7 @@ public interface HeadquartersEjbRemote {
 	 *             Thrown if there is an error when retrieving the airports.
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException;
-	
+
 	/**
 	 * Creates an airplane in the system with the provided information.
 	 * 

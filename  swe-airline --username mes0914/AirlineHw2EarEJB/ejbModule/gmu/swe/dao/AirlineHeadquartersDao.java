@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.dao;
 
 import gmu.swe.domain.Airplane;
@@ -16,6 +19,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * This is the Data Access Object (DAO) used for the database communication.
+ * 
+ */
 public class AirlineHeadquartersDao {
 
 	/**
@@ -88,7 +95,7 @@ public class AirlineHeadquartersDao {
 			closeDbObjects(stmt, conn);
 		}
 	}
-	
+
 	/**
 	 * Returns all of the flights in the database.
 	 * 
@@ -126,7 +133,7 @@ public class AirlineHeadquartersDao {
 			}
 
 			return flights;
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DataAccessException(e.getMessage(), e);
@@ -212,7 +219,7 @@ public class AirlineHeadquartersDao {
 		createSingleFlight(flight);
 		int flightId = getLastAddedFlightId();
 		Flight savedFlight = getFlight(flightId);
-		
+
 		return savedFlight;
 	}
 
@@ -581,7 +588,7 @@ public class AirlineHeadquartersDao {
 				flight.setCost(rs.getDouble(5));
 				flight.setAirplaneId(rs.getInt(6));
 				flight.setAvailableSeats(rs.getInt(7));
-				
+
 				flights.add(flight);
 			}
 

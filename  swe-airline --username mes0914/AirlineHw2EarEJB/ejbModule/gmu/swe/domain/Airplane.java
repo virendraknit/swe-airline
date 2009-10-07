@@ -1,11 +1,12 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.domain;
 
 import java.io.Serializable;
 
 /**
  * Domain object used to represent an Airplane.
- * 
- * @author mbsnyder
  * 
  */
 public class Airplane implements Serializable {
