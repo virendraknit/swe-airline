@@ -60,24 +60,6 @@
  		</span>
  	</c:if>
  	
- 	<h4>Existing Flights</h4>
-	<display:table name="requestScope.flights" cellspacing="10px" class="allInfo">
- 		<display:column property="id" title="Flight #" />
- 		<display:column property="departureAirportCode" title="Depart Code" />
- 		<display:column property="destinationAirportCode" title="Dest Code" />
- 		<display:column property="departureDate" format="{0,date,MM-dd-yyyy}" title="Flight Date" />
- 		<display:column property="cost" format="$ {0,number,000.00}" title="Cost" />
- 		<display:column property="availableSeats" title="Avail Seats" />
- 		<display:column property="airplaneId" title="Airplane Id" />
- 	</display:table>
-	
-	<h4>Airplane Descriptions</h4>
-	<display:table name="requestScope.airplanes" cellspacing="10px" class="allInfo">
- 		<display:column property="id" title="Airplane Id" />
- 		<display:column property="type" title="Airplane Type" />
- 		<display:column property="numSeats" title="Number of Seats" />
- 	</display:table>
- 	
  	<h2>Please enter the information to create a flight:</h2>
 
  	<form action="${basePath}/createFlight">
@@ -125,6 +107,23 @@
 	<a href="${basePath}/jsp/headquartersMenu.jsp">Headquarters Menu</a><br>
 	<a href="${basePath}/jsp/home.jsp">Main Menu</a>
 	
+	<h4>Existing Flights</h4>
+	<display:table name="requestScope.flights" cellspacing="10px" class="allInfo">
+ 		<display:column property="id" title="Flight #" />
+ 		<display:column property="departureAirportCode" title="Depart Code" />
+ 		<display:column property="destinationAirportCode" title="Dest Code" />
+ 		<display:column property="departureDate" format="{0,date,MM-dd-yyyy}" title="Flight Date" />
+ 		<display:column property="cost" format="$ {0,number,000.00}" title="Cost" />
+ 		<display:column property="availableSeats" title="Avail Seats" />
+ 		<display:column property="airplaneId" title="Airplane Id" />
+ 	</display:table>
+	
+	<h4>Airplane Descriptions</h4>
+	<display:table name="requestScope.airplanes" cellspacing="10px" class="allInfo">
+ 		<display:column property="id" title="Airplane Id" />
+ 		<display:column property="type" title="Airplane Type" />
+ 		<display:column property="numSeats" title="Number of Seats" />
+ 	</display:table>
 </body>
 <script type="text/javascript">
 	//load();
