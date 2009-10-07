@@ -1,3 +1,6 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.util;
 
 import java.util.ResourceBundle;
@@ -5,8 +8,6 @@ import java.util.ResourceBundle;
 /**
  * Utility class used to read in a property file and provide methods to get
  * property values.
- * 
- * @author mbsnyder
  * 
  */
 public class ResourceBundleUtils {

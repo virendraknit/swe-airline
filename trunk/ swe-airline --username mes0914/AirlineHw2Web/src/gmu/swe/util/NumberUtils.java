@@ -1,5 +1,12 @@
+/*
+ * Created by: Matt Snyder
+ */
 package gmu.swe.util;
 
+/**
+ * Utility class to extract common code dealing with numbers.
+ *
+ */
 public class NumberUtils {
 	/**
 	 * Utility method that determines if the provided string is a whole number.
