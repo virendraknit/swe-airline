@@ -4,6 +4,7 @@
 
 package gmu.swe.web.servlet;
 
+import gmu.swe.constant.Constants;
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.SearchFilters;
 import gmu.swe.exception.DataAccessException;
@@ -94,7 +95,7 @@ public class FlightSearch extends HttpServlet {
 	private Collection<Flight> getFlights(SearchFilters searchFilters) throws ValidationException {
 		
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("AirlineHw2/TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 			
 			return ejbRef.search(searchFilters);
 		} catch (NamingException e) {

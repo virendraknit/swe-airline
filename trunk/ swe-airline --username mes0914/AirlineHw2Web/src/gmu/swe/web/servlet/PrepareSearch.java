@@ -1,5 +1,6 @@
 package gmu.swe.web.servlet;
 
+import gmu.swe.constant.Constants;
 import gmu.swe.exception.DataAccessException;
 import gmu.swe.exception.ValidationException;
 import gmu.swe.service.ejb.TravelAgentEjbRemote;
@@ -56,7 +57,7 @@ public class PrepareSearch extends HttpServlet {
 	private Collection<String> getAllAirports() throws ValidationException {
 		try {
 			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
-					"AirlineHw2/TravelAgentEjb/remote");
+					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 
 			return ejbRef.getAllAirports();
 		} catch (NamingException e) {

@@ -1,5 +1,6 @@
 package gmu.swe.web.servlet;
 
+import gmu.swe.constant.Constants;
 import gmu.swe.domain.Flight;
 import gmu.swe.domain.Reservation;
 import gmu.swe.exception.DataAccessException;
@@ -91,7 +92,7 @@ public class ReserveFlight extends HttpServlet {
 	 */
 	private Reservation createReservation(int flightId, int numSeats) throws ValidationException {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup("AirlineHw2/TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 			return ejbRef.createReservation(flightId, numSeats);
 		} catch (NamingException e) {
 			e.printStackTrace();
