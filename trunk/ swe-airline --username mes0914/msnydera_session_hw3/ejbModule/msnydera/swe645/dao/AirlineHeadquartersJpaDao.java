@@ -3,7 +3,6 @@
  */
 package msnydera.swe645.dao;
 
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -13,7 +12,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
+
 import msnydera.swe645.domain.Airplane;
+import msnydera.swe645.domain.Airport;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.domain.SearchFilters;
@@ -24,7 +28,12 @@ import msnydera.swe645.util.DbUtils;
  * This is the Data Access Object (DAO) used for the database communication.
  * 
  */
-public class AirlineHeadquartersDao {
+public class AirlineHeadquartersJpaDao {
+	private EntityManager entityManager;
+	
+	public AirlineHeadquartersJpaDao(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
 	/**
 	 * Returns all of the airplanes in the database.
@@ -187,23 +196,47 @@ public class AirlineHeadquartersDao {
 	 *             database.
 	 */
 	public void createAirport(String airportCode) throws DataAccessException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
+//		EntityManagerFactory factory = null;
+//		EntityManager entityManager = null;
+		
+//		try {
+//			factory = DbUtils.getEntityManager();
+//			entityManager = getConfiguredManager(factory);
 
-		try {
-			conn = DbUtils.getConnection();
+			Airport airport = new Airport();
+			airport.setAirportCode(airportCode);
 
-			stmt = conn.prepareStatement("insert into airport (code) values (?)");
-			stmt.setString(1, airportCode.toUpperCase());
+			this.entityManager.persist(airport);
+			
+//			DbUtils.closeAndFlushEntityPeices(factory, entityManager);
+			
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			DbUtils.closeEntityPieces(factory, entityManager);
+//			
+//			throw new DataAccessException(e.getMessage(), e);
+//		}
 
-			stmt.executeUpdate();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
-		}
+		
+		
+		// Connection conn = null;
+		// PreparedStatement stmt = null;
+		//
+		// try {
+		// conn = DbUtils.getConnection();
+		//
+		// stmt =
+		// conn.prepareStatement("insert into airport (code) values (?)");
+		// stmt.setString(1, airportCode.toUpperCase());
+		//
+		// stmt.executeUpdate();
+		//
+		// } catch (SQLException e) {
+		// e.printStackTrace();
+		// throw new DataAccessException(e.getMessage(), e);
+		// } finally {
+		// closeDbObjects(stmt, conn);
+		// }
 	}
 
 	/**
@@ -659,5 +692,19 @@ public class AirlineHeadquartersDao {
 				// Intentially do nothing
 			}
 		}
+	}
+
+	/**
+	 * Utility method to create an EntityManager from the provided factory
+	 * obejct, and sets the flush mode to COMMIT for the entity manager.
+	 * 
+	 * @param factory
+	 *            EntityManagerFactory to create an EntityManager from
+	 * @return EntityManager with the flush mode set to COMMIT.
+	 */
+	private EntityManager getConfiguredManager(EntityManagerFactory factory) {
+		EntityManager entityManager = factory.createEntityManager();
+		entityManager.setFlushMode(FlushModeType.COMMIT);
+		return entityManager;
 	}
 }
