@@ -22,7 +22,7 @@ public class Airport implements Serializable{
 	}
 
 	public void setAirportCode(String airportCode) {
-		this.airportCode = airportCode;
+		this.airportCode = (airportCode != null ? airportCode.toUpperCase() : airportCode);
 	}
 	
 }
