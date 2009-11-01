@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.sql.DataSource;
 
 /**
@@ -35,5 +38,40 @@ public class DbUtils {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
+	}
+	
+	public static EntityManagerFactory getEntityManager() throws SQLException{
+		try {
+			InitialContext ic = new InitialContext();
+			EntityManagerFactory emf = (EntityManagerFactory) ic.lookup("java:comp/env/msnyderaPersistence");
+			
+			return emf;
+		} catch (NamingException e) {
+			e.printStackTrace();
+			throw new SQLException(e.getMessage());
+		}
+		
+//		EntityManagerFactory factory = Persistence.createEntityManagerFactory("msnyderaPersistence");
+		
+//		return emf;
+//		return factory;
+	}
+	
+	public static void closeAndFlushEntityPeices(EntityManagerFactory factory, EntityManager entityManager){
+		if(entityManager != null){
+			entityManager.joinTransaction();
+			entityManager.flush();
+		}
+		closeEntityPieces(factory, entityManager);
+	}
+
+	public static void closeEntityPieces(EntityManagerFactory factory, EntityManager entityManager) {
+		if(entityManager != null){
+			entityManager.close();
+		}
+		if(factory != null){
+			factory.close();
+		}
+		
 	}
 }

@@ -7,7 +7,9 @@ package msnydera.swe645.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-import msnydera.swe645.dao.AirlineHeadquartersDao;
+import javax.persistence.EntityManager;
+
+import msnydera.swe645.dao.AirlineHeadquartersJpaDao;
 import msnydera.swe645.domain.Airplane;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
@@ -24,7 +26,17 @@ import msnydera.swe645.util.DateUtil;
  * 
  */
 public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersService {
-	private AirlineHeadquartersDao dao;
+	private AirlineHeadquartersJpaDao dao;
+	
+	private EntityManager entityManager;
+	
+	public AirlineHeadquartersServiceImpl(){
+		
+	}
+	
+	public AirlineHeadquartersServiceImpl(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -312,10 +324,10 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 * 
 	 * @return DAO to use.
 	 */
-	public AirlineHeadquartersDao getDao() {
-		if (this.dao == null) {
-			this.dao = new AirlineHeadquartersDao();
-		}
+	public AirlineHeadquartersJpaDao getDao() {
+		//if (this.dao == null) {
+			this.dao = new AirlineHeadquartersJpaDao(this.entityManager);
+		//}
 		return this.dao;
 	}
 
@@ -325,7 +337,7 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 * @param dao
 	 *            DAO to set.
 	 */
-	public void setDao(AirlineHeadquartersDao dao) {
+	public void setDao(AirlineHeadquartersJpaDao dao) {
 		this.dao = dao;
 	}
 }
