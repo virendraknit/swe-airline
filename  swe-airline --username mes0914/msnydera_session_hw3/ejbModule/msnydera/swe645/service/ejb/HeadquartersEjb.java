@@ -147,11 +147,11 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 			MapMessage mapMsg = session.createMapMessage();
 			mapMsg.setString("flightId", "" + flight.getId());
 			mapMsg.setString("flightDate", flight.getDisplayDate());
-			mapMsg.setString("departureAirport", flight.getDepartureAirportCode());
-			mapMsg.setString("destinationAirport", flight.getDestinationAirportCode());
+			mapMsg.setString("departureAirport", flight.getDepartureAirport().getAirportCode());
+			mapMsg.setString("destinationAirport", flight.getDestinationAirport().getAirportCode());
 			mapMsg.setInt("numSeats", flight.getAvailableSeats());
 			mapMsg.setDouble("cost", flight.getCost());
-			mapMsg.setString("airplaneId", "" + flight.getAirplaneId());
+			mapMsg.setString("airplaneId", "" + flight.getAirplane());
 
 			producer.send(mapMsg);
 

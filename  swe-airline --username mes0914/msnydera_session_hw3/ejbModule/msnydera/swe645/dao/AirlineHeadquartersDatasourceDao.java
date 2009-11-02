@@ -124,10 +124,10 @@ public class AirlineHeadquartersDatasourceDao {
 				Flight flight = new Flight();
 				flight.setId(rs.getInt(1));
 				flight.setDepartureDate(rs.getDate(2));
-				flight.setDepartureAirportCode(rs.getString(3));
-				flight.setDestinationAirportCode(rs.getString(4));
+//				flight.setDepartureAirport(rs.getString(3));
+//				flight.setDestinationAirport(rs.getString(4));
 				flight.setCost(rs.getDouble(5));
-				flight.setAirplaneId(rs.getInt(6));
+//				flight.setAirplane(rs.getInt(6));
 				flight.setAvailableSeats(rs.getInt(7));
 
 				flights.add(flight);
@@ -244,11 +244,11 @@ public class AirlineHeadquartersDatasourceDao {
 					.prepareStatement("insert into flight (DEPARTURE_DATE, DEPARTURE_AIRPORT_CODE, DESTINATION_AIRPORT_CODE, "
 							+ "COST, AIRPLANE_ID, AVAILABLE_SEATS) values (?, ?, ?, ?, ?, (select num_seats from airplane where ID = ?))");
 			stmt.setDate(1, new Date(flight.getDepartureDate().getTime()));
-			stmt.setString(2, flight.getDepartureAirportCode().toUpperCase());
-			stmt.setString(3, flight.getDestinationAirportCode().toUpperCase());
+//			stmt.setString(2, flight.getDepartureAirport().toUpperCase());
+//			stmt.setString(3, flight.getDestinationAirport().toUpperCase());
 			stmt.setDouble(4, flight.getCost());
-			stmt.setInt(5, flight.getAirplaneId());
-			stmt.setInt(6, flight.getAirplaneId());
+//			stmt.setInt(5, flight.getAirplane());
+//			stmt.setInt(6, flight.getAirplane());
 
 			stmt.executeUpdate();
 
@@ -365,10 +365,10 @@ public class AirlineHeadquartersDatasourceDao {
 			Flight flight = new Flight();
 			flight.setId(rs.getInt(1));
 			flight.setDepartureDate(rs.getDate(2));
-			flight.setDepartureAirportCode(rs.getString(3));
-			flight.setDestinationAirportCode(rs.getString(4));
+//			flight.setDepartureAirport(rs.getString(3));
+//			flight.setDestinationAirport(rs.getString(4));
 			flight.setCost(rs.getDouble(5));
-			flight.setAirplaneId(rs.getInt(6));
+//			flight.setAirplane(rs.getInt(6));
 			flight.setAvailableSeats(rs.getInt(7));
 
 			return flight;
@@ -584,10 +584,10 @@ public class AirlineHeadquartersDatasourceDao {
 				Flight flight = new Flight();
 				flight.setId(rs.getInt(1));
 				flight.setDepartureDate(rs.getDate(2));
-				flight.setDepartureAirportCode(rs.getString(3));
-				flight.setDestinationAirportCode(rs.getString(4));
+//				flight.setDepartureAirport(rs.getString(3));
+//				flight.setDestinationAirport(rs.getString(4));
 				flight.setCost(rs.getDouble(5));
-				flight.setAirplaneId(rs.getInt(6));
+//				flight.setAirplane(rs.getInt(6));
 				flight.setAvailableSeats(rs.getInt(7));
 
 				flights.add(flight);

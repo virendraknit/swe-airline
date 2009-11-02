@@ -283,20 +283,20 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 								+ sdf.format(flight.getDepartureDate()) + ".");
 			}
 
-			if (flight.getDepartureAirportCode() == null) {
+			if (flight.getDepartureAirport() == null) {
 				validationException.addErrorMessage("No departing airport code was provided");
-			} else if (!this.getDao().doesAirportExist(flight.getDepartureAirportCode())) {
+			} else if (!this.getDao().doesAirportExist(flight.getDepartureAirport().getAirportCode())) {
 				validationException.addErrorMessage("The provided departing airport code does not exist");
 			}
 
-			if (flight.getDestinationAirportCode() == null) {
+			if (flight.getDestinationAirport() == null) {
 				validationException.addErrorMessage("No destination airport code was provided");
-			} else if (!this.getDao().doesAirportExist(flight.getDestinationAirportCode())) {
+			} else if (!this.getDao().doesAirportExist(flight.getDestinationAirport().getAirportCode())) {
 				validationException.addErrorMessage("The provided destination airport code does not exist");
 			}
 
-			if (flight.getDepartureAirportCode() != null && flight.getDestinationAirportCode() != null
-					&& flight.getDepartureAirportCode().equalsIgnoreCase(flight.getDestinationAirportCode())) {
+			if (flight.getDepartureAirport() != null && flight.getDestinationAirport() != null
+					&& flight.getDepartureAirport().getAirportCode().equalsIgnoreCase(flight.getDestinationAirport().getAirportCode())) {
 				validationException.addErrorMessage("The destination and departure codes may not be the same");
 			}
 
@@ -304,9 +304,9 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 				validationException.addErrorMessage("The flight cost must be >= $0");
 			}
 
-			if (flight.getAirplaneId() < 0) {
+			if (flight.getAirplane().getId() < 0) {
 				validationException.addErrorMessage("The provided airplane Id is invalid.  The Id must be > 0");
-			} else if (!this.getDao().doesAirplaneExist(flight.getAirplaneId())) {
+			} else if (!this.getDao().doesAirplaneExist(flight.getAirplane().getId())) {
 				validationException.addErrorMessage("The provided airplane Id does not exist.");
 			}
 		}

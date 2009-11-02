@@ -17,16 +17,14 @@ import javax.persistence.Table;
  * Domain object used to represent an Airplane.
  * 
  */
-//@Entity
-//@Table(name="Airplane")
-//@SequenceGenerator(name="AIRPLANE_SEQUENCE", sequenceName="IDENTITY")
+@Entity
+@Table(name="AIRPLANE")
+@SequenceGenerator(name="AIRPLANE_SEQUENCE", sequenceName="IDENTITY")
 public class Airplane implements Serializable {
 
 	private static final long serialVersionUID = -1882443873536037244L;
 
 	// Unique Id of the airplane
-	//@Id
-	//@GeneratedValue(strategy=GenerationType.IDENTITY, generator="AIRPLANE_SEQUENCE")
 	private int id;
 	
 	// Number of seats on the airplane.
@@ -35,6 +33,8 @@ public class Airplane implements Serializable {
 	// The airplane type
 	private String type;
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="AIRPLANE_SEQUENCE")
 	public int getId() {
 		return id;
 	}
@@ -43,6 +43,7 @@ public class Airplane implements Serializable {
 		this.id = id;
 	}
 
+	@Column(name="NUM_SEATS", nullable=false)
 	public int getNumSeats() {
 		return numSeats;
 	}
@@ -51,6 +52,7 @@ public class Airplane implements Serializable {
 		this.numSeats = numSeats;
 	}
 
+	@Column(name="TYPE", nullable=false)
 	public String getType() {
 		return type;
 	}
