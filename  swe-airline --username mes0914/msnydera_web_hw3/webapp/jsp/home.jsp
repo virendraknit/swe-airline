@@ -11,6 +11,13 @@
  	<c:set var="basePath" value="${pageContext.request.contextPath}" />
  	
 	<h1>Airline Application Home</h1>
+	<c:if test="${not empty requestScope.error}">
+ 		<span style="color: red;">
+ 			<ul>
+ 				<li><c:out value="${requestScope.error}" escapeXml="false" /></li>
+ 			</ul>
+ 		</span>
+ 	</c:if>
  	<p>Please choose what you would like to do:</p>
 	<a href="${basePath}/prepareSearch">Search and Reserve Flights</a><br>
 	<a href="${basePath}/jsp/headquartersMenu.jsp">Create Airplanes, Airports, and/or Flights</a>

@@ -3,7 +3,6 @@
  */
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -59,6 +58,7 @@ public class ReserveFlight extends HttpServlet {
 
 		int flightId = Integer.parseInt(request.getParameter("flightId"));
 		String numSeats = request.getParameter("numSeats");
+		int customerId = Integer.parseInt(request.getParameter("customerId"));
 
 		String errorMessage = validateReservation(flightId, numSeats, request);
 
@@ -68,7 +68,7 @@ public class ReserveFlight extends HttpServlet {
 		} else {
 			Reservation reservation;
 			try {
-				reservation = createReservation(flightId, Integer.parseInt(numSeats));
+				reservation = createReservation(flightId, customerId, Integer.parseInt(numSeats));
 
 				request.getSession().setAttribute("savedFlights", null);
 				dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
@@ -92,6 +92,8 @@ public class ReserveFlight extends HttpServlet {
 	 * 
 	 * @param flightId
 	 *            Flight number the reservation should be created for.
+	 * @param customerId
+	 *            Customer the reservation is for.
 	 * @param numSeats
 	 *            The number of seats the reservation is for.
 	 * @return The Reservation created.
@@ -100,11 +102,11 @@ public class ReserveFlight extends HttpServlet {
 	 *             remote EJB or if there is a validation error with the
 	 *             provided data.
 	 */
-	private Reservation createReservation(int flightId, int numSeats) throws ValidationException {
+	private Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException {
 		try {
 			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
 					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
-			return ejbRef.createReservation(flightId, numSeats);
+			return ejbRef.createReservation(flightId, customerId, numSeats);
 		} catch (NamingException e) {
 			e.printStackTrace();
 			ValidationException ve = new ValidationException();

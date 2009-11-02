@@ -22,6 +22,17 @@
 			<td>${requestScope.reservation.id}</td>
 		</tr>
 		<tr>
+			<td class="labelHeading">Reservation Status:</td>
+			<td>
+				<c:set var="statusStyle">green</c:set>
+				<c:if test="${requestScope.reservation.status == 'CANCELED'}">
+					<c:set var="statusStyle">red</c:set>
+				</c:if>
+				
+				<span style="color: ${statusStyle}">${requestScope.reservation.status}</span>
+			</td>
+		</tr>
+		<tr>
 			<td class="labelHeading">Number Seats Reserved:</td>
 			<td>${requestScope.reservation.numSeats}</td>
 		</tr>
@@ -45,8 +56,28 @@
 			<td class="labelHeading">Total Cost:</td>
 			<td>&#36;${requestScope.reservation.totalCost}</td>
 		</tr>
+		<tr>
+			<td class="labelHeading">Customer Name:</td>
+			<td>${requestScope.reservation.customer.name} (Customer Id: ${requestScope.reservation.customer.id})</td>
+		</tr>
+		<tr>
+			<td class="labelHeading">Customer Address:</td>
+			<td>${requestScope.reservation.customer.address}</td>
+		</tr>
+		<tr>
+			<td class="labelHeading">Customer Phone:</td>
+			<td>${requestScope.reservation.customer.phone}</td>
+		</tr>
 	</table>
-			
+	<c:if test="${requestScope.reservation.status != 'CANCELED'}">
+		<form action="${basePath}/cancelReservation">
+			<input type="hidden" name="reservationId" value="${requestScope.reservation.id}" />
+			<input type="submit" value="Cancel Reservation" />
+		</form>
+	</c:if>
+	<c:if test="${requestScope.reservation.status == 'CANCELED'}">
+		<span style="font-style: italic;">** No action available because reservation already canceled.</span>
+	</c:if>
 <%--			
 	<span class="labelHeading">Reservation #:</span> ${requestScope.reservation.id} <br />
 	<span class="labelHeading">Number Seats Reserved:</span> ${requestScope.reservation.numSeats} <br />

@@ -4,7 +4,6 @@
 
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.SearchFilters;
 import msnydera.swe645.exception.DataAccessException;
@@ -75,6 +75,9 @@ public class FlightSearch extends HttpServlet {
 				} else {
 					request.getSession().setAttribute("savedFlights", flights);
 					request.setAttribute("flights", flights);
+
+					Collection<Customer> customers = getCustomers();
+					request.setAttribute("customers", customers);
 				}
 			} else {
 				dispatch = request.getRequestDispatcher("/prepareSearch");
@@ -97,7 +100,7 @@ public class FlightSearch extends HttpServlet {
 	}
 
 	/**
-	 * Communicates wit the remote EJB service to search for flights based on
+	 * Communicates with the remote EJB service to search for flights based on
 	 * the provided SearchFilters object.
 	 * 
 	 * @param searchFilters
@@ -124,6 +127,30 @@ public class FlightSearch extends HttpServlet {
 		} catch (DataAccessException e) {
 			ValidationException ve = new ValidationException();
 			ve.addErrorMessage("Server error occured during search.");
+			throw ve;
+		}
+	}
+
+	/**
+	 * Communicates with the remote EJB service to retrieve all of the
+	 * customers.
+	 * 
+	 * @return Collection of customers.
+	 */
+	private Collection<Customer> getCustomers() throws ValidationException {
+		try {
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
+					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+
+			return ejbRef.getAllCustomers();
+		} catch (NamingException e) {
+			e.printStackTrace();
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured during EJB lookup.");
+			throw ve;
+		} catch (DataAccessException e) {
+			ValidationException ve = new ValidationException();
+			ve.addErrorMessage("Server error occured while retrieving all the customers.");
 			throw ve;
 		}
 	}
