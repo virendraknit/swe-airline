@@ -11,10 +11,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
+import javax.persistence.Query;
 
 import msnydera.swe645.domain.Airplane;
 import msnydera.swe645.domain.Airport;
@@ -44,33 +46,47 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public Collection<Airplane> getAllAirplanes() throws DataAccessException {
-		Connection conn = null;
-		Statement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-			stmt = conn.createStatement();
-
-			ResultSet rs = stmt.executeQuery("select * from AIRPLANE ORDER BY TYPE ASC");
-
-			Collection<Airplane> airplanes = new ArrayList<Airplane>();
-			while (rs.next()) {
-				Airplane airplane = new Airplane();
-				airplane.setId(rs.getInt(1));
-				airplane.setNumSeats(rs.getInt(2));
-				airplane.setType(rs.getString(3));
-
-				airplanes.add(airplane);
-			}
-
-			return airplanes;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
+		Collection<Airplane> airplanes = new ArrayList<Airplane>();
+		
+		Query query = this.entityManager.createQuery("from Airplane ORDER BY TYPE ASC");
+		List<?> airplaneList = query.getResultList();
+		
+		for (Object airplane : airplaneList) {
+			Airplane storedAirplane = (Airplane)airplane;
+			airplanes.add(storedAirplane);
 		}
+		
+		this.entityManager.clear();
+		
+		return airplanes;
+		
+//		Connection conn = null;
+//		Statement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//			stmt = conn.createStatement();
+//
+//			ResultSet rs = stmt.executeQuery("select * from AIRPLANE ORDER BY TYPE ASC");
+//
+//			Collection<Airplane> airplanes = new ArrayList<Airplane>();
+//			while (rs.next()) {
+//				Airplane airplane = new Airplane();
+//				airplane.setId(rs.getInt(1));
+//				airplane.setNumSeats(rs.getInt(2));
+//				airplane.setType(rs.getString(3));
+//
+//				airplanes.add(airplane);
+//			}
+//
+//			return airplanes;
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -82,28 +98,42 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public Collection<String> getAllAirports() throws DataAccessException {
-		Connection conn = null;
-		Statement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-			stmt = conn.createStatement();
-
-			ResultSet rs = stmt.executeQuery("select * from AIRPORT ORDER BY CODE ASC");
-
-			Collection<String> airports = new ArrayList<String>();
-			while (rs.next()) {
-				airports.add(rs.getString(1));
-			}
-
-			return airports;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
+		Collection<String> airports = new ArrayList<String>();
+		
+		Query query = this.entityManager.createQuery("from Airport");
+		List<?> airportList = query.getResultList();
+		
+		for (Object airport : airportList) {
+			Airport storedAirport = (Airport)airport;
+			airports.add(storedAirport.getAirportCode());
 		}
+		
+		this.entityManager.clear();
+		
+		return airports;
+		
+//		Connection conn = null;
+//		Statement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//			stmt = conn.createStatement();
+//
+//			ResultSet rs = stmt.executeQuery("select * from AIRPORT ORDER BY CODE ASC");
+//
+//			Collection<String> airports = new ArrayList<String>();
+//			while (rs.next()) {
+//				airports.add(rs.getString(1));
+//			}
+//
+//			return airports;
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -115,41 +145,56 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException {
-		Connection conn = null;
-		Statement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-			stmt = conn.createStatement();
-
-			ResultSet rs = stmt.executeQuery("select * from FLIGHT");
-
-			Collection<Flight> flights = new ArrayList<Flight>();
-			while (rs.next()) {
-				if (flights == null) {
-					flights = new ArrayList<Flight>();
-				}
-
-				Flight flight = new Flight();
-				flight.setId(rs.getInt(1));
-				flight.setDepartureDate(rs.getDate(2));
-				flight.setDepartureAirportCode(rs.getString(3));
-				flight.setDestinationAirportCode(rs.getString(4));
-				flight.setCost(rs.getDouble(5));
-				flight.setAirplaneId(rs.getInt(6));
-				flight.setAvailableSeats(rs.getInt(7));
-
-				flights.add(flight);
-			}
-
-			return flights;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
+		
+		Collection<Flight> flights = new ArrayList<Flight>();
+		
+		Query query = this.entityManager.createQuery("from Flight ORDER BY DEPARTURE_DATE");
+		List<?> flightList = query.getResultList();
+		
+		for (Object flight : flightList) {
+			Flight storedFlight = (Flight)flight;
+			flights.add(storedFlight);
 		}
+		
+		this.entityManager.clear();
+		
+		return flights;
+		
+//		Connection conn = null;
+//		Statement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//			stmt = conn.createStatement();
+//
+//			ResultSet rs = stmt.executeQuery("select * from FLIGHT");
+//
+//			Collection<Flight> flights = new ArrayList<Flight>();
+//			while (rs.next()) {
+//				if (flights == null) {
+//					flights = new ArrayList<Flight>();
+//				}
+//
+//				Flight flight = new Flight();
+//				flight.setId(rs.getInt(1));
+//				flight.setDepartureDate(rs.getDate(2));
+//				flight.setDepartureAirportCode(rs.getString(3));
+//				flight.setDestinationAirportCode(rs.getString(4));
+//				flight.setCost(rs.getDouble(5));
+//				flight.setAirplaneId(rs.getInt(6));
+//				flight.setAvailableSeats(rs.getInt(7));
+//
+//				flights.add(flight);
+//			}
+//
+//			return flights;
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -165,24 +210,31 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public void createAirplane(int numberOfSeats, String airplaneType) throws DataAccessException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-
-			stmt = conn.prepareStatement("insert into airplane (num_seats, type) values (?, ?)");
-			stmt.setInt(1, numberOfSeats);
-			stmt.setString(2, airplaneType.toUpperCase());
-
-			stmt.executeUpdate();
-			// conn.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
-		}
+		Airplane airplane = new Airplane();
+		airplane.setNumSeats(numberOfSeats);
+		airplane.setType(airplaneType.toUpperCase());
+		
+		this.entityManager.persist(airplane);
+		this.entityManager.clear();
+		
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//
+//			stmt = conn.prepareStatement("insert into airplane (num_seats, type) values (?, ?)");
+//			stmt.setInt(1, numberOfSeats);
+//			stmt.setString(2, airplaneType.toUpperCase());
+//
+//			stmt.executeUpdate();
+//			// conn.commit();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -207,6 +259,7 @@ public class AirlineHeadquartersJpaDao {
 			airport.setAirportCode(airportCode);
 
 			this.entityManager.persist(airport);
+			//this.entityManager.clear();
 			
 //			DbUtils.closeAndFlushEntityPeices(factory, entityManager);
 			
@@ -250,11 +303,20 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public Flight createFlight(Flight flight) throws DataAccessException {
-		createSingleFlight(flight);
-		int flightId = getLastAddedFlightId();
-		Flight savedFlight = getFlight(flightId);
+		Airplane airplane = this.entityManager.find(Airplane.class, flight.getAirplane().getId());
+		this.entityManager.clear();
+		
+		flight.setAvailableSeats(airplane.getNumSeats());
+		
+		this.entityManager.persist(flight);
+		
+		this.entityManager.clear();
+		
+//		createSingleFlight(flight);
+//		int flightId = getLastAddedFlightId();
+//		Flight savedFlight = getFlight(flightId);
 
-		return savedFlight;
+		return flight;
 	}
 
 	/**
@@ -277,11 +339,11 @@ public class AirlineHeadquartersJpaDao {
 					.prepareStatement("insert into flight (DEPARTURE_DATE, DEPARTURE_AIRPORT_CODE, DESTINATION_AIRPORT_CODE, "
 							+ "COST, AIRPLANE_ID, AVAILABLE_SEATS) values (?, ?, ?, ?, ?, (select num_seats from airplane where ID = ?))");
 			stmt.setDate(1, new Date(flight.getDepartureDate().getTime()));
-			stmt.setString(2, flight.getDepartureAirportCode().toUpperCase());
-			stmt.setString(3, flight.getDestinationAirportCode().toUpperCase());
+			stmt.setString(2, flight.getDepartureAirport().getAirportCode().toUpperCase());
+			stmt.setString(3, flight.getDestinationAirport().getAirportCode().toUpperCase());
 			stmt.setDouble(4, flight.getCost());
-			stmt.setInt(5, flight.getAirplaneId());
-			stmt.setInt(6, flight.getAirplaneId());
+			stmt.setInt(5, flight.getAirplane().getId());
+			stmt.setInt(6, flight.getAirplane().getId());
 
 			stmt.executeUpdate();
 
@@ -398,10 +460,21 @@ public class AirlineHeadquartersJpaDao {
 			Flight flight = new Flight();
 			flight.setId(rs.getInt(1));
 			flight.setDepartureDate(rs.getDate(2));
-			flight.setDepartureAirportCode(rs.getString(3));
-			flight.setDestinationAirportCode(rs.getString(4));
+			
+			Airport airport = new Airport();
+			airport.setAirportCode(rs.getString(3));
+			flight.setDepartureAirport(airport);
+			
+			airport = new Airport();
+			airport.setAirportCode(rs.getString(4));
+			
+			flight.setDestinationAirport(airport);
 			flight.setCost(rs.getDouble(5));
-			flight.setAirplaneId(rs.getInt(6));
+			
+			Airplane airplane = new Airplane();
+			airplane.setId(rs.getInt(6));
+			flight.setAirplane(airplane);
+			
 			flight.setAvailableSeats(rs.getInt(7));
 
 			return flight;
@@ -445,34 +518,39 @@ public class AirlineHeadquartersJpaDao {
 	 * Returns true/false on whether or not the provided airport code exists in
 	 * the database. The string is case-insensitive.
 	 * 
-	 * @param destinationAirportCode
+	 * @param airportCode
 	 *            Airport code to check on.
 	 * @return True/False if the provided airport code exists in the database.
 	 * @throws DataAccessException
 	 *             Thrown if a problem occurs while communicating with the
 	 *             database.
 	 */
-	public boolean doesAirportExist(String destinationAirportCode) throws DataAccessException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-
-			stmt = conn.prepareStatement("select code from airport where code = ?");
-			stmt.setString(1, destinationAirportCode.toUpperCase());
-
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return true;
-			}
-			return false;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
-		}
+	public boolean doesAirportExist(String airportCode) throws DataAccessException {
+		Airport airport = this.entityManager.find(Airport.class, airportCode.toUpperCase());
+		this.entityManager.clear();
+		
+		return airport != null;
+		
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//
+//			stmt = conn.prepareStatement("select code from airport where code = ?");
+//			stmt.setString(1, destinationAirportCode.toUpperCase());
+//
+//			ResultSet rs = stmt.executeQuery();
+//			if (rs.next()) {
+//				return true;
+//			}
+//			return false;
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -488,26 +566,31 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public boolean doesAirplaneExist(int airplaneId) throws DataAccessException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-
-			stmt = conn.prepareStatement("select id from AIRPLANE where id = ?");
-			stmt.setInt(1, airplaneId);
-
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return true;
-			}
-			return false;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
-		}
+		Airplane airplane = this.entityManager.find(Airplane.class, airplaneId);
+		this.entityManager.clear();
+		
+		return airplane != null;
+		
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//
+//			stmt = conn.prepareStatement("select id from AIRPLANE where id = ?");
+//			stmt.setInt(1, airplaneId);
+//
+//			ResultSet rs = stmt.executeQuery();
+//			if (rs.next()) {
+//				return true;
+//			}
+//			return false;
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -522,26 +605,31 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public boolean doesFlightExist(int flightId) throws DataAccessException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-
-			stmt = conn.prepareStatement("select id from flight where id = ?");
-			stmt.setInt(1, flightId);
-
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return true;
-			}
-			return false;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
-		}
+		Flight flight = this.entityManager.find(Flight.class, flightId);
+		this.entityManager.clear();
+		
+		return flight != null;
+		
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//
+//			stmt = conn.prepareStatement("select id from flight where id = ?");
+//			stmt.setInt(1, flightId);
+//
+//			ResultSet rs = stmt.executeQuery();
+//			if (rs.next()) {
+//				return true;
+//			}
+//			return false;
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -556,24 +644,29 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public int getNumberOfAvailableSeats(int flightId) throws DataAccessException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-
-		try {
-			conn = DbUtils.getConnection();
-
-			stmt = conn.prepareStatement("select available_seats from flight where id = ?");
-			stmt.setInt(1, flightId);
-
-			ResultSet rs = stmt.executeQuery();
-			rs.next();
-			return rs.getInt(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
-		}
+		Flight flight = this.entityManager.find(Flight.class, flightId);
+		this.entityManager.clear();
+		
+		return flight.getAvailableSeats();
+		
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//
+//			stmt = conn.prepareStatement("select available_seats from flight where id = ?");
+//			stmt.setInt(1, flightId);
+//
+//			ResultSet rs = stmt.executeQuery();
+//			rs.next();
+//			return rs.getInt(1);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
 	/**
@@ -591,51 +684,110 @@ public class AirlineHeadquartersJpaDao {
 	 *             database.
 	 */
 	public Collection<Flight> search(SearchFilters searchFilters) throws DataAccessException {
-		Collection<Flight> flights = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
+		String sQuery = generateJpaSearchQuery(searchFilters);
+		Query query = this.entityManager.createQuery(sQuery);
 
-		try {
-			conn = DbUtils.getConnection();
-
-			String query = generateSearchQuery(searchFilters);
-			stmt = conn.prepareStatement(query);
-
-			if (searchFilters.getDateOfTrip() != null) {
-				stmt.setDate(1, new Date(searchFilters.getDateOfTrip().getTime()));
-			} else {
-				stmt.setDate(1, new Date(new java.util.Date().getTime()));
-			}
-
-			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				if (flights == null) {
-					flights = new ArrayList<Flight>();
-				}
-
-				Flight flight = new Flight();
-				flight.setId(rs.getInt(1));
-				flight.setDepartureDate(rs.getDate(2));
-				flight.setDepartureAirportCode(rs.getString(3));
-				flight.setDestinationAirportCode(rs.getString(4));
-				flight.setCost(rs.getDouble(5));
-				flight.setAirplaneId(rs.getInt(6));
-				flight.setAvailableSeats(rs.getInt(7));
-
-				flights.add(flight);
-			}
-
-			return flights;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DataAccessException(e.getMessage(), e);
-		} finally {
-			closeDbObjects(stmt, conn);
+		if (searchFilters.getDateOfTrip() != null) {
+			//departDate
+			query.setParameter("departDate", new Date(searchFilters.getDateOfTrip().getTime()));
+			//stmt.setDate(1, new Date(searchFilters.getDateOfTrip().getTime()));
+		} else {
+			query.setParameter("departDate", new Date(new java.util.Date().getTime()));
+//			stmt.setDate(1, new Date(new java.util.Date().getTime()));
 		}
+		
+		List<?> flightList = query.getResultList();
+
+		Collection<Flight> flights = new ArrayList<Flight>();
+		
+		for (Object flight : flightList) {
+			Flight storedFlight = (Flight)flight;
+			flights.add(storedFlight);
+		}
+		
+		this.entityManager.clear();
+		
+		return flights;
+		
+		
+//		Collection<Flight> flights = null;
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//
+//		try {
+//			conn = DbUtils.getConnection();
+//
+//			String query = generateSearchQuery(searchFilters);
+//			stmt = conn.prepareStatement(query);
+//
+//			if (searchFilters.getDateOfTrip() != null) {
+//				stmt.setDate(1, new Date(searchFilters.getDateOfTrip().getTime()));
+//			} else {
+//				stmt.setDate(1, new Date(new java.util.Date().getTime()));
+//			}
+//
+//			ResultSet rs = stmt.executeQuery();
+//
+//			while (rs.next()) {
+//				if (flights == null) {
+//					flights = new ArrayList<Flight>();
+//				}
+//
+//				Flight flight = new Flight();
+//				flight.setId(rs.getInt(1));
+//				flight.setDepartureDate(rs.getDate(2));
+//				flight.setDepartureAirportCode(rs.getString(3));
+//				flight.setDestinationAirportCode(rs.getString(4));
+//				flight.setCost(rs.getDouble(5));
+//				flight.setAirplaneId(rs.getInt(6));
+//				flight.setAvailableSeats(rs.getInt(7));
+//
+//				flights.add(flight);
+//			}
+//
+//			return flights;
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			throw new DataAccessException(e.getMessage(), e);
+//		} finally {
+//			closeDbObjects(stmt, conn);
+//		}
 	}
 
+	/**
+	 * Utility method used to create the search string based on the filters
+	 * provided to run a search for flights on.
+	 * 
+	 * @param searchFilters
+	 *            Filters to use when searching for flights.
+	 * @return Query string to use to search for flights.
+	 */
+	private String generateJpaSearchQuery(SearchFilters searchFilters) {
+		String query = "select f from Flight AS f ";
+		String clause = "";
+
+		if (searchFilters.getDateOfTrip() != null) {
+			clause += " WHERE f.departureDate = :departDate";
+		} else {
+			/*
+			 * If no date is provided, we still want to limit the results
+			 * because we don't want to return flights that have already
+			 * occurred.
+			 */
+			clause += " WHERE f.departureDate >= :departDate";
+		}
+
+		if (searchFilters.getDepartureLocation() != null && !searchFilters.getDepartureLocation().trim().equals("")) {
+			clause += " AND f.departureAirport = '" + searchFilters.getDepartureLocation() + "'";
+		}
+		if (searchFilters.getDestinationLocation() != null && !searchFilters.getDestinationLocation().trim().equals("")) {
+			clause += " AND f.destinationAirport = '" + searchFilters.getDestinationLocation() + "'";
+		}
+
+		return query + clause + " ORDER BY f.departureAirport, f.destinationAirport ASC";
+	}
+	
 	/**
 	 * Utility method used to create the search string based on the filters
 	 * provided to run a search for flights on.

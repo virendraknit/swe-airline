@@ -3,10 +3,11 @@
  */
 package msnydera.swe645.service.ejb;
 
-
 import java.util.Collection;
 
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
@@ -25,6 +26,9 @@ import msnydera.swe645.service.impl.AirlineHeadquartersServiceImpl;
 @Stateless
 public class TravelAgentEjb implements TravelAgentEjbRemote {
 	private AirlineHeadquartersService service;
+
+	@PersistenceContext(unitName = "msnyderaPersistence")
+	private EntityManager entityManager;
 
 	/**
 	 * Default constructor.
@@ -66,9 +70,7 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	 * @return The service implementation to use.
 	 */
 	public AirlineHeadquartersService getService() {
-		if (this.service == null) {
-			this.service = new AirlineHeadquartersServiceImpl();
-		}
+		this.service = new AirlineHeadquartersServiceImpl(this.entityManager);
 
 		return this.service;
 	}
