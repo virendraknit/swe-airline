@@ -31,11 +31,11 @@
 		</tr>
 		<tr>
 			<td class="labelHeading">Departing Airport Code:</td>
-			<td>${requestScope.reservation.flight.departureAirportCode}</td>
+			<td>${requestScope.reservation.flight.departureAirport.airportCode}</td>
 		</tr>
 		<tr>
 			<td class="labelHeading">Destination Airport Code:</td>
-			<td>${requestScope.reservation.flight.destinationAirportCode}</td>
+			<td>${requestScope.reservation.flight.destinationAirport.airportCode}</td>
 		</tr>
 		<tr>
 			<td class="labelHeading">Flight Date:</td>
