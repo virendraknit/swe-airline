@@ -69,6 +69,13 @@
 			</c:forEach>
  		</select>
  		<br />
+ 		What Customer ID is the reservation for? <span style="font-style: italic;">(see customer details in table below)</span>
+ 		<select name="customerId">
+ 			<c:forEach var="customer" items="${requestScope.customers}">
+ 				<option>${customer.id }</option>
+			</c:forEach>
+ 		</select>
+ 		<br />
  		<label>Number of Seats</label>
  		<input type="text" name="numSeats" />
  		<br />
@@ -77,5 +84,14 @@
  	<br />
  	<a href="${basePath}/prepareSearch">Run New Search</a><br>
 	<a href="${basePath}/jsp/home.jsp">Main Menu</a>
+	<br />
+	<br />
+	
+	<display:table name="requestScope.customers" cellspacing="10px" class="searchResults">
+ 		<display:column property="id" title="Customer ID" />
+ 		<display:column property="name" title="Name" />
+ 		<display:column property="address" title="Address" />
+ 		<display:column property="phone" title="Phone" />
+ 	</display:table>
 </body>
 </html>

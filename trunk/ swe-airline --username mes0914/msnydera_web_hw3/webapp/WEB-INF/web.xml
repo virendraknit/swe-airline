@@ -91,6 +91,15 @@
 		<servlet-class>
 		msnydera.swe645.web.servlet.CreateFlight</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		cancelReservation</display-name>
+		<servlet-name>cancelReservation</servlet-name>
+		<servlet-class>
+		msnydera.swe645.web.servlet.CancelReservation</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>airlineHome</servlet-name>
 		<url-pattern>/airlineHome</url-pattern>
@@ -130,6 +139,10 @@
 	<servlet-mapping>
 		<servlet-name>createFlight</servlet-name>
 		<url-pattern>/createFlight</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>cancelReservation</servlet-name>
+		<url-pattern>/cancelReservation</url-pattern>
 	</servlet-mapping>
 	
 	<welcome-file-list>
