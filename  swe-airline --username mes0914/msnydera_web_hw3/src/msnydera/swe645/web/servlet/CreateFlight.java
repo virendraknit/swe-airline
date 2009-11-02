@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.Airplane;
+import msnydera.swe645.domain.Airport;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -123,8 +125,15 @@ public class CreateFlight extends HttpServlet {
 	 */
 	private Flight getFlight(HttpServletRequest request) throws ParseException, ValidationException {
 		Flight flight = new Flight();
-		flight.setDepartureAirportCode(request.getParameter("departureAirport"));
-		flight.setDestinationAirportCode(request.getParameter("destinationAirport"));
+		
+		Airport airport = new Airport();
+		airport.setAirportCode(request.getParameter("departureAirport"));
+		flight.setDepartureAirport(airport);
+		
+		airport = new Airport();
+		airport.setAirportCode(request.getParameter("destinationAirport"));
+		flight.setDestinationAirport(airport);
+		
 		flight.setDepartureDate(getDateOfTrip(request));
 
 		if (!NumberUtils.isValidCurrency(request.getParameter("cost"))) {
@@ -134,7 +143,11 @@ public class CreateFlight extends HttpServlet {
 		}
 
 		flight.setCost(Double.parseDouble(request.getParameter("cost")));
-		flight.setAirplaneId(Integer.parseInt(request.getParameter("airplaneId")));
+		
+		Airplane airplane = new Airplane();
+		airplane.setId(Integer.parseInt(request.getParameter("airplaneId")));
+		
+		flight.setAirplane(airplane);
 
 		return flight;
 	}

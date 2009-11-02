@@ -50,12 +50,12 @@
  	
  	<display:table name="requestScope.flights" cellspacing="10px" class="searchResults">
  		<display:column property="id" title="Flight #" />
- 		<display:column property="departureAirportCode" title="Depart Code" />
- 		<display:column property="destinationAirportCode" title="Dest Code" />
+ 		<display:column property="departureAirport.airportCode" title="Depart Code" />
+ 		<display:column property="destinationAirport.airportCode" title="Dest Code" />
  		<display:column property="departureDate" format="{0,date,MM-dd-yyyy}" title="Flight Date" />
  		<display:column property="cost" format="$ {0,number,000.00}" title="Cost" />
  		<display:column property="availableSeats" title="Avail Seats" />
- 		<display:column property="airplaneId" title="Airplane Id" />
+ 		<display:column property="airplane.id" title="Airplane Id" />
  	</display:table>
  	
 	<br />
