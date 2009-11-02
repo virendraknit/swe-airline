@@ -3,11 +3,11 @@
  */
 package msnydera.swe645.service.ejb;
 
-
 import java.util.Collection;
 
 import javax.ejb.Remote;
 
+import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.domain.SearchFilters;
@@ -43,6 +43,8 @@ public interface TravelAgentEjbRemote {
 	 * 
 	 * @param flightId
 	 *            Flight number the reservation should be created for.
+	 * @param customerId
+	 *            Customer the reservation is for.
 	 * @param numSeats
 	 *            The number of seats the reservation is for.
 	 * @return The Reservation created.
@@ -52,8 +54,8 @@ public interface TravelAgentEjbRemote {
 	 * @throws DataAccessException
 	 *             Thrown if there is an error when creating the reservation.
 	 */
-	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException;
-	
+	public Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException, DataAccessException;
+
 	/**
 	 * Returns all airports that are in the system.
 	 * 
@@ -62,4 +64,39 @@ public interface TravelAgentEjbRemote {
 	 *             Thrown if there is an error when retrieving the airports.
 	 */
 	public Collection<String> getAllAirports() throws DataAccessException;
+
+	/**
+	 * Returns all customers that are in the system.
+	 * 
+	 * @return All the customers.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when retrieving the customers.
+	 */
+	public Collection<Customer> getAllCustomers() throws DataAccessException;
+
+	/**
+	 * Creates an customer in the system with the provided information.
+	 * 
+	 * @param customer
+	 *            The customer to create.
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors with the provided code.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when creating the airport.
+	 * @return Customer The created customer.
+	 */
+	public Customer createCustomer(Customer customer) throws ValidationException, DataAccessException;
+
+	/**
+	 * Cancels a reservation containing the provided reservationId
+	 * 
+	 * @param reservationId
+	 *            The Id of the reservation to cancel
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors with the provided code.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when creating the airport.
+	 * @return Customer The created customer.
+	 */
+	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException;
 }

@@ -3,10 +3,10 @@
  */
 package msnydera.swe645.service;
 
-
 import java.util.Collection;
 
 import msnydera.swe645.domain.Airplane;
+import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.domain.SearchFilters;
@@ -46,7 +46,16 @@ public interface AirlineHeadquartersService {
 	 *             Thrown if there is an error when retrieving the airports.
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException;
-	
+
+	/**
+	 * Returns all customers that are in the system.
+	 * 
+	 * @return All the customers.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when retrieving the customers.
+	 */
+	public Collection<Customer> getAllCustomers() throws DataAccessException;
+
 	/**
 	 * Searches for Flights based on the provided searchFilters.
 	 * 
@@ -89,6 +98,19 @@ public interface AirlineHeadquartersService {
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException;
 
 	/**
+	 * Creates an customer in the system with the provided information.
+	 * 
+	 * @param customer
+	 *            The customer to create.
+	 * @return Customer The created customer
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors with the provided code.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when creating the airport.
+	 */
+	public Customer createCustomer(Customer customer) throws ValidationException, DataAccessException;
+
+	/**
 	 * Creates a flight in the system with the provided information.
 	 * 
 	 * @param flight
@@ -108,6 +130,8 @@ public interface AirlineHeadquartersService {
 	 * 
 	 * @param flightId
 	 *            Flight number the reservation should be created for.
+	 * @param customerId
+	 *            Customer the reservation is for.
 	 * @param numSeats
 	 *            The number of seats the reservation is for.
 	 * @return The Reservation created.
@@ -117,6 +141,20 @@ public interface AirlineHeadquartersService {
 	 * @throws DataAccessException
 	 *             Thrown if there is an error when creating the reservation.
 	 */
-	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException;
+	public Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException,
+			DataAccessException;
+
+	/**
+	 * Cancels a reservation containing the provided reservationId
+	 * 
+	 * @param reservationId
+	 *            The Id of the reservation to cancel
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors with the provided code.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when creating the airport.
+	 * @return Customer The created customer.
+	 */
+	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException;
 
 }

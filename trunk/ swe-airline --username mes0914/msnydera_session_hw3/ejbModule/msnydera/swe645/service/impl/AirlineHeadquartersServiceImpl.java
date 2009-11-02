@@ -3,7 +3,6 @@
  */
 package msnydera.swe645.service.impl;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
@@ -11,6 +10,7 @@ import javax.persistence.EntityManager;
 
 import msnydera.swe645.dao.AirlineHeadquartersJpaDao;
 import msnydera.swe645.domain.Airplane;
+import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.domain.SearchFilters;
@@ -27,13 +27,19 @@ import msnydera.swe645.util.DateUtil;
  */
 public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersService {
 	private AirlineHeadquartersJpaDao dao;
-	
+
 	private EntityManager entityManager;
-	
-	public AirlineHeadquartersServiceImpl(){
-		
+
+	public AirlineHeadquartersServiceImpl() {
+
 	}
-	
+
+	/**
+	 * Constructor to set the EntityManager to use in the DAO.
+	 * 
+	 * @param entityManager
+	 *            EntityManager the DAO should use.
+	 */
 	public AirlineHeadquartersServiceImpl(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
@@ -63,6 +69,15 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException {
 		return this.getDao().getAllFlights();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see msnydera.swe645.service.AirlineHeadquartersService#getAllCustomers()
+	 */
+	public Collection<Customer> getAllCustomers() throws DataAccessException {
+		return this.getDao().getAllCustomers();
 	}
 
 	/**
@@ -104,6 +119,20 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	}
 
 	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createCustomer(Customer)<br>
+	 * <br>
+	 *      Fails validation if the customers name, address, and/or phone are
+	 *      empty or null. Also fails if the provided customer has an ID set
+	 *      that already exists in the system.
+	 * 
+	 */
+	public Customer createCustomer(Customer customer) throws ValidationException, DataAccessException {
+		validateCustomer(customer);
+
+		return this.getDao().createCustomer(customer);
+	}
+
+	/**
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createFlight(gmu.swe.
 	 *      domain.Flight)<br>
 	 * <br>
@@ -126,24 +155,71 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 
 	/**
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createReservation(int,
-	 *      int)<br>
+	 *      int, int)<br>
 	 * <br>
 	 *      Fails validation if the provided flightId < 0 or does not exist in
 	 *      the system. Also fails if the numSeats < 1 or if the flight doesn't
 	 *      have enough available seats.
 	 */
-	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException {
-		validateReservationData(flightId, numSeats);
+	public Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException,
+			DataAccessException {
+		validateReservationData(flightId, customerId, numSeats);
 
-		return this.getDao().createReservation(flightId, numSeats);
+		return this.getDao().createReservation(flightId, customerId, numSeats);
+	}
+
+	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#createReservation(int)<br>
+	 * <br>
+	 *      Fails validation if the provided reservationId < 0, if it doesn't
+	 *      exist in the system, or if it is already canceled.
+	 */
+	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException {
+		validateReservationId(reservationId);
+
+		return this.getDao().cancelReservation(reservationId);
+	}
+
+	/**
+	 * Fails validation if the provided reservationId < 0, if it doesn't exist
+	 * in the system, or if it is already canceled.
+	 * 
+	 * @param reservationId
+	 *            Field to validate
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when looking up values in the
+	 *             system.
+	 */
+	private void validateReservationId(int reservationId) throws ValidationException, DataAccessException {
+		ValidationException validationException = new ValidationException();
+
+		if (reservationId < 0) {
+			validationException.addErrorMessage("An invalid reservation Id was provided, it must be >= 0");
+		} else if (!this.getDao().doesReservationExist(reservationId)) {
+			validationException.addErrorMessage("The provided reservation Id does not exist");
+		}
+
+		Reservation reservation = this.getDao().getReservation(reservationId);
+		if (reservation.getStatus().equalsIgnoreCase("CANCELED")) {
+			validationException.addErrorMessage("The reservation has already been canceled");
+		}
+
+		if (validationException.hasErrors()) {
+			throw validationException;
+		}
 	}
 
 	/**
 	 * Fails validation if the provided flightId < 0 or does not exist in the
+	 * system. Fails if the provided customerId < 0 or does not exist in the
 	 * system. Also fails if the numSeats < 1 or if the flight doesn't have
 	 * enough available seats.
 	 * 
 	 * @param flightId
+	 *            Field to validate
+	 * @param customerId
 	 *            Field to validate
 	 * @param numSeats
 	 *            Field to validate
@@ -153,13 +229,19 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 *             Thrown if there is an error when looking up values in the
 	 *             system.
 	 */
-	private void validateReservationData(int flightId, int numSeats) throws ValidationException, DataAccessException {
+	private void validateReservationData(int flightId, int customerId, int numSeats) throws ValidationException,
+			DataAccessException {
 		ValidationException validationException = new ValidationException();
 
 		if (flightId < 0) {
 			validationException.addErrorMessage("An invalid flight Id was provided, it must be >= 0");
 		} else if (!this.getDao().doesFlightExist(flightId)) {
 			validationException.addErrorMessage("The provided flight Id does not exist");
+		}
+		if (customerId < 0) {
+			validationException.addErrorMessage("An invalid Customer Id was provided, it must be >= 0");
+		} else if (!this.getDao().doesCustomerExist(customerId)) {
+			validationException.addErrorMessage("The provided Customer Id does not exist");
 		}
 		if (numSeats < 1) {
 			validationException.addErrorMessage("An invalid number of seats was provided, it must be >= 1");
@@ -168,6 +250,38 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 			if (numAvailableSeats < numSeats) {
 				validationException.addErrorMessage("The flight does not have enough seats, it only has "
 						+ numAvailableSeats + " seats available");
+			}
+		}
+
+		if (validationException.hasErrors()) {
+			throw validationException;
+		}
+	}
+
+	/**
+	 * Fails validation if the provided customer is null, or if the name,
+	 * address, or phone are empty or null. Also fails if the provided customer
+	 * has an ID set that already exists in the system.
+	 * 
+	 * @param customer
+	 *            Customer to validate
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors.
+	 */
+	private void validateCustomer(Customer customer) throws ValidationException {
+		ValidationException validationException = new ValidationException();
+
+		if (customer == null) {
+			validationException.addErrorMessage("The provided Customer object was null.");
+		} else {
+			if (customer.getName() == null || customer.getName().trim().equals("")) {
+				validationException.addErrorMessage("A name must be provided for the customer");
+			}
+			if (customer.getAddress() == null || customer.getAddress().trim().equals("")) {
+				validationException.addErrorMessage("An address must be provided for the customer");
+			}
+			if (customer.getPhone() == null || customer.getPhone().trim().equals("")) {
+				validationException.addErrorMessage("A phone number must be provided for the customer");
 			}
 		}
 
@@ -295,8 +409,10 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 				validationException.addErrorMessage("The provided destination airport code does not exist");
 			}
 
-			if (flight.getDepartureAirport() != null && flight.getDestinationAirport() != null
-					&& flight.getDepartureAirport().getAirportCode().equalsIgnoreCase(flight.getDestinationAirport().getAirportCode())) {
+			if (flight.getDepartureAirport() != null
+					&& flight.getDestinationAirport() != null
+					&& flight.getDepartureAirport().getAirportCode().equalsIgnoreCase(
+							flight.getDestinationAirport().getAirportCode())) {
 				validationException.addErrorMessage("The destination and departure codes may not be the same");
 			}
 
@@ -325,9 +441,9 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 * @return DAO to use.
 	 */
 	public AirlineHeadquartersJpaDao getDao() {
-		//if (this.dao == null) {
-			this.dao = new AirlineHeadquartersJpaDao(this.entityManager);
-		//}
+		// if (this.dao == null) {
+		this.dao = new AirlineHeadquartersJpaDao(this.entityManager);
+		// }
 		return this.dao;
 	}
 

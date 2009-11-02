@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -36,6 +35,12 @@ public class Reservation implements Serializable {
 	
 	// The flight the reservation is for
 	private Flight flight;
+	
+	// Status of the reservation (i.e. RESERVED or CANCELED)
+	private String status;
+	
+	// Customer that the reservation is for
+	private Customer customer;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="RESERVATION_SEQUENCE")
@@ -70,5 +75,22 @@ public class Reservation implements Serializable {
 		}
 		
 		return 0;
+	}
+	
+	@Column(name="STATUS", nullable=false)
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	@ManyToOne
+	@JoinColumn(name="CUSTOMER_ID", nullable=false)
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 }
