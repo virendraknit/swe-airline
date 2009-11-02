@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.domain.SearchFilters;
@@ -39,12 +40,20 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see gmu.swe.service.ejb.TravelAgentEjbRemote#createReservation(int, int)
+	 * @see gmu.swe.service.ejb.TravelAgentEjbRemote#createReservation(int, int, int)
 	 */
-	public Reservation createReservation(int flightId, int numSeats) throws ValidationException, DataAccessException {
-		return this.getService().createReservation(flightId, numSeats);
+	public Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException, DataAccessException {
+		return this.getService().createReservation(flightId, customerId, numSeats);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see msnydera.swe645.service.ejb.TravelAgentEjbRemote#cancelReservation(int)
+	 */
+	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException {
+		return this.getService().cancelReservation(reservationId);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -64,7 +73,23 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	public Collection<String> getAllAirports() throws DataAccessException {
 		return this.getService().getAllAirports();
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see msnydera.swe645.service.ejb.TravelAgentEjbRemote#getAllCustomers()
+	 */
+	public Collection<Customer> getAllCustomers() throws DataAccessException {
+		return this.getService().getAllCustomers();
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see msnydera.swe645.service.ejb.TravelAgentEjbRemote#createCustomer(msnydera.swe645.domain.Customer)
+	 */
+	public Customer createCustomer(Customer customer) throws ValidationException, DataAccessException {
+		return this.getService().createCustomer(customer);
+	}
+	
 	/**
 	 * 
 	 * @return The service implementation to use.
@@ -85,5 +110,4 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	public void setService(AirlineHeadquartersService service) {
 		this.service = service;
 	}
-
 }
