@@ -19,7 +19,9 @@
  		</span>
  	</c:if>
  	<p>Please choose what you would like to do:</p>
+ 	<a href="${basePath}/prepareCreateCustomer">Create New Customer</a><br>
 	<a href="${basePath}/prepareSearch">Search and Reserve Flights</a><br>
+	<a href="${basePath}/viewReservations">View/Cancel Reservations</a><br>
 	<a href="${basePath}/jsp/headquartersMenu.jsp">Create Airplanes, Airports, and/or Flights</a>
 	
 </body>

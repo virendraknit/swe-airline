@@ -89,7 +89,8 @@
 --%>
 			
  	<br />
- 	<a href="${basePath}/prepareSearch">Run New Search</a><br>
+ 	<a href="${basePath}/prepareSearch">Run Search</a><br>
+ 	<a href="${basePath}/viewReservations">View All Reservations</a><br>
 	<a href="${basePath}/jsp/home.jsp">Main Menu</a>
 </body>
 </html>
