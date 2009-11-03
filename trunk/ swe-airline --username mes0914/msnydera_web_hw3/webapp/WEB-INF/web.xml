@@ -100,6 +100,42 @@
 		<servlet-class>
 		msnydera.swe645.web.servlet.CancelReservation</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		viewReservations</display-name>
+		<servlet-name>viewReservations</servlet-name>
+		<servlet-class>
+		msnydera.swe645.web.servlet.ViewReservations</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		showReservation</display-name>
+		<servlet-name>showReservation</servlet-name>
+		<servlet-class>
+		msnydera.swe645.web.servlet.ShowReservation</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		prepareCreateCustomer</display-name>
+		<servlet-name>prepareCreateCustomer</servlet-name>
+		<servlet-class>
+		msnydera.swe645.web.servlet.PrepareCreateCustomer</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		createCustomer</display-name>
+		<servlet-name>createCustomer</servlet-name>
+		<servlet-class>
+		msnydera.swe645.web.servlet.CreateCustomer</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>airlineHome</servlet-name>
 		<url-pattern>/airlineHome</url-pattern>
@@ -144,7 +180,22 @@
 		<servlet-name>cancelReservation</servlet-name>
 		<url-pattern>/cancelReservation</url-pattern>
 	</servlet-mapping>
-	
+	<servlet-mapping>
+		<servlet-name>viewReservations</servlet-name>
+		<url-pattern>/viewReservations</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>showReservation</servlet-name>
+		<url-pattern>/showReservation</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>prepareCreateCustomer</servlet-name>
+		<url-pattern>/prepareCreateCustomer</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>createCustomer</servlet-name>
+		<url-pattern>/createCustomer</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>/jsp/home.jsp</welcome-file>
 	</welcome-file-list>
