@@ -80,6 +80,14 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 		return this.getDao().getAllCustomers();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see msnydera.swe645.service.AirlineHeadquartersService#getAllReservations()
+	 */
+	public Collection<Reservation> getAllReservations() throws DataAccessException {
+		return this.getDao().getAllReservations();
+	}
+	
 	/**
 	 * @see gmu.swe.service.impl.AirlineHeadquartersService#search(msnydera.swe645.domain.SearchFilters)
 	 * 
@@ -175,14 +183,57 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 	 *      exist in the system, or if it is already canceled.
 	 */
 	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException {
-		validateReservationId(reservationId);
+		validateCancelReservationId(reservationId);
 
 		return this.getDao().cancelReservation(reservationId);
 	}
 
 	/**
+	 * @see gmu.swe.service.impl.AirlineHeadquartersService#getReservation(int)<br>
+	 * <br>
+	 *      Fails validation if the provided reservationId < 0 or if it doesn't
+	 *      exist in the system.
+	 */
+	public Reservation getReservation(int reservationId) throws ValidationException, DataAccessException{
+		validateReservationId(reservationId);
+		
+		return this.getDao().getReservation(reservationId);
+	}
+	
+	/**
 	 * Fails validation if the provided reservationId < 0, if it doesn't exist
 	 * in the system, or if it is already canceled.
+	 * 
+	 * @param reservationId
+	 *            Field to validate
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when looking up values in the
+	 *             system.
+	 */
+	private void validateCancelReservationId(int reservationId) throws ValidationException, DataAccessException {
+		ValidationException validationException = new ValidationException();
+
+		if (reservationId < 0) {
+			validationException.addErrorMessage("An invalid reservation Id was provided, it must be >= 0");
+		} else if (!this.getDao().doesReservationExist(reservationId)) {
+			validationException.addErrorMessage("The provided reservation Id does not exist");
+		}
+
+		Reservation reservation = this.getDao().getReservation(reservationId);
+		if (reservation.getStatus().equalsIgnoreCase("CANCELED")) {
+			validationException.addErrorMessage("The reservation has already been canceled");
+		}
+
+		if (validationException.hasErrors()) {
+			throw validationException;
+		}
+	}
+	
+	/**
+	 * Fails validation if the provided reservationId < 0 or if it doesn't exist
+	 * in the system.
 	 * 
 	 * @param reservationId
 	 *            Field to validate
@@ -199,11 +250,6 @@ public class AirlineHeadquartersServiceImpl implements AirlineHeadquartersServic
 			validationException.addErrorMessage("An invalid reservation Id was provided, it must be >= 0");
 		} else if (!this.getDao().doesReservationExist(reservationId)) {
 			validationException.addErrorMessage("The provided reservation Id does not exist");
-		}
-
-		Reservation reservation = this.getDao().getReservation(reservationId);
-		if (reservation.getStatus().equalsIgnoreCase("CANCELED")) {
-			validationException.addErrorMessage("The reservation has already been canceled");
 		}
 
 		if (validationException.hasErrors()) {

@@ -56,6 +56,14 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	
 	/*
 	 * (non-Javadoc)
+	 * @see msnydera.swe645.service.ejb.TravelAgentEjbRemote#getReservation(int)
+	 */
+	public Reservation getReservation(int reservationId) throws ValidationException, DataAccessException {
+		return this.getService().getReservation(reservationId);
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * gmu.swe.service.ejb.TravelAgentEjbRemote#search(gmu.swe.domain.SearchFilters
@@ -80,6 +88,14 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	 */
 	public Collection<Customer> getAllCustomers() throws DataAccessException {
 		return this.getService().getAllCustomers();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see msnydera.swe645.service.ejb.TravelAgentEjbRemote#getAllReservations()
+	 */
+	public Collection<Reservation> getAllReservations() throws DataAccessException {
+		return this.getService().getAllReservations();
 	}
 
 	/*

@@ -43,7 +43,7 @@ public interface AirlineHeadquartersService {
 	 * 
 	 * @return All the flights.
 	 * @throws DataAccessException
-	 *             Thrown if there is an error when retrieving the airports.
+	 *             Thrown if there is an error when retrieving the flights.
 	 */
 	public Collection<Flight> getAllFlights() throws DataAccessException;
 
@@ -56,6 +56,15 @@ public interface AirlineHeadquartersService {
 	 */
 	public Collection<Customer> getAllCustomers() throws DataAccessException;
 
+	/**
+	 * Returns all the reservations that are in the system.
+	 * 
+	 * @return All the reservations
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when retrieving the reservations.
+	 */
+	public Collection<Reservation> getAllReservations() throws DataAccessException;
+	
 	/**
 	 * Searches for Flights based on the provided searchFilters.
 	 * 
@@ -104,9 +113,9 @@ public interface AirlineHeadquartersService {
 	 *            The customer to create.
 	 * @return Customer The created customer
 	 * @throws ValidationException
-	 *             Thrown if there are validation errors with the provided code.
+	 *             Thrown if there are validation errors with the provided customer.
 	 * @throws DataAccessException
-	 *             Thrown if there is an error when creating the airport.
+	 *             Thrown if there is an error when creating the customer.
 	 */
 	public Customer createCustomer(Customer customer) throws ValidationException, DataAccessException;
 
@@ -150,11 +159,23 @@ public interface AirlineHeadquartersService {
 	 * @param reservationId
 	 *            The Id of the reservation to cancel
 	 * @throws ValidationException
-	 *             Thrown if there are validation errors with the provided code.
+	 *             Thrown if there are validation errors with the provided Id.
 	 * @throws DataAccessException
-	 *             Thrown if there is an error when creating the airport.
-	 * @return Customer The created customer.
+	 *             Thrown if there is an error when canceling the reservation.
+	 * @return The canceled reservation.
 	 */
 	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException;
 
+	/**
+	 * Gets the reservation associated with the provided reservationId
+	 * 
+	 * @param reservationId
+	 *            The Id of the reservation to get
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors with the provided Id.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when getting the reservation.
+	 * @return The reservation.
+	 */
+	public Reservation getReservation(int reservationId) throws ValidationException, DataAccessException;
 }
