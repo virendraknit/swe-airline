@@ -77,6 +77,7 @@ public class FlightSearch extends HttpServlet {
 					request.setAttribute("flights", flights);
 
 					Collection<Customer> customers = getCustomers();
+					request.getSession().setAttribute("customers", customers);
 					request.setAttribute("customers", customers);
 				}
 			} else {

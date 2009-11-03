@@ -13,7 +13,6 @@ import msnydera.swe645.constant.Constants;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
-import msnydera.swe645.service.ejb.HeadquartersEjbRemote;
 import msnydera.swe645.service.ejb.TravelAgentEjbRemote;
 import msnydera.swe645.util.NumberUtils;
 import msnydera.swe645.util.ResourceUtil;
