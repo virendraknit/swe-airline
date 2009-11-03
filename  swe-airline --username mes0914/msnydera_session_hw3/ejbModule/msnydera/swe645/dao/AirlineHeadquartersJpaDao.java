@@ -136,6 +136,30 @@ public class AirlineHeadquartersJpaDao {
 	}
 
 	/**
+	 * Returns all of the reservations in the database.
+	 * 
+	 * @return All of the reservations.
+	 * @throws DataAccessException
+	 *             Thrown if a problem occurs while communicating with the
+	 *             database.
+	 */
+	public Collection<Reservation> getAllReservations() throws DataAccessException {
+		Collection<Reservation> reservations = new ArrayList<Reservation>();
+
+		Query query = this.entityManager.createQuery("from Reservation");
+		List<?> reserationList = query.getResultList();
+
+		for (Object reservation : reserationList) {
+			Reservation storedReservation = (Reservation) reservation;
+			reservations.add(storedReservation);
+		}
+
+		this.entityManager.clear();
+
+		return reservations;
+	}
+
+	/**
 	 * Returns the Reservation for the provided reservationId.
 	 * 
 	 * @param reservationId
@@ -144,7 +168,7 @@ public class AirlineHeadquartersJpaDao {
 	 */
 	public Reservation getReservation(int reservationId) {
 		Reservation reservation = this.entityManager.find(Reservation.class, reservationId);
-		
+
 		return reservation;
 	}
 

@@ -54,7 +54,8 @@ public interface TravelAgentEjbRemote {
 	 * @throws DataAccessException
 	 *             Thrown if there is an error when creating the reservation.
 	 */
-	public Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException, DataAccessException;
+	public Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException,
+			DataAccessException;
 
 	/**
 	 * Returns all airports that are in the system.
@@ -75,15 +76,24 @@ public interface TravelAgentEjbRemote {
 	public Collection<Customer> getAllCustomers() throws DataAccessException;
 
 	/**
-	 * Creates an customer in the system with the provided information.
+	 * Returns all the reservations that are in the system.
+	 * 
+	 * @return All the reservations
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when retrieving the reservations.
+	 */
+	public Collection<Reservation> getAllReservations() throws DataAccessException;
+
+	/**
+	 * Creates a customer in the system with the provided information.
 	 * 
 	 * @param customer
 	 *            The customer to create.
 	 * @throws ValidationException
-	 *             Thrown if there are validation errors with the provided code.
+	 *             Thrown if there are validation errors with the provided customer.
 	 * @throws DataAccessException
-	 *             Thrown if there is an error when creating the airport.
-	 * @return Customer The created customer.
+	 *             Thrown if there is an error when creating the customer.
+	 * @return The created customer.
 	 */
 	public Customer createCustomer(Customer customer) throws ValidationException, DataAccessException;
 
@@ -93,10 +103,23 @@ public interface TravelAgentEjbRemote {
 	 * @param reservationId
 	 *            The Id of the reservation to cancel
 	 * @throws ValidationException
-	 *             Thrown if there are validation errors with the provided code.
+	 *             Thrown if there are validation errors with the Id
 	 * @throws DataAccessException
-	 *             Thrown if there is an error when creating the airport.
-	 * @return Customer The created customer.
+	 *             Thrown if there is an error when canceling the reservation.
+	 * @return The reservation canceled.
 	 */
 	public Reservation cancelReservation(int reservationId) throws ValidationException, DataAccessException;
+
+	/**
+	 * Gets the reservation associated with the provided reservationId
+	 * 
+	 * @param reservationId
+	 *            The Id of the reservation to get
+	 * @throws ValidationException
+	 *             Thrown if there are validation errors with the provided Id.
+	 * @throws DataAccessException
+	 *             Thrown if there is an error when getting the reservation.
+	 * @return The reservation.
+	 */
+	public Reservation getReservation(int reservationId) throws ValidationException, DataAccessException;
 }
