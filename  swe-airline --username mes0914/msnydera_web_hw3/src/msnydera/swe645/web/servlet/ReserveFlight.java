@@ -65,12 +65,15 @@ public class ReserveFlight extends HttpServlet {
 		if (errorMessage != null) {
 			request.setAttribute("error", errorMessage);
 			request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
+			request.setAttribute("customers", request.getSession().getAttribute("customers"));
 		} else {
 			Reservation reservation;
 			try {
 				reservation = createReservation(flightId, customerId, Integer.parseInt(numSeats));
 
 				request.getSession().setAttribute("savedFlights", null);
+				request.getSession().setAttribute("customers", null);
+				
 				dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
 				request.setAttribute("reservation", reservation);
 
@@ -79,6 +82,7 @@ public class ReserveFlight extends HttpServlet {
 
 				request.setAttribute("error", errorMessage);
 				request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
+				request.setAttribute("customers", request.getSession().getAttribute("customers"));
 			}
 
 		}
