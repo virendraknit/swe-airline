@@ -9,4 +9,5 @@ package msnydera.swe645.constant;
  */
 public final class Constants {
 	public final static String EAR_FILE_NAME = "msnydera_hw3";
+	public final static String CURRENT_USER = "currentUser";
 }
