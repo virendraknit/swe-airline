@@ -3,10 +3,10 @@
  */
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -54,27 +54,36 @@ public class AddAirport extends HttpServlet {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareAddAirport");
 
 		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-		
-		if(user == null){
+
+		if (user == null) {
 			dispatch = request.getRequestDispatcher("jsp/login.jsp");
 			request.setAttribute("error", "Please login before accessing the system.");
-			
+
 			dispatch.forward(request, response);
-			
+
 			return;
 		}
-		
+
 		String airportCode = request.getParameter("airportCode");
 		String errorMessage = validateAirport(airportCode);
 
 		if (errorMessage == null) {
 			try {
-				addAirport(airportCode);
+				addAirport(airportCode, user);
 				request.setAttribute("addedAirportCode", airportCode);
 
 			} catch (ValidationException e) {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 				request.setAttribute("error", errorMessage);
+			} catch (LoginException e) {
+				dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
+
+				request.setAttribute("error", "Your role does not allow you to perform this action.");
+
+			} catch (Exception e) {
+				dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
+
+				request.setAttribute("error", "Your role does not allow you to perform this action.");
 			}
 
 		} else {
@@ -89,14 +98,24 @@ public class AddAirport extends HttpServlet {
 	 * 
 	 * @param airport
 	 *            Airport to add
+	 * @param user
+	 *            AirlineUser to use
 	 * @throws ValidationException
 	 *             Thrown if there was an error with the validation of the
 	 *             provided airport, or if there was an issue in communicating
 	 *             with the remote service.
+	 * @throws LoginException
+	 *             Thrown if a problem occurs when logging the user in.
+	 * @throws Exception
+	 *             Thrown if an error occurs with the connection to the DB with
+	 *             the user.
 	 */
-	private void addAirport(String airport) throws ValidationException {
+	private void addAirport(String airport, AirlineUser user) throws ValidationException, LoginException, Exception {
 		try {
-			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
+			// HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote)
+			// ResourceUtil.getInitialContext().lookup(
+			// Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
+			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
 					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
 			ejbRef.createAirport(airport);
 		} catch (NamingException e) {

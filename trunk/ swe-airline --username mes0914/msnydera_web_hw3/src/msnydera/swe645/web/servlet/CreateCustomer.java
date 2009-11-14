@@ -3,10 +3,10 @@
  */
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,27 +53,36 @@ public class CreateCustomer extends HttpServlet {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareCreateCustomer");
 
 		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-		
-		if(user == null){
+
+		if (user == null) {
 			dispatch = request.getRequestDispatcher("jsp/login.jsp");
 			request.setAttribute("error", "Please login before accessing the system.");
-			
+
 			dispatch.forward(request, response);
-			
+
 			return;
 		}
-		
+
 		Customer customer = getCustomer(request);
 		String errorMessage = validateCustomer(customer);
-		
+
 		if (errorMessage == null) {
 			try {
-				createCustomer(customer);
-				
+				createCustomer(customer, user);
+
 				request.setAttribute("createdCustomer", customer);
 			} catch (ValidationException e) {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 				request.setAttribute("error", errorMessage);
+			} catch (LoginException e) {
+				dispatch = request.getRequestDispatcher("jsp/home.jsp");
+
+				request.setAttribute("error", "Your role does not allow you to perform this action.");
+
+			} catch (Exception e) {
+				dispatch = request.getRequestDispatcher("jsp/home.jsp");
+
+				request.setAttribute("error", "Your role does not allow you to perform this action.");
 			}
 
 		} else {
@@ -88,12 +97,25 @@ public class CreateCustomer extends HttpServlet {
 	 * 
 	 * @param customer
 	 *            Customer to add
+	 * @param user
+	 *            AirlineUser to use
 	 * @throws ValidationException
 	 *             Thrown if a validation error occurred.
+	 * @throws ValidationException
+	 *             Thrown to help with messages
+	 * @throws LoginException
+	 *             Thrown if a problem occurs when logging the user in.
+	 * @throws Exception
+	 *             Thrown if an error occurs with the connection to the DB with
+	 *             the user.
 	 */
-	private void createCustomer(Customer customer) throws ValidationException {
+	private void createCustomer(Customer customer, AirlineUser user) throws ValidationException, LoginException,
+			Exception {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
+			// TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
+			// ResourceUtil.getInitialContext().lookup(
+			// Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
 					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 			ejbRef.createCustomer(customer);
 		} catch (NamingException e) {
@@ -123,27 +145,27 @@ public class CreateCustomer extends HttpServlet {
 	 */
 	private String validateCustomer(Customer customer) {
 		String errorMessage = "";
-		
-		if(customer.getName() == null || customer.getName().length() < 1){
+
+		if (customer.getName() == null || customer.getName().length() < 1) {
 			errorMessage += "A name must be provided";
 		}
-		if(customer.getAddress() == null || customer.getAddress().length() < 1){
-			if(errorMessage.length() > 0){
+		if (customer.getAddress() == null || customer.getAddress().length() < 1) {
+			if (errorMessage.length() > 0) {
 				errorMessage += "<br />";
 			}
 			errorMessage += "An address must be provided";
 		}
-		if(customer.getPhone() == null || customer.getPhone().length() < 1){
-			if(errorMessage.length() > 0){
+		if (customer.getPhone() == null || customer.getPhone().length() < 1) {
+			if (errorMessage.length() > 0) {
 				errorMessage += "<br />";
 			}
-			
+
 			errorMessage += "A phone number must be provided";
 		}
-		
+
 		return (errorMessage.length() < 1 ? null : errorMessage);
 	}
-	
+
 	/**
 	 * Binds the information in the request to a Customer object and returns
 	 * that object.
@@ -156,12 +178,12 @@ public class CreateCustomer extends HttpServlet {
 		String name = request.getParameter("customerName");
 		String address = request.getParameter("address");
 		String phone = request.getParameter("phone");
-		
+
 		Customer customer = new Customer();
 		customer.setName((name == null ? null : name.trim()));
 		customer.setAddress((address == null ? null : address.trim()));
 		customer.setPhone((phone == null ? null : phone.trim()));
-		
+
 		return customer;
 	}
 }

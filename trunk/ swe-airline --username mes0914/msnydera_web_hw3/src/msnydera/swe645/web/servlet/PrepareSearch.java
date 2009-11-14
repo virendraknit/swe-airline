@@ -3,11 +3,11 @@
  */
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 import java.util.Collection;
 
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,25 +44,34 @@ public class PrepareSearch extends HttpServlet {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/search.jsp");
 
 		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-		
-		if(user == null){
+
+		if (user == null) {
 			dispatch = request.getRequestDispatcher("jsp/login.jsp");
 			request.setAttribute("error", "Please login before accessing the system.");
-			
+
 			dispatch.forward(request, response);
-			
+
 			return;
 		}
-		
+
 		Collection<String> airports = null;
 		try {
-			airports = getAllAirports();
+			airports = getAllAirports(user);
 			request.setAttribute("airports", airports);
 			request.setAttribute("error", request.getAttribute("error"));
 
 		} catch (ValidationException e) {
 			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 			request.setAttribute("error", errorMessage);
+		} catch (LoginException e) {
+			dispatch = request.getRequestDispatcher("jsp/home.jsp");
+
+			request.setAttribute("error", "Your role does not allow you to perform this action.");
+
+		} catch (Exception e) {
+			dispatch = request.getRequestDispatcher("jsp/home.jsp");
+
+			request.setAttribute("error", "Your role does not allow you to perform this action.");
 		}
 
 		request.setAttribute("airports", airports);
@@ -73,14 +82,27 @@ public class PrepareSearch extends HttpServlet {
 	/**
 	 * Returns all the airports in the system.
 	 * 
+	 * @param user
+	 *            AirlineUser to use
+	 * 
 	 * @return Collection of all the airport codes in the system.
 	 * @throws ValidationException
 	 *             Thrown if a problem occurs in communicating with the remote
 	 *             EJB.
+	 * @throws ValidationException
+	 *             Thrown to help with messages
+	 * @throws LoginException
+	 *             Thrown if a problem occurs when logging the user in.
+	 * @throws Exception
+	 *             Thrown if an error occurs with the connection to the DB with
+	 *             the user.
 	 */
-	private Collection<String> getAllAirports() throws ValidationException {
+	private Collection<String> getAllAirports(AirlineUser user) throws ValidationException, LoginException, Exception {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
+			// TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
+			// ResourceUtil.getInitialContext().lookup(
+			// Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
 					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 
 			return ejbRef.getAllAirports();

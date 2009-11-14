@@ -4,11 +4,7 @@
 package msnydera.swe645.web.servlet;
 
 import java.io.IOException;
-import java.util.Collection;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,14 +14,11 @@ import javax.servlet.http.HttpSession;
 
 import msnydera.swe645.constant.Constants;
 import msnydera.swe645.domain.AirlineUser;
-import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
-import msnydera.swe645.service.ejb.HeadquartersEjbRemote;
-import msnydera.swe645.util.ResourceUtil;
 import msnydera.swe645.util.StringUtils;
 
 /**
- * Servlet used to prepare the request object for the page to add airports.
+ * Servlet used to log a user in.
  */
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
