@@ -3,11 +3,11 @@
  */
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 import java.util.Collection;
 
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -60,20 +60,20 @@ public class PrepareCreateFlight extends HttpServlet {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/createFlight.jsp");
 
 		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-		
-		if(user == null){
+
+		if (user == null) {
 			dispatch = request.getRequestDispatcher("jsp/login.jsp");
 			request.setAttribute("error", "Please login before accessing the system.");
-			
+
 			dispatch.forward(request, response);
-			
+
 			return;
 		}
-		
+
 		try {
-			Collection<Airplane> airplanes = this.airplaneServlet.getExistingAirplanes();
-			Collection<String> airports = this.airportServlet.getExistingAirports();
-			Collection<Flight> flights = getExistingFlights();
+			Collection<Airplane> airplanes = this.airplaneServlet.getExistingAirplanes(user);
+			Collection<String> airports = this.airportServlet.getExistingAirports(user);
+			Collection<Flight> flights = getExistingFlights(user);
 
 			request.setAttribute("airplanes", airplanes);
 			request.setAttribute("airports", airports);
@@ -83,6 +83,15 @@ public class PrepareCreateFlight extends HttpServlet {
 		} catch (ValidationException e) {
 			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 			request.setAttribute("error", errorMessage);
+		} catch (LoginException e) {
+			dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
+
+			request.setAttribute("error", "Your role does not allow you to perform this action.");
+
+		} catch (Exception e) {
+			dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
+
+			request.setAttribute("error", "Your role does not allow you to perform this action.");
 		}
 
 		dispatch.forward(request, response);
@@ -91,14 +100,28 @@ public class PrepareCreateFlight extends HttpServlet {
 	/**
 	 * Returns all the flights in the system.
 	 * 
+	 * @param user
+	 *            AirlineUser to use
+	 * 
 	 * @return Collection of all the flights in the system.
 	 * @throws ValidationException
 	 *             Thrown if there is a problem in communicating with the remote
 	 *             EJB.
+	 * @throws ValidationException
+	 *             Thrown to help with messages
+	 * @throws LoginException
+	 *             Thrown if a problem occurs when logging the user in.
+	 * @throws Exception
+	 *             Thrown if an error occurs with the connection to the DB with
+	 *             the user.
 	 */
-	private Collection<Flight> getExistingFlights() throws ValidationException {
+	private Collection<Flight> getExistingFlights(AirlineUser user) throws ValidationException, LoginException,
+			Exception {
 		try {
-			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
+			// HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote)
+			// ResourceUtil.getInitialContext().lookup(
+			// Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
+			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
 					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
 			return ejbRef.getAllFlights();
 		} catch (NamingException e) {

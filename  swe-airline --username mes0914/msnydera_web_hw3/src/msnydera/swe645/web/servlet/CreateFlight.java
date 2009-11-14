@@ -3,13 +3,13 @@
  */
 package msnydera.swe645.web.servlet;
 
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -61,20 +61,20 @@ public class CreateFlight extends HttpServlet {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareCreateFlight");
 
 		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-		
-		if(user == null){
+
+		if (user == null) {
 			dispatch = request.getRequestDispatcher("jsp/login.jsp");
 			request.setAttribute("error", "Please login before accessing the system.");
-			
+
 			dispatch.forward(request, response);
-			
+
 			return;
 		}
-		
+
 		try {
 			Flight flight = getFlight(request);
 
-			int newFlightNum = createFlight(flight);
+			int newFlightNum = createFlight(flight, user);
 			flight.setId(newFlightNum);
 
 			request.setAttribute("addedFlight", flight);
@@ -89,6 +89,15 @@ public class CreateFlight extends HttpServlet {
 
 			String errorMessage = "Please provide a date in the format MM/dd/yyyy.";
 			request.setAttribute("error", errorMessage);
+		} catch (LoginException e) {
+			dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
+
+			request.setAttribute("error", "Your role does not allow you to perform this action.");
+
+		} catch (Exception e) {
+			dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
+
+			request.setAttribute("error", "Your role does not allow you to perform this action.");
 		}
 
 		dispatch.forward(request, response);
@@ -99,14 +108,26 @@ public class CreateFlight extends HttpServlet {
 	 * 
 	 * @param flight
 	 *            Flight to create
+	 * @param user
+	 *            AirlineUser to use
 	 * @return Flight # of the flight created.
 	 * @throws ValidationException
 	 *             Thrown if a validation error occurs or if there is a problem
 	 *             with communicating with the remote EJB service.
+	 * @throws ValidationException
+	 *             Thrown to help with messages
+	 * @throws LoginException
+	 *             Thrown if a problem occurs when logging the user in.
+	 * @throws Exception
+	 *             Thrown if an error occurs with the connection to the DB with
+	 *             the user.
 	 */
-	private int createFlight(Flight flight) throws ValidationException {
+	private int createFlight(Flight flight, AirlineUser user) throws ValidationException, LoginException, Exception {
 		try {
-			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getInitialContext().lookup(
+			// HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote)
+			// ResourceUtil.getInitialContext().lookup(
+			// Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
+			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
 					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
 			return ejbRef.createFlight(flight);
 		} catch (NamingException e) {
@@ -137,15 +158,15 @@ public class CreateFlight extends HttpServlet {
 	 */
 	private Flight getFlight(HttpServletRequest request) throws ParseException, ValidationException {
 		Flight flight = new Flight();
-		
+
 		Airport airport = new Airport();
 		airport.setAirportCode(request.getParameter("departureAirport"));
 		flight.setDepartureAirport(airport);
-		
+
 		airport = new Airport();
 		airport.setAirportCode(request.getParameter("destinationAirport"));
 		flight.setDestinationAirport(airport);
-		
+
 		flight.setDepartureDate(getDateOfTrip(request));
 
 		if (!NumberUtils.isValidCurrency(request.getParameter("cost"))) {
@@ -155,10 +176,10 @@ public class CreateFlight extends HttpServlet {
 		}
 
 		flight.setCost(Double.parseDouble(request.getParameter("cost")));
-		
+
 		Airplane airplane = new Airplane();
 		airplane.setId(Integer.parseInt(request.getParameter("airplaneId")));
-		
+
 		flight.setAirplane(airplane);
 
 		return flight;

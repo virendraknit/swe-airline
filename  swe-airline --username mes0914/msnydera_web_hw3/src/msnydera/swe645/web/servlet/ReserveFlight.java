@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -58,16 +59,16 @@ public class ReserveFlight extends HttpServlet {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/searchResults.jsp");
 
 		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-		
-		if(user == null){
+
+		if (user == null) {
 			dispatch = request.getRequestDispatcher("jsp/login.jsp");
 			request.setAttribute("error", "Please login before accessing the system.");
-			
+
 			dispatch.forward(request, response);
-			
+
 			return;
 		}
-		
+
 		int flightId = Integer.parseInt(request.getParameter("flightId"));
 		String numSeats = request.getParameter("numSeats");
 		int customerId = Integer.parseInt(request.getParameter("customerId"));
@@ -81,11 +82,11 @@ public class ReserveFlight extends HttpServlet {
 		} else {
 			Reservation reservation;
 			try {
-				reservation = createReservation(flightId, customerId, Integer.parseInt(numSeats));
+				reservation = createReservation(flightId, customerId, Integer.parseInt(numSeats), user);
 
 				request.getSession().setAttribute("savedFlights", null);
 				request.getSession().setAttribute("customers", null);
-				
+
 				dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
 				request.setAttribute("reservation", reservation);
 
@@ -95,6 +96,15 @@ public class ReserveFlight extends HttpServlet {
 				request.setAttribute("error", errorMessage);
 				request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
 				request.setAttribute("customers", request.getSession().getAttribute("customers"));
+			} catch (LoginException e) {
+				dispatch = request.getRequestDispatcher("jsp/home.jsp");
+
+				request.setAttribute("error", "Your role does not allow you to perform this action.");
+
+			} catch (Exception e) {
+				dispatch = request.getRequestDispatcher("jsp/home.jsp");
+
+				request.setAttribute("error", "Your role does not allow you to perform this action.");
 			}
 
 		}
@@ -112,15 +122,28 @@ public class ReserveFlight extends HttpServlet {
 	 *            Customer the reservation is for.
 	 * @param numSeats
 	 *            The number of seats the reservation is for.
+	 * @param user
+	 *            AirlineUser to use
 	 * @return The Reservation created.
 	 * @throws ValidationException
 	 *             Thrown if there there was a problem in communicating with the
 	 *             remote EJB or if there is a validation error with the
 	 *             provided data.
+	 * @throws ValidationException
+	 *             Thrown to help with messages
+	 * @throws LoginException
+	 *             Thrown if a problem occurs when logging the user in.
+	 * @throws Exception
+	 *             Thrown if an error occurs with the connection to the DB with
+	 *             the user.
 	 */
-	private Reservation createReservation(int flightId, int customerId, int numSeats) throws ValidationException {
+	private Reservation createReservation(int flightId, int customerId, int numSeats, AirlineUser user)
+			throws ValidationException, LoginException, Exception {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
+			// TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
+			// ResourceUtil.getInitialContext().lookup(
+			// Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
 					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 			return ejbRef.createReservation(flightId, customerId, numSeats);
 		} catch (NamingException e) {
