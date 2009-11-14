@@ -43,6 +43,17 @@
 </head>
 <body>
 	<c:set var="basePath" value="${pageContext.request.contextPath}" />
+	
+	<c:choose>
+ 		<c:when test="${sessionScope.currentUser != null}">
+	 		${sessionScope.currentUser.username} |
+	 		<a href="${basePath}/logOff">Log Out</a><br /> 
+	 	</c:when>
+	 	<c:otherwise>
+	 		<a href="${basePath}/jsp/login.jsp">Log In</a><br />
+	 	</c:otherwise>
+ 	</c:choose>
+ 	
 	<h1>Create Flight</h1>
 	<c:if test="${not empty requestScope.error}">
  		<span style="color: red;">
