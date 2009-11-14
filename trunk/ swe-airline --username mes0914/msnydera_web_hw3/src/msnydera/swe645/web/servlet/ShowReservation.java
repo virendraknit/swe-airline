@@ -5,7 +5,6 @@ package msnydera.swe645.web.servlet;
 
 
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -50,6 +50,17 @@ public class ShowReservation extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
+		
+		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
+		
+		if(user == null){
+			dispatch = request.getRequestDispatcher("jsp/login.jsp");
+			request.setAttribute("error", "Please login before accessing the system.");
+			
+			dispatch.forward(request, response);
+			
+			return;
+		}
 		
 		Reservation reservation = null;
 		try {

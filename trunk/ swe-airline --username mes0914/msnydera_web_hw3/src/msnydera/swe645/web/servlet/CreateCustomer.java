@@ -14,13 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
-import msnydera.swe645.domain.Airplane;
+import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Customer;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
-import msnydera.swe645.service.ejb.HeadquartersEjbRemote;
 import msnydera.swe645.service.ejb.TravelAgentEjbRemote;
-import msnydera.swe645.util.NumberUtils;
 import msnydera.swe645.util.ResourceUtil;
 import msnydera.swe645.util.StringUtils;
 
@@ -54,6 +52,17 @@ public class CreateCustomer extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareCreateCustomer");
 
+		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
+		
+		if(user == null){
+			dispatch = request.getRequestDispatcher("jsp/login.jsp");
+			request.setAttribute("error", "Please login before accessing the system.");
+			
+			dispatch.forward(request, response);
+			
+			return;
+		}
+		
 		Customer customer = getCustomer(request);
 		String errorMessage = validateCustomer(customer);
 		

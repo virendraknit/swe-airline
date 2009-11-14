@@ -38,7 +38,6 @@ public class AirlineHome extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		System.out.println("Got to AirlineHome");
 		RequestDispatcher dispatch = request.getRequestDispatcher("/jsp/home.jsp");
 		dispatch.forward(request, response);
 	}

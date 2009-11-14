@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Airplane;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -52,6 +53,17 @@ public class AddAirplane extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareAddAirplane");
 
+		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
+		
+		if(user == null){
+			dispatch = request.getRequestDispatcher("jsp/login.jsp");
+			request.setAttribute("error", "Please login before accessing the system.");
+			
+			dispatch.forward(request, response);
+			
+			return;
+		}
+		
 		Airplane airplane = getAirplane(request);
 		String errorMessage = validateAirplane(airplane);
 

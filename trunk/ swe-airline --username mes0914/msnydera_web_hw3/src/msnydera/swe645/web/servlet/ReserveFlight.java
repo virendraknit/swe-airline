@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.exception.DataAccessException;
@@ -56,6 +57,17 @@ public class ReserveFlight extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/searchResults.jsp");
 
+		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
+		
+		if(user == null){
+			dispatch = request.getRequestDispatcher("jsp/login.jsp");
+			request.setAttribute("error", "Please login before accessing the system.");
+			
+			dispatch.forward(request, response);
+			
+			return;
+		}
+		
 		int flightId = Integer.parseInt(request.getParameter("flightId"));
 		String numSeats = request.getParameter("numSeats");
 		int customerId = Integer.parseInt(request.getParameter("customerId"));
