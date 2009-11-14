@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.domain.SearchFilters;
@@ -60,6 +61,17 @@ public class FlightSearch extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/searchResults.jsp");
 
+		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
+		
+		if(user == null){
+			dispatch = request.getRequestDispatcher("jsp/login.jsp");
+			request.setAttribute("error", "Please login before accessing the system.");
+			
+			dispatch.forward(request, response);
+			
+			return;
+		}
+		
 		SearchFilters searchFilters;
 		try {
 			searchFilters = getSearchFilters(request);

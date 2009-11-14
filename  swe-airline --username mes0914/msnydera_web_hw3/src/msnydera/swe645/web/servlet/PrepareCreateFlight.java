@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
+import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Airplane;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.exception.DataAccessException;
@@ -58,6 +59,17 @@ public class PrepareCreateFlight extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/createFlight.jsp");
 
+		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
+		
+		if(user == null){
+			dispatch = request.getRequestDispatcher("jsp/login.jsp");
+			request.setAttribute("error", "Please login before accessing the system.");
+			
+			dispatch.forward(request, response);
+			
+			return;
+		}
+		
 		try {
 			Collection<Airplane> airplanes = this.airplaneServlet.getExistingAirplanes();
 			Collection<String> airports = this.airportServlet.getExistingAirports();
