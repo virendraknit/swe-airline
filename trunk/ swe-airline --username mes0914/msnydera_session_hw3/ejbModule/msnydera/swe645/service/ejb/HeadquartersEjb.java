@@ -7,6 +7,7 @@ package msnydera.swe645.service.ejb;
 import java.util.Collection;
 import java.util.Properties;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -23,13 +24,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import msnydera.swe645.domain.Airplane;
-import msnydera.swe645.domain.Airport;
 import msnydera.swe645.domain.Flight;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
 import msnydera.swe645.service.AirlineHeadquartersService;
 import msnydera.swe645.service.impl.AirlineHeadquartersServiceImpl;
-import msnydera.swe645.util.DbUtils;
+
+import org.jboss.ejb3.annotation.SecurityDomain;
 
 /**
  * Session Bean implementation of the Remote HeadquartersEjb. This class is
@@ -39,6 +40,8 @@ import msnydera.swe645.util.DbUtils;
  * with Headquarters related business.
  */
 @Stateless
+@SecurityDomain("other")
+@RolesAllowed( { "admin", "hq" })
 public class HeadquartersEjb implements HeadquartersEjbRemote {
 	private AirlineHeadquartersService service;
 
@@ -68,14 +71,9 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 	 * gmu.swe.service.ejb.HeadquartersEjbRemote#createAirport(java.lang.String)
 	 */
 	public void createAirport(String airportCode) throws ValidationException, DataAccessException {
-//		DbUtils.setEntityManager(this.entityManager);
 		
 		this.getService().createAirport(airportCode);
 		
-//		Airport airport = new Airport();
-//		airport.setAirportCode(airportCode);
-//
-//		entityManager.persist(airport);
 	}
 
 	/*
