@@ -12,10 +12,27 @@
 	<c:set var="basePath" value="${pageContext.request.contextPath}" />
 	
 	<h1>Airline Headquarters</h1>
+	
+	<c:if test="${not empty requestScope.error}">
+ 		<span style="color: red;">
+ 			<ul>
+ 				<li><c:out value="${requestScope.error}" escapeXml="false" /></li>
+ 			</ul>
+ 		</span>
+ 	</c:if>
+ 	
  	<p>Welcome to the Airline Headquarters.  Please choose what you would like to do:</p>
 	<a href="${basePath}/prepareAddAirplane">Add Airplane</a><br>
 	<a href="${basePath}/prepareAddAirport">Add Airport</a><br>
 	<a href="${basePath}/prepareCreateFlight">Create Flight</a><br>
-	<a href="home.jsp">Main Menu</a>
+	
+	<c:choose>
+		<c:when test="${not empty requestScope.error}">
+			<a href="jsp/home.jsp">Main Menu</a>
+		</c:when>
+		<c:otherwise>
+			<a href="home.jsp">Main Menu</a>
+		</c:otherwise>
+	</c:choose>
 </body>
 </html>
