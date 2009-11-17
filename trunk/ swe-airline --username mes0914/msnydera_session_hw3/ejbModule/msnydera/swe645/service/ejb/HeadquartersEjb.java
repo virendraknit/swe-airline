@@ -7,16 +7,16 @@ package msnydera.swe645.service.ejb;
 import java.util.Collection;
 import java.util.Properties;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicSession;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -47,6 +47,12 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 
 	@PersistenceContext(unitName="msnyderaPersistence")
 	private EntityManager entityManager;
+	
+	@Resource(mappedName = "ConnectionFactory")
+    ConnectionFactory connectionFactory;
+    
+    @Resource(mappedName = "topic/MsnyderaTopic")
+    Topic topic;
 	
 	/**
 	 * Default constructor.
@@ -128,20 +134,13 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 	 */
 	public boolean sendMessage(Flight flight) {
 		try {
-			Context context = getInitialContext();
-			TopicConnectionFactory connectionFactory = (TopicConnectionFactory) context.lookup("ConnectionFactory");
-
-			TopicConnection conn;
+			Connection conn = this.connectionFactory.createConnection();
 
 			System.out.println("** " + getClass().getSimpleName() + ": Sending Message for Flight #" + flight.getId());
-			conn = connectionFactory.createTopicConnection();
-			TopicSession session = conn.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+			Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			
+			MessageProducer producer = session.createProducer(this.topic);
 
-			Topic topic = (Topic) context.lookup("topic/MsnyderaTopic");
-
-			MessageProducer producer = session.createProducer(topic);
-
-			// MessageProducer producer = session.createProducer(queue);
 			MapMessage mapMsg = session.createMapMessage();
 			mapMsg.setString("flightId", "" + flight.getId());
 			mapMsg.setString("flightDate", flight.getDisplayDate());
@@ -160,9 +159,8 @@ public class HeadquartersEjb implements HeadquartersEjbRemote {
 			return true;
 		} catch (JMSException e) {
 			e.printStackTrace();
-		} catch (NamingException e) {
-			e.printStackTrace();
 		}
+		
 		return false;
 	}
 
