@@ -5,12 +5,11 @@ package msnydera.swe645.service.ejb;
 
 import java.util.Collection;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.jws.WebMethod;
+import javax.jws.WebService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.jboss.ejb3.annotation.SecurityDomain;
 
 import msnydera.swe645.domain.Customer;
 import msnydera.swe645.domain.Flight;
@@ -28,8 +27,9 @@ import msnydera.swe645.service.impl.AirlineHeadquartersServiceImpl;
  * point. The functionality provided here is for the Travel Agent business.
  */
 @Stateless
-@SecurityDomain("other")
-@RolesAllowed( { "admin", "agent" })
+@WebService
+//@SecurityDomain("other")
+//@RolesAllowed( { "admin", "agent" })
 public class TravelAgentEjb implements TravelAgentEjbRemote {
 	private AirlineHeadquartersService service;
 
@@ -74,6 +74,7 @@ public class TravelAgentEjb implements TravelAgentEjbRemote {
 	 * gmu.swe.service.ejb.TravelAgentEjbRemote#search(gmu.swe.domain.SearchFilters
 	 * )
 	 */
+	@WebMethod
 	public Collection<Flight> search(SearchFilters searchFilters) throws ValidationException, DataAccessException {
 		return this.getService().search(searchFilters);
 	}
