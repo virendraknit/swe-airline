@@ -65,7 +65,7 @@ public class AddAirplane extends HttpServlet {
 			} catch (Exception e) {
 				dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
 
-				request.setAttribute("error", "Your role does not allow you to perform this action.");
+				request.setAttribute("error", "An unkown error occured.");
 			}
 
 		} else {

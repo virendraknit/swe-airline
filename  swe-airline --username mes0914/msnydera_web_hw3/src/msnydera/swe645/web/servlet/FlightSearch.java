@@ -131,7 +131,7 @@ public class FlightSearch extends HttpServlet {
 		} catch (Exception e) {
 			dispatch = request.getRequestDispatcher("jsp/home.jsp");
 
-			request.setAttribute("error", "Your role does not allow you to perform this action.");
+			request.setAttribute("error", "An unkown error occured.");
 		}
 		return dispatch;
 	}
@@ -186,7 +186,7 @@ public class FlightSearch extends HttpServlet {
 		} catch (Exception e) {
 			dispatch = request.getRequestDispatcher("jsp/home.jsp");
 
-			request.setAttribute("error", "Your role does not allow you to perform this action.");
+			request.setAttribute("error", "An unkown error occured.");
 		}
 		return dispatch;
 	}
@@ -216,6 +216,8 @@ public class FlightSearch extends HttpServlet {
 				flight.setDepartureDate(wsFlight.getDepartureDate().getTime());
 				flight.setDestinationAirport(convertAirport(wsFlight.getDestinationAirport()));
 				flight.setId(wsFlight.getId());
+				
+				flights.add(flight);
 			}
 		}
 
@@ -487,10 +489,14 @@ public class FlightSearch extends HttpServlet {
 		searchFilters.setDestinationLocation((String) request.getParameter("destinationAirport"));
 
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(getDateOfTrip(request));
-
-		searchFilters.setDateOfTrip(cal);
-
+		
+		Date date = getDateOfTrip(request);
+		
+		if(date != null){
+			cal.setTime(date);
+			searchFilters.setDateOfTrip(cal);
+		}
+		
 		return searchFilters;
 	}
 
