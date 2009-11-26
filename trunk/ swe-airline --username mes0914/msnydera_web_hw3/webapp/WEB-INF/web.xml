@@ -136,6 +136,7 @@
 		<servlet-class>
 		msnydera.swe645.web.servlet.CreateCustomer</servlet-class>
 	</servlet>
+	<!-- 
 	<servlet>
 		<description>
 		</description>
@@ -154,6 +155,7 @@
 		<servlet-class>
 		msnydera.swe645.web.servlet.LogOff</servlet-class>
 	</servlet>
+	-->
 	<servlet-mapping>
 		<servlet-name>airlineHome</servlet-name>
 		<url-pattern>/airlineHome</url-pattern>
@@ -214,6 +216,7 @@
 		<servlet-name>createCustomer</servlet-name>
 		<url-pattern>/createCustomer</url-pattern>
 	</servlet-mapping>
+	<!-- 
 	<servlet-mapping>
 		<servlet-name>login</servlet-name>
 		<url-pattern>/login</url-pattern>
@@ -222,8 +225,8 @@
 		<servlet-name>logOff</servlet-name>
 		<url-pattern>/logOff</url-pattern>
 	</servlet-mapping>
-	
+	-->
 	<welcome-file-list>
-		<welcome-file>/jsp/login.jsp</welcome-file>
+		<welcome-file>/jsp/home.jsp</welcome-file>
 	</welcome-file-list>
 </web-app>

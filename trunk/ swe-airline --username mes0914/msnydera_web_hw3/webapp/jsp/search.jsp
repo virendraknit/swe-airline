@@ -17,6 +17,7 @@
 <body>
 	<c:set var="basePath" value="${pageContext.request.contextPath}" />
 	
+	<%--
 	<c:choose>
  		<c:when test="${sessionScope.currentUser != null}">
 	 		${sessionScope.currentUser.username} |
@@ -26,6 +27,7 @@
 	 		<a href="${basePath}/jsp/login.jsp">Log In</a><br />
 	 	</c:otherwise>
  	</c:choose>
+	--%>
 	
 	<h1>Flight Search</h1>
 	<c:if test="${not empty requestScope.error}">
@@ -59,6 +61,12 @@
 	 	<label>Departure Date (MM/DD/YYYY):</label>
 		<input type="text" name="flightDate" size="10" id="flightDate" datepicker="true" datepicker_format="MM/DD/YYYY" readonly="readonly"/>
 		<a href="javascript:void(0)" onclick="clearDate()">Clear Date</a>
+	 	<br />
+	 	<br />
+	 	
+	 	<input type="radio" name="searchType" value="ejb" /> Search using an EJB<br />
+	 	<input type="radio" name="searchType" value="webService" /> Search using a Web Service
+	 	
 	 	<br />
 	 	<input type="submit" value="Search">
  	</form>
