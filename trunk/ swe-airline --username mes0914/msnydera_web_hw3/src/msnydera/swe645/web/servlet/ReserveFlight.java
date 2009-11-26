@@ -86,7 +86,7 @@ public class ReserveFlight extends HttpServlet {
 			} catch (Exception e) {
 				dispatch = request.getRequestDispatcher("jsp/home.jsp");
 
-				request.setAttribute("error", "Your role does not allow you to perform this action.");
+				request.setAttribute("error", "An unkown error occured.");
 			}
 
 		}

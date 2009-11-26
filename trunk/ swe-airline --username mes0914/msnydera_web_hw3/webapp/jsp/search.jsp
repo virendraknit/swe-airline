@@ -64,9 +64,9 @@
 	 	<br />
 	 	<br />
 	 	
-	 	<input type="radio" name="searchType" value="ejb" /> Search using an EJB<br />
+	 	<input type="radio" name="searchType" value="ejb" checked="checked" /> Search using an EJB<br />
 	 	<input type="radio" name="searchType" value="webService" /> Search using a Web Service
-	 	
+	 	<br />
 	 	<br />
 	 	<input type="submit" value="Search">
  	</form>
