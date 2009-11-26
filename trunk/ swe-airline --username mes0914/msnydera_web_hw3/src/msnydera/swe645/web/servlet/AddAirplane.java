@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
-import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Airplane;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -53,32 +52,16 @@ public class AddAirplane extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareAddAirplane");
 
-		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-
-		if (user == null) {
-			dispatch = request.getRequestDispatcher("jsp/login.jsp");
-			request.setAttribute("error", "Please login before accessing the system.");
-
-			dispatch.forward(request, response);
-
-			return;
-		}
-
 		Airplane airplane = getAirplane(request);
 		String errorMessage = validateAirplane(airplane);
 
 		if (errorMessage == null) {
 			try {
-				addAirplane(airplane, user);
+				addAirplane(airplane);
 				request.setAttribute("addedAirplane", airplane);
 			} catch (ValidationException e) {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 				request.setAttribute("error", errorMessage);
-			} catch (LoginException e) {
-				dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
-
-				request.setAttribute("error", "Your role does not allow you to perform this action.");
-
 			} catch (Exception e) {
 				dispatch = request.getRequestDispatcher("jsp/headquartersMenu.jsp");
 
@@ -97,8 +80,6 @@ public class AddAirplane extends HttpServlet {
 	 * 
 	 * @param airplane
 	 *            Airplane to add
-	 * @param user
-	 *            AirlineUser to use
 	 * @throws ValidationException
 	 *             Thrown if a validation error occurred.
 	 * @throws LoginException
@@ -107,13 +88,11 @@ public class AddAirplane extends HttpServlet {
 	 *             Thrown if an error occurs with the connection to the DB with
 	 *             the user.
 	 */
-	private void addAirplane(Airplane airplane, AirlineUser user) throws ValidationException, LoginException, Exception {
+	private void addAirplane(Airplane airplane) throws ValidationException, Exception {
 		try {
-			// HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote)
-			// ResourceUtil.getInitialContext().lookup(
-			// Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
-			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
-					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
+			 HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote)ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
+//			HeadquartersEjbRemote ejbRef = (HeadquartersEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
+//					Constants.EAR_FILE_NAME + "/HeadquartersEjb/remote");
 			ejbRef.createAirplane(airplane.getNumSeats(), airplane.getType());
 		} catch (NamingException e) {
 			e.printStackTrace();

@@ -6,7 +6,6 @@ package msnydera.swe645.web.servlet;
 import java.io.IOException;
 
 import javax.naming.NamingException;
-import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
-import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Customer;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -52,33 +50,17 @@ public class CreateCustomer extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("/prepareCreateCustomer");
 
-		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-
-		if (user == null) {
-			dispatch = request.getRequestDispatcher("jsp/login.jsp");
-			request.setAttribute("error", "Please login before accessing the system.");
-
-			dispatch.forward(request, response);
-
-			return;
-		}
-
 		Customer customer = getCustomer(request);
 		String errorMessage = validateCustomer(customer);
 
 		if (errorMessage == null) {
 			try {
-				createCustomer(customer, user);
+				createCustomer(customer);
 
 				request.setAttribute("createdCustomer", customer);
 			} catch (ValidationException e) {
 				errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 				request.setAttribute("error", errorMessage);
-			} catch (LoginException e) {
-				dispatch = request.getRequestDispatcher("jsp/home.jsp");
-
-				request.setAttribute("error", "Your role does not allow you to perform this action.");
-
 			} catch (Exception e) {
 				dispatch = request.getRequestDispatcher("jsp/home.jsp");
 
@@ -97,26 +79,20 @@ public class CreateCustomer extends HttpServlet {
 	 * 
 	 * @param customer
 	 *            Customer to add
-	 * @param user
-	 *            AirlineUser to use
 	 * @throws ValidationException
 	 *             Thrown if a validation error occurred.
 	 * @throws ValidationException
 	 *             Thrown to help with messages
-	 * @throws LoginException
-	 *             Thrown if a problem occurs when logging the user in.
 	 * @throws Exception
 	 *             Thrown if an error occurs with the connection to the DB with
 	 *             the user.
 	 */
-	private void createCustomer(Customer customer, AirlineUser user) throws ValidationException, LoginException,
-			Exception {
+	private void createCustomer(Customer customer) throws ValidationException, Exception {
 		try {
-			// TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
-			// ResourceUtil.getInitialContext().lookup(
-			// Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
-					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+			 TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
+			 ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+//			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
+//					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 			ejbRef.createCustomer(customer);
 		} catch (NamingException e) {
 			e.printStackTrace();
