@@ -6,7 +6,6 @@ package msnydera.swe645.web.servlet;
 import java.io.IOException;
 
 import javax.naming.NamingException;
-import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
-import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Reservation;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -52,20 +50,9 @@ public class ShowReservation extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
 
-		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-
-		if (user == null) {
-			dispatch = request.getRequestDispatcher("jsp/login.jsp");
-			request.setAttribute("error", "Please login before accessing the system.");
-
-			dispatch.forward(request, response);
-
-			return;
-		}
-
 		Reservation reservation = null;
 		try {
-			reservation = getReservation(Integer.parseInt(request.getParameter("reservationId")), user);
+			reservation = getReservation(Integer.parseInt(request.getParameter("reservationId")));
 
 			request.setAttribute("reservation", reservation);
 
@@ -73,11 +60,6 @@ public class ShowReservation extends HttpServlet {
 			dispatch = request.getRequestDispatcher("jsp/home.jsp");
 			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 			request.setAttribute("error", errorMessage);
-		} catch (LoginException e) {
-			dispatch = request.getRequestDispatcher("jsp/home.jsp");
-
-			request.setAttribute("error", "Your role does not allow you to perform this action.");
-
 		} catch (Exception e) {
 			dispatch = request.getRequestDispatcher("jsp/home.jsp");
 
@@ -90,29 +72,22 @@ public class ShowReservation extends HttpServlet {
 	/**
 	 * Returns the Reservation associated with the provided reservationId.
 	 * 
-	 * @param user
-	 *            AirlineUser to use
-	 * 
 	 * @return The reservation.
 	 * @throws ValidationException
 	 *             Thrown if there is a problem in communicating with the remote
 	 *             EJB.
 	 * @throws ValidationException
 	 *             Thrown to help with messages
-	 * @throws LoginException
-	 *             Thrown if a problem occurs when logging the user in.
 	 * @throws Exception
 	 *             Thrown if an error occurs with the connection to the DB with
 	 *             the user.
 	 */
-	private Reservation getReservation(int reservationId, AirlineUser user) throws ValidationException, LoginException,
-			Exception {
+	private Reservation getReservation(int reservationId) throws ValidationException, Exception {
 		try {
-			// TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
-			// ResourceUtil.getInitialContext().lookup(
-			// Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
-					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+			 TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote)
+			 ResourceUtil.getInitialContext().lookup(Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+//			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
+//					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 
 			return ejbRef.getReservation(reservationId);
 		} catch (NamingException e) {

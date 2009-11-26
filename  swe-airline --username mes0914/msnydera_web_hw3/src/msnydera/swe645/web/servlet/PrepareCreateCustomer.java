@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import javax.naming.NamingException;
-import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import msnydera.swe645.constant.Constants;
-import msnydera.swe645.domain.AirlineUser;
 import msnydera.swe645.domain.Customer;
 import msnydera.swe645.exception.DataAccessException;
 import msnydera.swe645.exception.ValidationException;
@@ -54,19 +52,8 @@ public class PrepareCreateCustomer extends HttpServlet {
 			IOException {
 		RequestDispatcher dispatch = request.getRequestDispatcher("jsp/createCustomer.jsp");
 
-		AirlineUser user = ResourceUtil.getLoggedInUser(request.getSession());
-
-		if (user == null) {
-			dispatch = request.getRequestDispatcher("jsp/login.jsp");
-			request.setAttribute("error", "Please login before accessing the system.");
-
-			dispatch.forward(request, response);
-
-			return;
-		}
-
 		try {
-			Collection<Customer> customers = getCustomers(user);
+			Collection<Customer> customers = getCustomers();
 
 			request.setAttribute("customers", customers);
 			request.setAttribute("createdCustomer", request.getAttribute("createdCustomer"));
@@ -74,11 +61,6 @@ public class PrepareCreateCustomer extends HttpServlet {
 		} catch (ValidationException e) {
 			String errorMessage = StringUtils.getFormattedMessages(e.getErrorMessages());
 			request.setAttribute("error", errorMessage);
-
-		} catch (LoginException e) {
-			dispatch = request.getRequestDispatcher("jsp/home.jsp");
-
-			request.setAttribute("error", "Your role does not allow you to perform this action.");
 
 		} catch (Exception e) {
 			dispatch = request.getRequestDispatcher("jsp/home.jsp");
@@ -93,22 +75,19 @@ public class PrepareCreateCustomer extends HttpServlet {
 	 * Communicates with the remote EJB service to retrieve all of the
 	 * customers.
 	 * 
-	 * @param user
-	 *            The user to use.
-	 * 
 	 * @return Collection of customers.
 	 * @throws ValidationException
 	 *             Thrown to help with messages
-	 * @throws LoginException
-	 *             Thrown if a problem occurs when logging the user in.
 	 * @throws Exception
 	 *             Thrown if an error occurs with the connection to the DB with
 	 *             the user.
 	 */
-	private Collection<Customer> getCustomers(AirlineUser user) throws ValidationException, LoginException, Exception {
+	private Collection<Customer> getCustomers() throws ValidationException, Exception {
 		try {
-			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
+			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getInitialContext().lookup(
 					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
+//			TravelAgentEjbRemote ejbRef = (TravelAgentEjbRemote) ResourceUtil.getLoggedInContext(user).lookup(
+//					Constants.EAR_FILE_NAME + "/TravelAgentEjb/remote");
 
 			return ejbRef.getAllCustomers();
 		} catch (NamingException e) {
