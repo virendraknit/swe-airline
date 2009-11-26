@@ -39,6 +39,7 @@
 <body>
 	<c:set var="basePath" value="${pageContext.request.contextPath}" />
 	
+	<%--
 	<c:choose>
  		<c:when test="${sessionScope.currentUser != null}">
 	 		${sessionScope.currentUser.username} |
@@ -48,6 +49,7 @@
 	 		<a href="${basePath}/jsp/login.jsp">Log In</a><br />
 	 	</c:otherwise>
  	</c:choose>
+ 	--%>
  	
 	<h1>Available Flights</h1>
 	<c:if test="${not empty requestScope.error}">
