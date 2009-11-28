@@ -66,6 +66,10 @@ public class ReserveFlight extends HttpServlet {
 			request.setAttribute("error", errorMessage);
 			request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
 			request.setAttribute("customers", request.getSession().getAttribute("customers"));
+			
+			request.setAttribute("ejbSearch", request.getSession().getAttribute("ejbSearch"));
+			request.setAttribute("webServiceSearch", request.getSession().getAttribute("webServiceSearch"));
+			
 		} else {
 			Reservation reservation;
 			try {
@@ -73,7 +77,9 @@ public class ReserveFlight extends HttpServlet {
 
 				request.getSession().setAttribute("savedFlights", null);
 				request.getSession().setAttribute("customers", null);
-
+				request.getSession().setAttribute("ejbSearch", null);
+				request.getSession().setAttribute("webServiceSearch", null);
+				
 				dispatch = request.getRequestDispatcher("jsp/reservation.jsp");
 				request.setAttribute("reservation", reservation);
 
@@ -83,6 +89,9 @@ public class ReserveFlight extends HttpServlet {
 				request.setAttribute("error", errorMessage);
 				request.setAttribute("flights", request.getSession().getAttribute("savedFlights"));
 				request.setAttribute("customers", request.getSession().getAttribute("customers"));
+				
+				request.setAttribute("ejbSearch", request.getSession().getAttribute("ejbSearch"));
+				request.setAttribute("webServiceSearch", request.getSession().getAttribute("webServiceSearch"));
 			} catch (Exception e) {
 				dispatch = request.getRequestDispatcher("jsp/home.jsp");
 

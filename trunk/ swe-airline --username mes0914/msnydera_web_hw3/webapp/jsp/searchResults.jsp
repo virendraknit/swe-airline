@@ -51,7 +51,20 @@
  	</c:choose>
  	--%>
  	
-	<h1>Available Flights</h1>
+	<h1 style="margin-bottom: 0px">Available Flights</h1>
+	
+	<c:set var="serviceMessage" value="" />
+	
+	<c:if test="${not empty requestScope.ejbSearch && requestScope.ejbSearch}">
+		<c:set var="serviceMessage" value="Search was run using <span style='color: green'>EJB Service</span>" />
+		<span style="color: green"></span>
+	</c:if>
+	<c:if test="${not empty requestScope.webServiceSearch && requestScope.webServiceSearch}">
+		<c:set var="serviceMessage" value="Search was run using <span style='color: green'>Web Service</span>" />
+	</c:if>
+	
+	
+	<h2 style="margin-top: 0px;">(${serviceMessage})</h2>
 	<c:if test="${not empty requestScope.error}">
  		<span style="color: red;">
  			<ul>
