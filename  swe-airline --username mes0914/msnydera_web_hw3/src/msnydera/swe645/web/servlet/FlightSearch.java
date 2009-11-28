@@ -76,8 +76,14 @@ public class FlightSearch extends HttpServlet {
 		 */
 		if (serviceToUse.trim().equalsIgnoreCase("ejb")) {
 			dispatch = searchWithEjb(request, dispatch);
+			
+			request.setAttribute("ejbSearch", Boolean.TRUE);
+			request.getSession().setAttribute("ejbSearch", Boolean.TRUE);
 		} else {
 			dispatch = searchWithWebService(request, dispatch);
+			
+			request.setAttribute("webServiceSearch", Boolean.TRUE);
+			request.getSession().setAttribute("webServiceSearch", Boolean.TRUE);
 		}
 
 		dispatch.forward(request, response);
