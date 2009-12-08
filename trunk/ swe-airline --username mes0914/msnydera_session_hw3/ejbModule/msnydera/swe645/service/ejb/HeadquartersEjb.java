@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Properties;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -19,7 +18,6 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -30,8 +28,6 @@ import msnydera.swe645.exception.ValidationException;
 import msnydera.swe645.service.AirlineHeadquartersService;
 import msnydera.swe645.service.impl.AirlineHeadquartersServiceImpl;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
-
 /**
  * Session Bean implementation of the Remote HeadquartersEjb. This class is
  * basically a delegate object for the AirlineHeadquartersService business
@@ -40,8 +36,8 @@ import org.jboss.ejb3.annotation.SecurityDomain;
  * with Headquarters related business.
  */
 @Stateless
-@SecurityDomain("other")
-@RolesAllowed( { "admin", "hq" })
+//@SecurityDomain("other")
+//@RolesAllowed( { "admin", "hq" })
 public class HeadquartersEjb implements HeadquartersEjbRemote {
 	private AirlineHeadquartersService service;
 
